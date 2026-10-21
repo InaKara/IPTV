@@ -1,0 +1,31 @@
+# Private local settings and exports
+.env
+.env.*
+!.env.example
+local.properties
+.private/
+*.log
+
+# Generated Android/Gradle and IDE state
+.gradle/
+.kotlin/
+.idea/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.iml
+*.apk
+*.aab
+*.apks
+*.hprof
+
+# Signing material
+*.jks
+*.keystore
+keystore.properties
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color -->
+    <item android:drawable="@android:color/black"/>
+    
+    <!-- App logo centered -->
+    <item android:gravity="center">
+        <vector
+            android:width="120dp"
+            android:height="120dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:fillColor="#2979FF"
+                android:pathData="M8,5v14l11,-7z"/>
+        </vector>
+    </item>
+    
+    <!-- App name below logo -->
+    <item android:gravity="center_horizontal|bottom"
+          android:bottom="200dp">
+        <shape android:shape="rectangle">
+            <size android:height="40dp" android:width="200dp"/>
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+</layer-list>
