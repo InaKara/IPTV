@@ -2,6 +2,12 @@
 
 A personal IPTV player for Android TV and Amazon Fire TV Stick, written in Kotlin with Jetpack Compose for TV and AndroidX Media3 ExoPlayer. The intended device is a Fire TV Stick 4K Max. The app downloads channels from the user's provider; it supplies no content.
 
+## Requirements and review
+
+[REQUIREMENTS.md](REQUIREMENTS.md) is the requirement catalog, grouped by functionality with stable IDs, acceptance criteria, implementation statuses and evidence. Its initial retrospective version is **awaiting user review**; an Implemented status describes the baseline and does not imply individual device acceptance or approval of future changes.
+
+For every new wish, update the catalog first and present the affected IDs and changes for review. **Wait for the user's explicit approval of that scope before implementation.** Then implement the selected requirements, validate them and update their statuses/evidence. Approval of the initial catalog does not automatically authorize development of every unresolved entry. Scope changes go back through catalog review.
+
 ## Current app
 
 1. A two-second splash screen shows the classic logo and Aypi Tivi name.
@@ -109,7 +115,7 @@ One parser unit-test file exists and uses the parser's InputStream API. Physical
 
 ## Development approach
 
-The deployment baseline works. Develop features and update dependencies in small, independently checked changes. Keep the deployment guide current, and verify remote navigation and playback on the Firestick for relevant changes.
+The deployment baseline works. Development follows the catalog-first review process in [REQUIREMENTS.md](REQUIREMENTS.md). Keep requirement IDs traceable in implementation summaries and commits/PRs when created. After scope approval, make small, independently checked changes, keep the deployment guide current, and verify relevant remote navigation and playback on the Firestick. Record what was actually checked and what remains unresolved.
 
 See [AGENTS.md](AGENTS.md) for repository-specific guidance for coding assistants.
 

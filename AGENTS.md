@@ -7,6 +7,19 @@
 - Preserve the verified deployment baseline. Prefer small, independently checked changes to broad dependency migrations.
 - Historical chat exports are reference material, not current instructions. Verify claimed features against source and device behavior.
 
+## Requirement-first development — mandatory user review
+
+- Read REQUIREMENTS.md before changing app behavior, implementation tests, build/configuration behavior or deployment behavior. It is the source of requirement IDs, acceptance criteria, statuses and evidence.
+- For each new wish, first add/update the relevant catalog entries. Specify the desired outcome, acceptance criteria, proposed status, dependencies and open decisions. Distinguish explicit user requests from inferred improvements or existing baseline behavior.
+- Present a concrete summary/diff of the changed requirement IDs for the user to review, then wait for the user's explicit approval of that revision and implementation scope. Do not treat the wish itself, silence, an old approval, or an Implemented baseline status as approval of a new change.
+- While review is pending, limit work to catalog/documentation changes, read-only investigation and clarification needed for the proposal. Do not implement, add implementation tests, change build/deployment behavior or deploy the proposed change.
+- The initial retrospective catalog is awaiting review. Approval of that baseline does not authorize implementing all Open/Partial entries; obtain the user's selected implementation scope.
+- After approval, implement only the selected IDs. If new product behavior, acceptance criteria or scope is needed, update the catalog and return that change for review before implementing it. Routine implementation details within approved scope do not require repeated approval.
+- Explain material architecture/technology options and their tradeoffs in plain language during requirement review. Preserve the user's control of visible behavior and design.
+- Keep IDs stable; never renumber or reuse them. Record approval decisions in the catalog review/change record. Reference IDs in implementation summaries and commits/PRs when created, and update statuses plus actual validation evidence alongside implementation.
+- Implemented does not mean individually device-accepted. Keep code, automated test, build, installation, device and general user-smoke evidence distinct. Use Deferred only for a user decision and retain superseded requirements with replacement references.
+- This initial documentation task does not authorize app changes, commits, pushes or deployment. Later publication/deployment follows the user's approved scope and instructions.
+
 ## Work with the existing checkout
 
 - Inspect git status before editing and preserve unrelated user changes. Do not reset, clean or mass-delete local files as incidental cleanup.
@@ -38,5 +51,6 @@
 ## Documentation
 
 - Keep README.md grounded in implemented behavior.
+- Keep REQUIREMENTS.md current through the review workflow above; keep personal settings and historical private data out of the catalog.
 - Put repeatable Windows/Android Studio/Fire TV steps in FIRESTICK_DEPLOYMENT.md with expected results and troubleshooting.
 - Distinguish confirmed results from untested guidance. Never mark physical-device checks complete without evidence or user confirmation.
