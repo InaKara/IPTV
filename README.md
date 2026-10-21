@@ -8,6 +8,10 @@ A personal IPTV player for Android TV and Amazon Fire TV Stick, written in Kotli
 
 For every new wish, update the catalog first and present the affected IDs and changes for review. **Wait for the user's explicit approval of that scope before implementation.** Then implement the selected requirements, validate them and update their statuses/evidence. Approval of the initial catalog does not automatically authorize development of every unresolved entry. Scope changes go back through catalog review.
 
+## Code-review remediation
+
+The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) maps each finding to the local review candidate and its checks. The initial catalog's unrelated product decisions still await review. The previously installed app remains the latest Firestick acceptance baseline.
+
 ## Current app
 
 1. A two-second splash screen shows the classic logo and Aypi Tivi name.
@@ -15,13 +19,13 @@ For every new wish, update the catalog first and present the affected IDs and ch
 3. A persistent category sidebar sits beside a four-column channel grid. Recently viewed appears first (up to 20 entries), followed by categories beginning with TR, then other categories alphabetically. A new installation's recent category is empty; select another category to find channels.
 4. Selecting a channel opens ExoPlayer. Back returns to browsing. Back from browsing offers an exit confirmation.
 
-The server field is a base address such as `https://provider.example:8080`, without a trailing slash or `/get.php` query. The repository constructs:
+The server field is a base address such as `https://provider.example:8080`, without a trailing slash or `/get.php` query. A missing scheme now defaults to HTTPS. Explicit HTTP is retained with an on-screen encryption warning. Requests never silently downgrade HTTPS. The repository encodes each query parameter:
 
 ```text
 <base-address>/get.php?username=<username>&password=<password>&type=m3u_plus
 ```
 
-This is an M3U download endpoint in Xtream-style URL format, not a full Xtream API integration. Parsing extracts names, groups, logo URLs, TVG metadata, user-agent metadata and a heuristic VOD flag. Coil loads channel logos with a disk cache.
+This is an M3U download endpoint in Xtream-style URL format, not a full Xtream API integration. Parsing preserves commas in names and ignores URL queries/fragments during VOD detection. Coil caches channel logos. Per-channel user-agent metadata reaches playback, alongside HLS/DASH and progressive HTTP(S) support. RTMP is not claimed supported.
 
 Default login fields come from a private local `.env` at build time. Optional retired server addresses in that file can replace old saved addresses; other custom addresses and saved credentials are preserved. Release builds and checkouts without `.env` have empty defaults. Remote Select/Enter explicitly requests the keyboard on a focused login field. Physical-device confirmation of this recovery update is recorded in the deployment guide.
 
@@ -40,7 +44,7 @@ Default login fields come from a private local `.env` at build time. Optional re
 | Player / Rewind or Fast Forward | Seek backward or forward 10 seconds |
 | Player / Back | Return to browsing |
 
-These are code mappings, not a completed device acceptance test. Seeking depends on the stream. VOD detection uses category keywords, URL paths and file extensions. Playback quality, including 4K, depends on the stream, codec, device and connection.
+These are code mappings, not a completed device acceptance test. All seeking, including native controller seeking, requires detected VOD, stream seekability and a known positive duration; positions clamp to its bounds. Backgrounding releases the player. Returning restores VOD position and previous play/pause intent, while live playback returns to its current stream. VOD detection uses category keywords, URL paths and file extensions. Playback quality, including 4K, depends on the stream, codec, device and connection.
 
 ## Build setup
 
@@ -51,7 +55,8 @@ The repository pins these versions. An updated Android Studio installation does 
 | Android Gradle plugin | 8.2.2 |
 | Gradle / build runtime | 8.2 / JDK 17 |
 | Kotlin / Compose compiler | 1.9.22 / 1.5.8 |
-| Compose BOM / TV Foundation and Material | 2024.01.00 / 1.0.0-alpha10 |
+| Compose BOM / TV Foundation and Material | 2024.02.02 / 1.0.0-alpha10 |
+| Lint runtime override | 8.3.2 (artifact 31.3.2) |
 | Media3 / Hilt | 1.2.1 / 2.50 |
 | OkHttp / Coil / Gson | 4.12.0 / 2.5.0 / 2.10.1 |
 | Minimum / compile / target SDK | 26 / 34 / 34 |
@@ -69,7 +74,7 @@ In PowerShell, from the project folder:
 .\deploy-firestick.ps1
 ```
 
-This builds, connects, updates the Firestick without clearing app data, and launches the app. Add `-Check` to run the parser tests and Android lint, or use `-BuildOnly` / `-InstallOnly` as needed. See [FIRESTICK_DEPLOYMENT.md](FIRESTICK_DEPLOYMENT.md) for setup and troubleshooting.
+This builds, connects, updates the Firestick without clearing app data, and launches the app. Add `-Check` for environment fixtures, regression tests (including simulated remote focus) and Android lint, or use `-BuildOnly` / `-InstallOnly` as needed. See [FIRESTICK_DEPLOYMENT.md](FIRESTICK_DEPLOYMENT.md) for setup and troubleshooting.
 
 Gradle reads `.env` at build time; Android does not load it from the computer at runtime. Local debug APKs include those defaults and must stay private. Release defaults stay empty. Saved credentials on the device override defaults. Build output, local SDK settings, IDE state, logs and signing material are ignored by Git.
 
@@ -95,7 +100,7 @@ app/src/main/java/com/example/iptv/
   util/                    Global exception handler
 ```
 
-Screens use ViewModels and StateFlow. Top-level navigation is held in Compose state in MainActivity. There is one application module, `app`; the application ID is `com.example.iptv`. Launch through `com.example.iptv/.SplashActivity`, because MainActivity is not exported.
+Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death returns to the saved login form. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the application ID is `com.example.iptv`. Launch through `com.example.iptv/.SplashActivity`, because MainActivity is not exported.
 
 ## Validation and known limitations
 
@@ -105,12 +110,12 @@ Screens use ViewModels and StateFlow. Top-level navigation is held in Compose st
 .\gradlew.bat :app:lintDebug
 ```
 
-One parser unit-test file exists and uses the parser's InputStream API. Physical-device checks are essential for D-pad focus, playback and resume behavior. See the deployment guide's verification record for the latest check results.
+Regression checks cover parsing, URL encoding, connection reuse/cancellation, login concurrency, history/schema migration, seek bounds, channel position and Compose focus using synthetic data. Physical-device checks are essential for D-pad focus, playback and resume behavior. See the deployment guide's verification record for the latest check results.
 
-- The declared Media3 dependencies include the core player and UI, but no HLS, DASH or RTMP extension modules. Do not assume those protocols work from the old README or conversation; inspect the actual stream and add the appropriate module in a separate development change if needed.
-- Playlist user-agent metadata is parsed but not passed into the player. Provider-specific requirements may affect playback.
-- Local debug defaults are generated from the ignored `.env`. Saved credentials use unencrypted app-private SharedPreferences. Stream URLs and connection details can appear in debug logs. Keep credentials and raw logs out of shared documentation and commits. The manifest allows HTTP traffic.
-- Category-to-grid focus requests can target an absent item when a category is empty or its first item is not composed. Diagnose this if D-pad navigation crashes.
+- HLS/DASH modules and per-channel user-agent support are included; provider/codec compatibility and 4K still require device tests. RTMP requires separately selected support.
+- Saved credentials and stream references remain in unencrypted app-private preferences, excluded from backup/transfer. Explicit HTTP exposes credentials in transit; prefer verified provider HTTPS when available. App-controlled errors omit URLs/stacks; Android/platform diagnostics may still be private.
+- Empty/scrolled focus targets have regression checks; physical remote and keyboard acceptance remain pending. The login form scrolls to keep controls reachable on smaller screens.
+- Release builds enable R8/resource shrinking and have empty defaults. The generated release APK is unsigned; signing/distribution and minified device acceptance remain separate.
 - Generated build files, Gradle caches, IDE files and local settings are excluded from public history. Local debug APKs and caches can contain personal defaults; do not upload them.
 
 ## Development approach

@@ -4,6 +4,8 @@ Review date: 21 October 2026. Application/build/deployment source baseline: `7fb
 
 **Review only. No fixes, requirement changes, dependency upgrades, commits, pushes or deployments were made for this review.** Recommendations below are proposals. Selected work must first be added to or clarified in REQUIREMENTS.md and approved by the user.
 
+> Subsequent work: the user authorized remediation of all findings. This report retains the reviewed baseline; see [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) for the local implementation, evidence and pending device checks.
+
 ## Overall assessment
 
 The project has useful boundaries between screens, ViewModels, playlist parsing and storage. Its size is manageable, and the existing Kotlin/Compose/ExoPlayer approach supports incremental improvement. The largest problems are unsafe focus transitions, inconsistent ownership of state and player actions, and incomplete handling of failure cases. Repeated code has already produced different behavior between paths that should follow the same rules.

@@ -1,49 +1,36 @@
 package com.example.iptv.ui.error
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.Button
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Text
+import com.example.iptv.R
+import com.example.iptv.SplashActivity
 import com.example.iptv.ui.theme.IPTVTheme
 
 class ErrorActivity : ComponentActivity() {
+    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val errorText = intent.getStringExtra("error") ?: "Unknown error"
-        
         setContent {
             IPTVTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
-                    Column(modifier = Modifier.padding(32.dp)) {
-                        Text(
-                            text = "App Crashed",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.Red
-                        )
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState())
-                                .padding(top = 16.dp)
-                        ) {
-                            Text(
-                                text = errorText,
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                Column(Modifier.fillMaxSize().padding(32.dp), verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(stringResource(R.string.crash_title))
+                    Text(stringResource(R.string.crash_message), Modifier.padding(16.dp))
+                    Button(onClick = { startActivity(Intent(this@ErrorActivity, SplashActivity::class.java)); finish() }) {
+                        Text(stringResource(R.string.restart_app))
                     }
                 }
             }

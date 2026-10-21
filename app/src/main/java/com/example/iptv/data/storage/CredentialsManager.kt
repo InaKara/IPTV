@@ -3,10 +3,13 @@ package com.example.iptv.data.storage
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.iptv.BuildConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class CredentialsManager @Inject constructor(context: Context) {
-    private val prefs: SharedPreferences = context.getSharedPreferences("aypi_tivi_prefs", Context.MODE_PRIVATE)
+@Singleton
+class CredentialsManager @Inject constructor(@ApplicationContext context: Context) {
+    private val prefs: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE)
 
     var serverUrl: String
         get() {
@@ -32,7 +35,12 @@ class CredentialsManager @Inject constructor(context: Context) {
         set(value) = prefs.edit().putString("password", value).apply()
 
     fun clear() {
-        prefs.edit().clear().apply()
+        prefs.edit().remove("server_url").remove("username").remove("password").apply()
+    }
+
+    fun save(server: String, user: String, pass: String) {
+        prefs.edit().putString("server_url", server.trim().trimEnd('/'))
+            .putString("username", user).putString("password", pass).apply()
     }
 
     private fun normalizeServer(value: String): String = value.trim().trimEnd('/')

@@ -22,7 +22,13 @@ class M3UParser @Inject constructor() {
                 currentChannelBuilder = M3UChannelBuilder()
 
                 // Parse attributes
-                val matcher = attributePattern.matcher(trimmedLine)
+                var quoted = false
+                val separator = trimmedLine.indexOfFirst { char ->
+                    if (char == '"') quoted = !quoted
+                    char == ',' && !quoted
+                }
+                val metadata = if (separator >= 0) trimmedLine.substring(0, separator) else trimmedLine
+                val matcher = attributePattern.matcher(metadata)
                 while (matcher.find()) {
                     val key = matcher.group(1) ?: matcher.group(3)
                     val value = matcher.group(2) ?: matcher.group(4)
@@ -36,10 +42,10 @@ class M3UParser @Inject constructor() {
                     }
                 }
 
-                // Parse Channel Name (everything after the last comma)
-                val lastCommaIndex = trimmedLine.lastIndexOf(',')
-                if (lastCommaIndex != -1) {
-                    currentChannelBuilder?.name = trimmedLine.substring(lastCommaIndex + 1).trim()
+                // Preserve commas in names and ignore commas inside quoted metadata.
+                if (separator >= 0) {
+                    trimmedLine.substring(separator + 1).trim().takeIf { it.isNotEmpty() }
+                        ?.let { currentChannelBuilder?.name = it }
                 }
 
             } else if (!trimmedLine.startsWith("#") && trimmedLine.isNotEmpty()) {
@@ -58,13 +64,16 @@ class M3UParser @Inject constructor() {
     }
 
     private fun isVodContent(groupTitle: String, streamUrl: String): Boolean {
-        val vodKeywords = listOf("vod", "movie", "series", "film", "on demand", "films")
         val group = groupTitle.lowercase()
-        if (vodKeywords.any { group.contains(it) }) return true
-        val url = streamUrl.lowercase()
+        if (VOD_KEYWORDS.any { group.contains(it) }) return true
+        val url = streamUrl.substringBefore('?').substringBefore('#').lowercase()
         if (url.contains("/movie/") || url.contains("/series/") || url.contains("/vod/")) return true
         if (url.endsWith(".mp4") || url.endsWith(".mkv") || url.endsWith(".avi") || url.endsWith(".mov")) return true
         return false
+    }
+
+    private companion object {
+        val VOD_KEYWORDS = listOf("vod", "movie", "series", "film", "on demand")
     }
 
     private class M3UChannelBuilder {

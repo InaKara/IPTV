@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Aypi Tivi</string>
+    <string name="server_url">Server URL</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="connect">Connect</string>
+    <string name="connecting">Connecting…</string>
+    <string name="login_missing_fields">Please fill all fields.</string>
+    <string name="login_empty_playlist">No channels found. Check your provider and account.</string>
+    <string name="login_failed">Could not load channels. Check your server, account and connection, then try again.</string>
+    <string name="http_warning">HTTP sends account details without encryption. Use HTTPS if your provider supports it.</string>
+    <string name="loading_channels">Loading channels…</string>
+    <string name="categories">Categories</string>
+    <string name="exit_app">Exit app?</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Exit</string>
+    <string name="seek_seconds">%1$s%2$d s</string>
+    <string name="playback_error">Playback failed. Check the connection or try another channel.</string>
+    <string name="unsupported_stream">This stream protocol is not supported. Use an HTTP or HTTPS stream.</string>
+    <string name="go_back">Go back</string>
+    <string name="crash_title">Aypi Tivi stopped unexpectedly</string>
+    <string name="crash_message">The previous session ended unexpectedly. Restart the app to try again. Private connection details are not shown here.</string>
+    <string name="restart_app">Restart app</string>
 </resources>

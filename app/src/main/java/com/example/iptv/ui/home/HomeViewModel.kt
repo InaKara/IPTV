@@ -1,92 +1,59 @@
 package com.example.iptv.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iptv.data.model.ChannelGroup
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.data.storage.RecentlyWatchedManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val recentlyWatchedManager: RecentlyWatchedManager
-) : ViewModel() {
-
+class HomeViewModel @Inject constructor(private val recents: RecentlyWatchedManager) : ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    // Store the raw channels to allow refreshing the "Recently viewed" group
-    private var allChannels: List<M3UChannel> = emptyList()
-
-    fun loadChannels(channels: List<M3UChannel>) {
-        allChannels = channels
-        refreshContent()
+    val uiState = _uiState.asStateFlow()
+    private var source: List<M3UChannel>? = null
+    private var regularGroups = emptyList<ChannelGroup>()
+    private var refresh: Job? = null
+    init {
+        viewModelScope.launch {
+            recents.recentChannels.collect { channels -> if (source != null) updateGroups(channels) }
+        }
     }
 
-    fun refreshContent() {
-        if (allChannels.isEmpty()) return
+    private fun updateGroups(recent: List<M3UChannel>) {
+        val groups = listOf(ChannelGroup("Recently viewed", recent)) + regularGroups
+        val selectedName = (_uiState.value as? HomeUiState.Success)?.selectedGroup?.name
+        _uiState.value = HomeUiState.Success(groups, groups.find { it.name == selectedName } ?: groups.first())
+    }
 
-        viewModelScope.launch {
-            // Keep loading state only for initial load
-            if (_uiState.value !is HomeUiState.Success) {
-                _uiState.value = HomeUiState.Loading
-            }
-
-            val groups = withContext(Dispatchers.Default) {
-                val regularGroups = allChannels.groupBy { it.groupTitle }
-                    .map { (title, groupChannels) -> ChannelGroup(title, groupChannels) }
-                    .sortedWith(compareBy(
-                        { !it.name.startsWith("TR", ignoreCase = true) }, // TR first
-                        { it.name }                                        // then alphabetical
-                    ))
-
-                // Always add "Recently viewed" group at the top
-                val recentChannels = recentlyWatchedManager.getRecentChannels()
-                val recentGroup = ChannelGroup("Recently viewed", recentChannels)
-                listOf(recentGroup) + regularGroups
-            }
-
-            if (groups.isNotEmpty()) {
-                val currentState = _uiState.value
-                val selectedGroup = if (currentState is HomeUiState.Success) {
-                    // Try to keep selection or update if it's the "Recently viewed" group
-                    groups.find { it.name == currentState.selectedGroup.name } ?: groups.first()
-                } else {
-                    groups.first()
+    fun loadChannels(channels: List<M3UChannel>) {
+        refresh?.cancel()
+        refresh = viewModelScope.launch {
+            if (source !== channels) {
+                regularGroups = withContext(Dispatchers.Default) {
+                    channels.groupBy { it.groupTitle }.map { (name, entries) -> ChannelGroup(name, entries) }
+                        .sortedWith(compareBy({ !it.name.startsWith("TR", ignoreCase = true) }, { it.name }))
                 }
-                
-                _uiState.value = HomeUiState.Success(groups, selectedGroup = selectedGroup)
-            } else {
-                _uiState.value = HomeUiState.Empty
+                source = channels
             }
+            updateGroups(recents.recentChannels.value)
         }
     }
 
     fun selectGroup(group: ChannelGroup) {
-        val currentState = _uiState.value
-        if (currentState is HomeUiState.Success) {
-            _uiState.value = currentState.copy(selectedGroup = group)
-        }
-    }
-
-    companion object {
-        private const val TAG = "HomeViewModel"
+        val current = _uiState.value as? HomeUiState.Success ?: return
+        _uiState.value = current.copy(selectedGroup = group)
     }
 }
 
 sealed class HomeUiState {
     object Loading : HomeUiState()
-    object Empty : HomeUiState()
-    data class Success(
-        val groups: List<ChannelGroup>,
-        val selectedGroup: ChannelGroup
-    ) : HomeUiState()
+    data class Success(val groups: List<ChannelGroup>, val selectedGroup: ChannelGroup) : HomeUiState()
 }

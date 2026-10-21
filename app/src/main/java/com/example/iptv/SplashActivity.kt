@@ -1,6 +1,5 @@
 package com.example.iptv
 
-import com.example.iptv.R
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,23 +7,21 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.example.iptv.R
 import com.example.iptv.ui.theme.IPTVTheme
 import kotlinx.coroutines.delay
 
@@ -32,6 +29,13 @@ import kotlinx.coroutines.delay
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val notice = getSharedPreferences("crash_notice", MODE_PRIVATE)
+        if (notice.getBoolean("pending", false)) {
+            notice.edit().remove("pending").apply()
+            startActivity(Intent(this, com.example.iptv.ui.error.ErrorActivity::class.java))
+            finish()
+            return
+        }
         setContent {
             IPTVTheme {
                 SplashScreenContent {
@@ -69,7 +73,7 @@ fun SplashScreenContent(onTimeout: () -> Unit) {
         
         // App Name
         Text(
-            text = "Aypi Tivi",
+            text = androidx.compose.ui.res.stringResource(R.string.app_name),
             style = MaterialTheme.typography.displayMedium,
             color = Color.White
         )

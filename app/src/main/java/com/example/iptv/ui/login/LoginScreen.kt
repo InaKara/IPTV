@@ -1,257 +1,152 @@
 package com.example.iptv.ui.login
 
-import com.example.iptv.R
 import android.view.KeyEvent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.example.iptv.data.model.M3UChannel
+import com.example.iptv.R
 import com.example.iptv.ui.theme.IPTVTheme
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(
-    onLoginSuccess: (List<M3UChannel>) -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    var server by remember { mutableStateOf(viewModel.serverUrl) }
-    var username by remember { mutableStateOf(viewModel.username) }
-    var password by remember { mutableStateOf(viewModel.password) }
-
-    val focusManager = LocalFocusManager.current
-    val (serverFocus, userFocus, passwordFocus, buttonFocus) = remember { FocusRequester.createRefs() }
-
-    // Start with button focused
-    LaunchedEffect(Unit) {
-        buttonFocus.requestFocus()
+fun LoginScreen(onLoginSuccess: (List<M3UChannel>) -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LoginContent(viewModel.serverUrl, viewModel.username, viewModel.password, state,
+        { viewModel.serverUrl = it }, { viewModel.username = it }, { viewModel.password = it },
+        viewModel::onConnect)
+    LaunchedEffect(state) {
+        (state as? LoginUiState.Success)?.let { onLoginSuccess(it.channels) }
     }
-
-    // Shared color config
-    val fieldColors = TextFieldDefaults.outlinedTextFieldColors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary,
-        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-        focusedLabelColor = MaterialTheme.colorScheme.primary,
-        cursorColor = MaterialTheme.colorScheme.primary,
-        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-    )
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        androidx.compose.foundation.Image(
-            painter = painterResource(id = R.drawable.app_logo),
-            contentDescription = null,
-            modifier = Modifier.width(120.dp).height(120.dp).padding(bottom = 16.dp)
-        )
-        Text(
-            text = "Aypi Tivi",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Server URL
-        OutlinedTextField(
-            value = server,
-            onValueChange = { server = it; viewModel.serverUrl = it },
-            label = { androidx.compose.material3.Text("Server URL") },
-            singleLine = true,
-            modifier = Modifier
-                .width(400.dp)
-                .focusRequester(serverFocus)
-                .dpadNavigation(up = buttonFocus, down = userFocus,
-                    onSelect = { keyboardController?.show() }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { userFocus.requestFocus() }),
-            colors = fieldColors
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it; viewModel.username = it },
-            label = { androidx.compose.material3.Text("Username") },
-            singleLine = true,
-            modifier = Modifier
-                .width(400.dp)
-                .focusRequester(userFocus)
-                .dpadNavigation(up = serverFocus, down = passwordFocus,
-                    onSelect = { keyboardController?.show() }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { passwordFocus.requestFocus() }),
-            colors = fieldColors
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Password
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it; viewModel.password = it },
-            label = { androidx.compose.material3.Text("Password") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .width(400.dp)
-                .focusRequester(passwordFocus)
-                .dpadNavigation(up = userFocus, down = buttonFocus,
-                    onSelect = { keyboardController?.show() }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {
-                focusManager.clearFocus()
-                viewModel.onConnect()
-            }),
-            colors = fieldColors
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        if (uiState is LoginUiState.Loading) {
-            LoadingSpinner()
-            Spacer(modifier = Modifier.height(16.dp))
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null,
-                modifier = Modifier.width(32.dp).height(32.dp).padding(bottom = 8.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Loading Aypi Tivi...",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-        } else {
-            Button(
-                onClick = { viewModel.onConnect() },
-                modifier = Modifier.focusRequester(buttonFocus)
-            ) {
-                Text(text = "Connect")
-            }
-        }
-
-        if (uiState is LoginUiState.Error) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = (uiState as LoginUiState.Error).message,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
-        if (uiState is LoginUiState.Success) {
-            val channels = (uiState as LoginUiState.Success).channels
-            LaunchedEffect(Unit) { onLoginSuccess(channels) }
-        }
-    }
-}
-
-@Composable
-private fun LoadingSpinner() {
-    val infiniteTransition = rememberInfiniteTransition(label = "loading")
-    val angle by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing)
-        ),
-        label = "loadingAngle"
-    )
-
-    Canvas(modifier = Modifier.width(48.dp).height(48.dp)) {
-        drawArc(
-            color = Color(0xFF2979FF),
-            startAngle = angle,
-            sweepAngle = 270f,
-            useCenter = false,
-            style = Stroke(width = 4.dp.toPx())
-        )
-    }
-}
-
-private fun Modifier.dpadNavigation(
-    up: FocusRequester? = null,
-    down: FocusRequester? = null,
-    onSelect: () -> Unit
-): Modifier = this.onPreviewKeyEvent { event ->
-    val keyCode = event.nativeKeyEvent.keyCode
-    val isSelect = keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
-        keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
-    if (isSelect) {
-        if (event.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && event.nativeKeyEvent.repeatCount == 0) {
-            onSelect()
-        }
-        // Consume both halves so the field does not also submit or invoke another click.
-        true
-    } else if (event.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) {
-        when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN -> { down?.requestFocus(); down != null }
-            KeyEvent.KEYCODE_DPAD_UP -> { up?.requestFocus(); up != null }
-            else -> false
-        }
-    } else false
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
-@androidx.compose.ui.tooling.preview.Preview(device = "id:tv_1080p")
 @Composable
-fun LoginScreenPreview() {
+internal fun LoginContent(
+    server: String, username: String, password: String, state: LoginUiState,
+    onServer: (String) -> Unit, onUsername: (String) -> Unit, onPassword: (String) -> Unit,
+    onConnect: () -> Unit
+) {
+    val (serverFocus, userFocus, passwordFocus, buttonFocus) = remember { FocusRequester.createRefs() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) { keyboard?.hide(); buttonFocus.requestFocus() }
+    val loading = state is LoginUiState.Loading
+
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(32.dp), verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Image(painterResource(R.drawable.app_logo), null, Modifier.width(120.dp).height(120.dp))
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineLarge)
+        Spacer(Modifier.height(24.dp))
+        TvLoginField(server, onServer, R.string.server_url, serverFocus, buttonFocus, userFocus)
+        TvLoginField(username, onUsername, R.string.username, userFocus, serverFocus, passwordFocus)
+        TvLoginField(password, onPassword, R.string.password, passwordFocus, userFocus, buttonFocus, password = true)
+        if (server.trim().startsWith("http://", ignoreCase = true)) {
+            Text(stringResource(R.string.http_warning), color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(400.dp))
+        }
+        Spacer(Modifier.height(16.dp))
+        // Keep a stable, focusable target while loading; the ViewModel also enforces single-flight.
+        Button(onClick = { if (!loading) { keyboard?.hide(); onConnect() } },
+            modifier = Modifier.focusRequester(buttonFocus).focusProperties { up = passwordFocus; down = serverFocus }) {
+            Text(stringResource(if (loading) R.string.connecting else R.string.connect))
+        }
+        if (loading) CircularProgressIndicator(Modifier.padding(12.dp), color = MaterialTheme.colorScheme.primary)
+        (state as? LoginUiState.Error)?.let {
+            Text(stringResource(it.messageRes), color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.width(400.dp).padding(top = 12.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+private fun TvLoginField(
+    value: String, onChange: (String) -> Unit, label: Int,
+    focus: FocusRequester, up: FocusRequester, down: FocusRequester, password: Boolean = false
+) {
+    val keyboard = LocalSoftwareKeyboardController.current
+    OutlinedTextField(
+        value = value, onValueChange = onChange, singleLine = true,
+        label = { androidx.compose.material3.Text(stringResource(label)) },
+        visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,
+        modifier = Modifier.width(400.dp).padding(bottom = 12.dp).focusRequester(focus).onPreviewKeyEvent {
+            val key = it.nativeKeyEvent
+            when (key.keyCode) {
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                    if (key.action == KeyEvent.ACTION_DOWN && key.repeatCount == 0) keyboard?.show()
+                    true
+                }
+                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    if (key.action == KeyEvent.ACTION_DOWN) {
+                        keyboard?.hide()
+                        (if (key.keyCode == KeyEvent.KEYCODE_DPAD_UP) up else down).requestFocus()
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = if (password) ImeAction.Done else ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { down.requestFocus() },
+            onDone = { keyboard?.hide(); down.requestFocus() }
+        ),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+        )
+    )
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Preview(device = "id:tv_1080p")
+@Composable
+private fun LoginPreview() {
     IPTVTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            LoginScreen(onLoginSuccess = {})
+        Surface(Modifier.fillMaxSize()) {
+            LoginContent("https://provider.example", "demo", "", LoginUiState.Idle, {}, {}, {}, {})
         }
     }
 }

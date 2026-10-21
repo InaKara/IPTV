@@ -44,7 +44,7 @@ Edit `.env` locally. Do not replace an existing `.env` just to repeat a deployme
 | JAVA_HOME | Optional path to a JDK 17 installation |
 | ANDROID_HOME | Optional path to the Android SDK containing platform-tools/adb.exe |
 
-Use literal `KEY=value` lines. Blank lines and lines beginning with `#` are ignored. Matching single/double quotes around a value are removed. No variable expansion, shell execution, escape processing or inline comments are performed. Use forward slashes in Windows paths. Values containing `=` or `#` are supported.
+Use canonical uppercase keys in literal `KEY=value` lines. Both readers reject lowercase/case-variant keys, malformed entries and duplicates. `-Check` runs the same synthetic environment fixtures through both readers. Blank lines and lines beginning with `#` are ignored. Matching single/double quotes around a value are removed. No variable expansion, shell execution, escape processing or inline comments are performed. Use forward slashes in Windows paths. Values containing `=` or `#` are supported.
 
 The script resolves paths relative to itself, so the project can live anywhere. If JAVA_HOME or ANDROID_HOME is blank, existing environment settings are used; ADB can also be found on PATH. The standard local Android SDK directory is a fallback. An existing local.properties file must point to the correct SDK.
 
@@ -77,16 +77,16 @@ Repeat setup only after changing computers, reinstalling tools, resetting the Fi
 - **INSTALL_FAILED_VERSION_DOWNGRADE:** inspect versionCode before choosing a versioning change.
 - **Storage error:** free space through Fire TV settings.
 - **Login failure:** check provider availability, the base server address and account access. Login downloads an M3U playlist, not a full Xtream API session.
-- **Playback failure:** inspect stream format and player error. Current dependencies lack HLS/DASH/RTMP extension modules, and parsed user-agent metadata is not applied to playback.
+- **Playback failure:** inspect stream format and player error. The review candidate includes HLS/DASH modules and per-channel user-agent support. RTMP is not supported. Try an HTTP(S) stream with a supported device codec.
 
 To inspect recent errors with your own SDK/device values:
 
 ```powershell
 adb -s '<firestick-ip>:5555' logcat -b crash -d -t 200
-adb -s '<firestick-ip>:5555' logcat -d -t 500 'AndroidRuntime:E' 'LoginViewModel:D' 'PlayerViewModel:D' '*:S'
+adb -s '<firestick-ip>:5555' logcat -d -t 500 'AndroidRuntime:E' 'AypiTivi:W' '*:S'
 ```
 
-Use the full path to adb.exe if it is not on PATH. The app has its own exception screen, so an empty crash buffer does not rule out failure. Logs and crash messages can contain provider details or authenticated URLs; redact before sharing and keep logs out of Git.
+Use the full path to adb.exe if it is not on PATH. The review candidate saves a generic crash notice for the next launch and delegates to Android's normal crash handler. It does not display raw crash stacks. App-owned messages omit provider URLs; Android/platform diagnostics may still contain private information. Logs and crash messages can contain provider details or authenticated URLs; redact before sharing and keep logs out of Git.
 
 ## Verification record
 
@@ -101,7 +101,13 @@ The subsequent .env/deployment-script change was also verified:
 - A normal script run rebuilt with local defaults, installed successfully on the Firestick and received a successful activity launch. Playback after this particular update has not been separately reported.
 - The public source tree was checked for the known private values; .env, generated outputs and local tool settings are excluded. Publication uses a fresh initial commit rather than the old history containing private defaults.
 
-No library migration is part of this change.
+That record describes the earlier deployment baseline. The subsequent code-review candidate updates the Compose BOM to 2024.02.02 and independently aligns lint to 8.3.2 while keeping AGP 8.2.2, Gradle 8.2, Kotlin 1.9.22 and JDK 17. See CODE_REVIEW_FIXES.md for current local checks and pending Firestick acceptance.
+
+## Local remediation checks — 22 October 2026
+
+The review candidate passed debug and optimized unsigned-release builds, 29 debug tests (including simulated remote focus), 26 release-variant tests, eight shared fixtures in each environment reader, and debug/release lint (0 errors / 21 warnings, with the formerly skipped Compose registry running). Release defaults are empty and the public candidate/release artifact passed the configured private-value scan.
+
+No Firestick installation or real-provider request was performed for this candidate. Review CODE_REVIEW_FIXES.md, then use the normal deployment command and its acceptance checklist. Release unit tests run before optimization; minified device runtime is still unverified. The earlier installed app remains the last physical-device baseline.
 
 ## References
 

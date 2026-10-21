@@ -10,10 +10,12 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
-        android:banner="@drawable/ic_launcher" 
+        android:icon="@drawable/app_logo"
+        android:banner="@drawable/tv_banner"
         android:theme="@style/Theme.IPTVApp"
         android:name=".IPTVApplication"
         android:usesCleartextTraffic="true"

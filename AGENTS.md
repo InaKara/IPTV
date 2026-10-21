@@ -32,6 +32,8 @@
 ## Build and verification
 
 - Use the repository Gradle wrapper (8.2) and JDK 17. AGP is 8.2.2, compile/target SDK 34, Build Tools 34.0.0. Java/Kotlin output targets 1.8.
+- Compose BOM is 2024.02.02; the lint runtime override is 8.3.2 (artifact 31.3.2). Keep the aligned lint runtime unless a verified tooling change replaces it; do not suppress skipped Compose checks.
+- CR-001–CR-035 remediation was explicitly authorized under FIX-001–FIX-010. See CODE_REVIEW_FIXES.md for implementation and outstanding acceptance; unrelated historical Back/channel-direction/Stop decisions remain pending.
 - Do not use Android Studio's bundled Java 21 to run this Gradle version. Set the Gradle JDK explicitly.
 - Windows checks: .\gradlew.bat :app:assembleDebug, .\gradlew.bat :app:testDebugUnitTest and .\gradlew.bat :app:lintDebug as relevant to the change.
 - Prefer .\deploy-firestick.ps1 for the full build/install/launch workflow. Use -BuildOnly -Check for local checks without changing the device; -InstallOnly deliberately uses the existing APK.

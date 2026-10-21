@@ -1,0 +1,49 @@
+[
+  {
+    "name": "empty",
+    "text": " # comment\n\n",
+    "expected": {}
+  },
+  {
+    "name": "literal",
+    "text": "IPTV_USERNAME=demo\nIPTV_PASSWORD='a&b#c=$(literal)=x'\nJAVA_HOME=\"C:/Example JDK\"\nEMPTY=\n",
+    "expected": {
+      "IPTV_USERNAME": "demo",
+      "IPTV_PASSWORD": "a&b#c=$(literal)=x",
+      "JAVA_HOME": "C:/Example JDK",
+      "EMPTY": ""
+    }
+  },
+  {
+    "name": "bom",
+    "text": "﻿IPTV_USERNAME = demo\n",
+    "expected": {
+      "IPTV_USERNAME": "demo"
+    }
+  },
+  {
+    "name": "duplicate",
+    "text": "IPTV_USERNAME=a\nIPTV_USERNAME=b",
+    "invalid": true
+  },
+  {
+    "name": "casevariant",
+    "text": "IPTV_USERNAME=a\niptv_username=b",
+    "invalid": true
+  },
+  {
+    "name": "lowercase",
+    "text": "iptv_username=a",
+    "invalid": true
+  },
+  {
+    "name": "missingseparator",
+    "text": "IPTV_USERNAME",
+    "invalid": true
+  },
+  {
+    "name": "badkey",
+    "text": "BAD-KEY=value",
+    "invalid": true
+  }
+]
