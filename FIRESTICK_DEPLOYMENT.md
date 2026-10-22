@@ -10,6 +10,8 @@ Create your private `.env` once (see below), then open PowerShell in this projec
 
 The script reads local settings, checks JDK 17, builds a fresh debug APK, connects to the Firestick, installs with `-r` to preserve saved app data, and launches Aypi Tivi. It stops on build, connection or installation failure. Confirm picture, sound and the changed controls on the television after deployment.
 
+The installed application ID is **com.inakara.aypitivi**. Its activity class still belongs to the Kotlin namespace, so its full launcher component is `com.inakara.aypitivi/com.example.iptv.SplashActivity`. The script handles this pair. The one-time move from the former com.example.iptv installation is complete on the verified Firestick; future updates need only the normal command above. Changing an application ID does not automatically transfer another installation's settings/history; the approved private migration and its verification are recorded below.
+
 Useful options:
 
 ```powershell
@@ -110,6 +112,52 @@ That record describes the earlier deployment baseline. The subsequent code-revie
 The review candidate passed debug and optimized unsigned-release builds, 29 debug tests (including simulated remote focus), 26 release-variant tests, eight shared fixtures in each environment reader, and debug/release lint (0 errors / 21 warnings, with the formerly skipped Compose registry running). Release defaults are empty and the public candidate/release artifact passed the configured private-value scan.
 
 No Firestick installation or real-provider request was performed for this candidate. Review CODE_REVIEW_FIXES.md, then use the normal deployment command and its acceptance checklist. Release unit tests run before optimization; minified device runtime is still unverified. The earlier installed app remains the last physical-device baseline.
+
+## Logo and startup follow-up — 22 October 2026
+
+The first logo/timing candidate, version 1.1.1 (3), was installed with saved app data preserved. Local PNG/SVG logos and the same gray fallback for missing/404/unsupported images were visually verified on a five-channel fixture. That host suite passed 88/88 checks plus debug lint; its release build and release lint also passed. Real external channel-logo probes were not performed, following the user's local-fixtures-only instruction.
+
+Three synthetic 100,915-entry / 24.21 MiB device runs reached the first browsing layout in 17.65–19.82 seconds. Streaming download/parsing accounted for 15.07–17.59 seconds; history preparation 0.35–0.41 seconds and grouping 0.17–0.27 seconds. These are loopback-fixture measurements, not real-provider comparisons. See UX_INVESTIGATION.md.
+
+Debug startup records use INFO because this Firestick drops DEBUG records by default. To inspect only the fixed numeric timing records, with your own configured ADB/device selection:
+
+```powershell
+adb -s '<firestick-ip>:5555' logcat -s 'AypiStartup:I' '*:S'
+```
+
+The trace ends at the first browsing list layout and excludes channel playback/image readiness. It contains no provider/account/channel names, URLs or raw exception messages. Release disables it.
+
+The initial launcher APK resources and native rendered artwork were corrected, but the original-ID Fire TV tile still showed the blue/white rectangle. Replacement installation and a reboot did not resolve it; launcher force-stop was refused by the OS. The user then explicitly approved uninstall/reinstall with backup restoration. A fresh verified backup was taken, uninstall/install succeeded, preferences were restored byte-for-byte, and launch succeeded. A further restart still left the app-list tile unchanged; selecting that tile was confirmed to open the app. UI-004 was Partial at that stage. Launcher caching/metadata was suspected without inspecting its source. Repeating an uninstall or resetting launcher data was unnecessary; the subsequent identity migration resolved the issue.
+
+A temporary test APK with the same artwork, a different installation ID and empty login defaults displayed the correct classic icon beside the original blue/white tile. The test copy was removed and normal build outputs restored. This tied the difference to installation identity without exposing the launcher's metadata source. The user then approved OPS-006; the completed migration below resolved the tile issue.
+
+All local fixture settings were removed and original saved settings/history were restored and verified byte-for-byte, including after the approved reinstall and restart. The bridge was removed. The remaining launcher defect at that stage was resolved by the identity migration below. Future direct-to-list startup and cache/refresh policy remain LOGIN-008, Open for later review.
+
+## Completed identity migration — 22 October 2026
+
+**Version 1.1.2 (4), com.inakara.aypitivi, is installed.** The final app-selection screen shows the classic logo; the old blue/white tile is gone. UI-004 and OPS-006 are Implemented.
+
+The one-time approved migration used this order:
+
+1. Verify the new APK identity and that its signing certificate matches the original; stop the old app and take a fresh private backup of its complete shared-preferences file (`aypi_tivi_prefs.xml`).
+2. Install the new identity while retaining the old installation. Stop the new process, copy the preferences without text re-encoding, and compare the restored file's SHA-256 with the original.
+3. Launch the migrated app and visually verify the classic app-selection tile. Selecting it was confirmed to open the new package's MainActivity.
+4. Run the ordinary `.\deploy-firestick.ps1` workflow to build/install/launch a real version upgrade from 1.1.1 (3) to 1.1.2 (4). Verify the installed version, unchanged preference hash and correct tile afterward.
+5. Only after these checks, uninstall the obsolete com.example.iptv installation. Verify its absence, the remaining classic tile, its launch and unchanged migrated preferences.
+
+Saved settings/history matched the original byte-for-byte after migration, the normal update and removal of the old app. The app was left at its normal login screen. Private backups, APKs, screenshots and raw logs remain under ignored build output. No real-provider playback or external channel-logo requests were needed for this migration. This is a completed device record; routine deployment never repeats the legacy restore or uninstalls either identity.
+
+The final 1.1.2 candidate passed **91/91** fresh automatic checks in 27.2 seconds plus debug lint, release build and release lint. Release account defaults were verified empty. Three new deployment fixtures cover the new-ID/unchanged-activity pair and install/launch failure handling; the compiled TV intent case checks actual launcher resolution. The new fixtures also passed under Windows PowerShell 5.1 after using a structured JSON argument record. The installed device build is debug; optimized release runtime and provider playback remain separate acceptance.
+
+## BR-1 browser deployment — 22 October 2026; feature acceptance pending
+
+The user separately requested “Deploy this version” on 22 October 2026. The normal `.\deploy-firestick.ps1 -Check` workflow completed: fresh tests/lint passed, the current source built, `install -r` returned Success, and the launcher start reported success. The installed APK hash matches the fresh local debug APK, version 1.1.2 (4), and the saved preferences/history file matches its pre-update hash exactly. No uninstall, app-data clearing or legacy migration was performed. An additional foreground-activity sample did not confirm MainActivity; no interactive browsing/playback acceptance is claimed from the launch command. Private deployment details remain under ignored build reports.
+
+Local debug assembly and the fresh smoke suite with lint passed on 22 October 2026; current individual results are generated in REQUIREMENTS.md and TEST_CASES.md. Native rendering verifies the three density layouts and amber tile/sidebar pixels using synthetic local channels; the first non-remote launch also initializes keyboard/remote focus. Earlier focus/dialog scheduling failures and the channel-count plural warning were corrected and rerun. The remaining lint warnings concern the existing toolchain/resources; no dependency migration or check suppression was introduced. Installation evidence is recorded above; actual browser, keyboard, remote and playback acceptance remains pending.
+
+After authorized installation, verify Categories and Channels with all three densities, including 20 fully visible Standard tiles. Check amber focus on every sidebar icon and both tile variants; focus movement must not activate a destination or playback. Exercise empty recents/Favorites, partial final rows, long/scrolled category and channel lists, and sidebar return to the saved grid item. Back from a category restores Categories before the root exit dialog.
+
+Use Menu to add/remove a channel, restart to verify favorites/density persistence, and confirm Favorites Back restores its previous browser view. In Search, focus the field without opening the keyboard, use OK to edit, dismiss the keyboard before leaving Search, and verify results and focus survive playback return. Closing Settings must restore the prior view. Play a compatible existing stream, switch channels with the unchanged controls, then return: playback/audio must stop and the correct originating channel must regain focus. These are pending physical-device checks, not claims based on a local build or simulated playback destination.
 
 ## References
 

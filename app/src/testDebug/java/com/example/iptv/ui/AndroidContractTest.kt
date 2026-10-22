@@ -1,6 +1,7 @@
 package com.example.iptv.ui
 
 import android.app.Application
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import com.example.iptv.R
@@ -19,6 +20,7 @@ class AndroidContractTest {
     private val androidNamespace = "http://schemas.android.com/apk/res/android"
 
     @Test fun compiledManifestHasNamedTvLauncherWithoutTouchRequirement() {
+        assertEquals("com.inakara.aypitivi", app.packageName)
         val info = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_ACTIVITIES)
         assertEquals("Aypi Tivi", app.packageManager.getApplicationLabel(info.applicationInfo).toString())
         assertTrue(info.activities.single { it.name.endsWith(".SplashActivity") }.exported)
@@ -27,6 +29,12 @@ class AndroidContractTest {
         assertTrue(features.any { it.name == "android.software.leanback" && it.flags != 0 })
         assertTrue(features.any { it.name == "android.hardware.touchscreen" && it.flags == 0 })
         assertEquals(26, info.applicationInfo.minSdkVersion)
+        val launcher = app.packageManager.resolveActivity(
+            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+                .setPackage(app.packageName), 0
+        )!!.activityInfo
+        assertEquals(app.packageName, launcher.packageName)
+        assertEquals("com.example.iptv.SplashActivity", launcher.name)
     }
 
     @Test fun compiledBackupPolicyExcludesPrivatePreferences() {
@@ -50,7 +58,7 @@ class AndroidContractTest {
 
     @Test fun classicBrandingResourcesAreUsedByLaunchAndBanner() {
         val info = app.packageManager.getApplicationInfo(app.packageName, 0)
-        assertEquals(R.drawable.app_logo, info.icon)
+        assertEquals(R.mipmap.ic_launcher, info.icon)
         assertEquals(R.drawable.tv_banner, info.banner)
         app.resources.openRawResource(R.drawable.app_logo).use {
             assertEquals(0xff, it.read())

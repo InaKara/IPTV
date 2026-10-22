@@ -7,6 +7,14 @@ class M3UParserEdgeTest {
     private fun parse(info: String, url: String = "https://provider.example/live/1") =
         "#EXTM3U\n#EXTINF:-1 $info\n# comment\n\n$url".byteInputStream().use { M3UParser().parse(it).single() }
 
+    @Test fun providerNumbersAreOptionalTrimmedAndNeverInferred() {
+        assertEquals("007.2", parse("tvg-chno=\" 007.2 \" tvg-id=\"other\",News").providerNumber)
+        assertEquals("9", parse("tvg-chno=9,News").providerNumber)
+        assertNull(parse("tvg-chno=\"   \" tvg-id=\"42\",News").providerNumber)
+        assertNull(parse("tvg-id=\"42\",News").providerNumber)
+        assertEquals("News", parse("tvg-chno=\"5\",News").name)
+    }
+
     @Test fun preservesNameCommasAndQuotedMetadata() {
         val channel = parse("group-title=\"News, World\" tvg-name=\"metadata, name\",News, International")
         assertEquals("News, International", channel.name)

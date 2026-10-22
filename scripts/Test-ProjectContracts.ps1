@@ -4,6 +4,35 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'SmokeSupport.ps1')
 . (Join-Path $PSScriptRoot 'LocalEnvironment.ps1')
 $root = Split-Path $PSScriptRoot -Parent
+function Invoke-DeploymentFixture {
+    param([string]$Scenario = 'success')
+    $tokens = $null; $parseErrors = $null
+    $tree = [Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'deploy-firestick.ps1'),[ref]$tokens,[ref]$parseErrors)
+    Assert-Smoke ($parseErrors.Count -eq 0)
+    foreach ($name in @('Invoke-CheckedNative','Install-FirestickApp')) {
+        $function = $tree.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name},$true)
+        Assert-Smoke ($null -ne $function)
+        . ([scriptblock]::Create($function.Extent.Text))
+    }
+    $logPath = [IO.Path]::GetTempFileName()
+    $previousLog = $env:AYPI_TEST_ADB_LOG
+    $previousScenario = $env:AYPI_TEST_ADB_SCENARIO
+    try {
+        $env:AYPI_TEST_ADB_LOG = $logPath
+        $env:AYPI_TEST_ADB_SCENARIO = $Scenario
+        $rejected = $false
+        try {
+            Install-FirestickApp -Adb (Join-Path $PSScriptRoot 'test-fixtures/adb.ps1') `
+                -Device '192.0.2.1:5555' -Apk 'fixture.apk' | Out-Null
+        } catch { $rejected = $true }
+        $calls = @(foreach ($line in [IO.File]::ReadAllLines($logPath)) { $line | ConvertFrom-Json })
+        return [pscustomobject]@{ Rejected = $rejected; Calls = $calls }
+    } finally {
+        $env:AYPI_TEST_ADB_LOG = $previousLog
+        $env:AYPI_TEST_ADB_SCENARIO = $previousScenario
+        Remove-Item -LiteralPath $logPath
+    }
+}
 $results = @()
 $results += Invoke-SmokeCheck 'project#publicExampleHasAllSettingsAndNoAccountDefaults' {
     $example = Read-LocalEnvironment (Join-Path $root '.env.example')
@@ -41,6 +70,23 @@ $results += Invoke-SmokeCheck 'project#gitIgnoresPrivateSettingsAndBuildArtifact
         & git check-ignore --no-index -q -- '.env.example'
         Assert-Smoke ($LASTEXITCODE -eq 1)
     } finally { Pop-Location }
+}
+$results += Invoke-SmokeCheck 'project#deployUpdatesNewIdentityAndLaunchesUnchangedActivity' {
+    $result = Invoke-DeploymentFixture
+    Assert-Smoke (-not $result.Rejected -and $result.Calls.Count -eq 3)
+    Assert-Smoke (($result.Calls[0].arguments -join '|') -eq '-s|192.0.2.1:5555|install|-r|fixture.apk')
+    Assert-Smoke (($result.Calls[1].arguments -join '|') -eq '-s|192.0.2.1:5555|shell|am|force-stop|com.inakara.aypitivi')
+    Assert-Smoke (($result.Calls[2].arguments -join '|') -eq '-s|192.0.2.1:5555|shell|am|start|-W|-n|com.inakara.aypitivi/com.example.iptv.SplashActivity')
+}
+$results += Invoke-SmokeCheck 'project#failedInstallStopsBeforeFurtherDeviceChanges' {
+    $result = Invoke-DeploymentFixture 'install-failure'
+    Assert-Smoke ($result.Rejected -and $result.Calls.Count -eq 1)
+    Assert-Smoke (($result.Calls[0].arguments -join '|') -eq '-s|192.0.2.1:5555|install|-r|fixture.apk')
+}
+$results += Invoke-SmokeCheck 'project#launchStatusErrorRejectsDeploymentEvenWithZeroExitCode' {
+    $result = Invoke-DeploymentFixture 'launch-error'
+    Assert-Smoke ($result.Rejected -and $result.Calls.Count -eq 3)
+    Assert-Smoke ($result.Calls[2].arguments[-1] -eq 'com.inakara.aypitivi/com.example.iptv.SplashActivity')
 }
 if ($ResultPath) { [IO.File]::WriteAllText($ResultPath,(ConvertTo-Json -InputObject @($results) -Depth 4),[Text.UTF8Encoding]::new($false)) }
 $passed=@($results | Where-Object status -eq 'Passed').Count

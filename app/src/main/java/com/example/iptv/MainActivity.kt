@@ -28,7 +28,8 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.NonInteractiveSurfaceDefaults
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
-import com.example.iptv.ui.home.HomeScreen
+import com.example.iptv.ui.home.BrowserScreen
+import com.example.iptv.ui.home.HomeViewModel
 import com.example.iptv.ui.login.LoginScreen
 import com.example.iptv.ui.player.PlayerScreen
 import com.example.iptv.ui.SessionViewModel
@@ -39,6 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val session: SessionViewModel by viewModels()
+    private val browser: HomeViewModel by viewModels()
 
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,16 +55,17 @@ class MainActivity : ComponentActivity() {
                         PlayerScreen(
                             channel = selectedChannel,
                             selectionKey = state.selectedIndex,
-                            onBackPressed = session::browse,
+                            onBackPressed = { browser.returnFromPlayback(state.selectedIndex); session.browse() },
                             onNextChannel = { session.step(1) },
                             onPreviousChannel = { session.step(-1) }
                         )
                     } else if (state.channels.isNotEmpty()) {
                         ExitConfirmDialog(onExit = { finish() })
 
-                        HomeScreen(
+                        BrowserScreen(
                             channels = state.channels,
-                            onChannelClick = session::select
+                            onChannelClick = session::select,
+                            viewModel = browser
                         )
                     } else {
                         LoginScreen(onLoginSuccess = { loadedChannels ->

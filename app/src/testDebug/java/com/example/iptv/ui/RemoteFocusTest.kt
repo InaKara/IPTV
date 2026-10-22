@@ -11,7 +11,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.data.storage.RecentlyWatchedManager
-import com.example.iptv.ui.home.HomeScreen
+import com.example.iptv.ui.home.BrowserScreen
 import com.example.iptv.ui.home.HomeViewModel
 import com.example.iptv.ui.login.LoginContent
 import com.example.iptv.ui.login.LoginUiState
@@ -68,11 +68,11 @@ class RemoteFocusTest {
         val channels = listOf(M3UChannel("News", "Group", null, "https://provider.example/1", null, null, null, false))
         var selected = -1
         var delivered = emptyList<M3UChannel>()
-        compose.setContent { IPTVTheme { HomeScreen(channels, { index, entries -> selected = index; delivered = entries }, vm) } }
+        compose.setContent { IPTVTheme { BrowserScreen(channels, { index, entries -> selected = index; delivered = entries }, vm) } }
         compose.waitUntil(5000) { compose.onAllNodesWithText("Group").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("1 channel").assertIsDisplayed()
         focus("Group").performKeyInput { pressKey(Key.DirectionCenter) }
         compose.waitUntil(5000) { compose.onAllNodesWithText("News").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodesWithText("Group").onFirst().performKeyInput { pressKey(Key.DirectionRight) }
         compose.onNodeWithText("News").assertIsFocused().assertIsDisplayed().performKeyInput { pressKey(Key.DirectionCenter) }
         compose.runOnIdle { org.junit.Assert.assertEquals(0, selected); org.junit.Assert.assertEquals(channels, delivered) }
     }
@@ -90,25 +90,32 @@ class RemoteFocusTest {
     @Test fun emptyRecentCategoryDoesNotRequestMissingGridFocus() {
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
         val channels = listOf(M3UChannel("News", "Group", null, "https://provider.example/1", null, null, null, false))
-        compose.setContent { IPTVTheme { HomeScreen(channels, { _, _ -> }, vm) } }
+        compose.setContent { IPTVTheme { BrowserScreen(channels, { _, _ -> }, vm) } }
         compose.waitUntil(5000) { compose.onAllNodesWithText("Recently viewed").fetchSemanticsNodes().isNotEmpty() }
-        focus("Recently viewed").performKeyInput { pressKey(Key.DirectionRight) }
-        compose.onAllNodesWithText("Recently viewed").onFirst().assertIsFocused()
+        focus("Recently viewed").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused()
+        compose.onNodeWithText("No channels in this category.").assertIsDisplayed()
     }
 
     @Test fun remoteCanReachGridAndSidebarTargetsAfterScrolling() {
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
         val channels = (0 until 100).map { M3UChannel("Channel$it", "Group000", null, "https://provider.example/$it", null, null, null, false) } +
             (1..40).map { M3UChannel("Other$it", "Group%03d".format(it), null, "https://provider.example/other/$it", null, null, null, false) }
-        compose.setContent { IPTVTheme { HomeScreen(channels, { _, _ -> }, vm) } }
+        compose.setContent { IPTVTheme { BrowserScreen(channels, { _, _ -> }, vm) } }
         compose.waitUntil(5000) { compose.onAllNodesWithText("Group000").fetchSemanticsNodes().isNotEmpty() }
         focus("Group000").performKeyInput { pressKey(Key.DirectionCenter) }
         compose.waitUntil(5000) { compose.onAllNodesWithText("Channel0").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithTag("channel_grid").performScrollToIndex(80)
-        focus("Group000").performKeyInput { pressKey(Key.DirectionRight) }
-        compose.onNodeWithText("Channel0").assertIsFocused()
-        compose.onNodeWithTag("category_list").performScrollToIndex(35)
-        compose.onNodeWithText("Channel0").performKeyInput { pressKey(Key.DirectionLeft) }
-        compose.onAllNodesWithText("Group000").onFirst().assertIsFocused()
+        compose.onNodeWithTag("browser_grid").performScrollToIndex(80)
+        focus("Channel80").performKeyInput { pressKey(Key.DirectionLeft) }
+        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithText("Channel80").assertIsFocused().assertIsDisplayed()
+        compose.runOnIdle { vm.browser.back() }
+        compose.onNodeWithText("Group000").assertIsFocused()
+        compose.onNodeWithTag("browser_grid").performScrollToIndex(36)
+        focus("Group035").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithText("Other35").assertIsFocused()
+        compose.runOnIdle { vm.browser.back() }
+        compose.onNodeWithText("Group035").assertIsFocused().assertIsDisplayed()
     }
 }

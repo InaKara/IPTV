@@ -42,8 +42,14 @@ try {
     if ($Lint) { $tasks += ':app:lintDebug' }
     $arguments = $tasks + @("-PsmokeReportDirectory=$runDirectory", '--console=plain')
     Write-Host 'Running local smoke/regression checks (no device or provider connection)...'
-    & (Join-Path $projectRoot 'gradlew.bat') @arguments *> (Join-Path $runDirectory 'gradle.log')
-    $nativeExit = $LASTEXITCODE
+    # Windows PowerShell treats native stderr as an ErrorRecord. Let Gradle finish and
+    # publish fresh XML even on failure, then use its exit code and actual test outcomes.
+    $previousErrorAction = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        & (Join-Path $projectRoot 'gradlew.bat') @arguments *> (Join-Path $runDirectory 'gradle.log')
+        $nativeExit = $LASTEXITCODE
+    } finally { $ErrorActionPreference = $previousErrorAction }
     if ($nativeExit -ne 0) { $issues += 'Gradle build/test/check failure; private details are in the local run log.' }
     $observed += @(Read-SmokeJUnit (Join-Path $runDirectory 'app-tests'))
     $environmentReport = Join-Path $runDirectory 'environment-gradle.json'

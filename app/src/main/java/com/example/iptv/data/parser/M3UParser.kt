@@ -36,6 +36,7 @@ class M3UParser @Inject constructor() {
                     when (key) {
                         "tvg-id" -> currentChannelBuilder?.tvgId = value
                         "tvg-name" -> currentChannelBuilder?.tvgName = value
+                        "tvg-chno" -> currentChannelBuilder?.providerNumber = value.trim().takeIf { it.isNotEmpty() }
                         "tvg-logo" -> currentChannelBuilder?.logoUrl = value
                         "group-title" -> currentChannelBuilder?.groupTitle = value
                         "user-agent" -> currentChannelBuilder?.userAgent = value
@@ -85,9 +86,10 @@ class M3UParser @Inject constructor() {
         var tvgId: String? = null
         var tvgName: String? = null
         var isVod: Boolean = false
+        var providerNumber: String? = null
 
         fun build(): M3UChannel {
-            return M3UChannel(name, groupTitle, logoUrl, streamUrl, userAgent, tvgId, tvgName, isVod)
+            return M3UChannel(name, groupTitle, logoUrl, streamUrl, userAgent, tvgId, tvgName, isVod, providerNumber)
         }
     }
 }

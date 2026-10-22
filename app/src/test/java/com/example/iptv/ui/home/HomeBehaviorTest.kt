@@ -54,12 +54,13 @@ class HomeBehaviorTest {
         }
         try {
             vm.loadChannels(channels)
-            val initial = state { true }
-            vm.selectGroup(initial.groups.single { it.name == "Beta" })
+            state { true }
+            vm.browser.openCategory("group:Beta")
             manager.addChannel(channels.first())
             vm.loadChannels(channels)
             val refreshed = state { it.groups.first().channels.isNotEmpty() }
-            assertEquals("Beta", refreshed.selectedGroup.name)
+            assertEquals("group:Beta", vm.browser.state.value.location.categoryId)
+            assertEquals("two", vm.browser.state.value.items.single().entry!!.channel.name)
             assertEquals(listOf(channels.first()), refreshed.groups.first().channels)
         } finally { store.clear(); Dispatchers.resetMain() }
     }

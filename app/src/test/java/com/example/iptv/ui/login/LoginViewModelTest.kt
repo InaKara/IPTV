@@ -7,6 +7,7 @@ import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.data.repository.ChannelRepository
 import com.example.iptv.data.storage.CredentialsManager
 import com.example.iptv.data.storage.RecentlyWatchedManager
+import com.example.iptv.diagnostics.StartupTimings
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.*
@@ -59,13 +60,15 @@ class LoginViewModelTest {
         val app = RuntimeEnvironment.getApplication()
         val credentials = CredentialsManager(app)
         credentials.save("https://provider.example", "demo", "synthetic")
+        val timingLines = mutableListOf<String>()
+        val timing = StartupTimings(true, output = { timingLines.add(it) })
         var cancelled = false
         val repository = object : ChannelRepository {
             override suspend fun getChannels(serverUrl: String, username: String, password: String): Result<List<M3UChannel>> {
                 try { awaitCancellation() } finally { cancelled = true }
             }
         }
-        val vm = LoginViewModel(repository, credentials, RecentlyWatchedManager(app))
+        val vm = LoginViewModel(repository, credentials, RecentlyWatchedManager(app), timing)
         val store = ViewModelStore().apply { put("login", vm) }
         try {
             vm.onConnect()
@@ -74,6 +77,8 @@ class LoginViewModelTest {
             runCurrent()
             assertTrue(cancelled)
             assertFalse(vm.uiState.value is LoginUiState.Error)
+            assertEquals(1, timingLines.count { "phase=cancelled" in it })
+            assertNull(timing.current())
         } finally { store.clear(); Dispatchers.resetMain() }
     }
 }

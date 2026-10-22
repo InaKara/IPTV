@@ -20,6 +20,27 @@ function Invoke-CheckedNative {
     if ($LASTEXITCODE -ne 0) { throw $Failure }
 }
 
+function Install-FirestickApp {
+    param(
+        [Parameter(Mandatory)][string]$Adb,
+        [Parameter(Mandatory)][string]$Device,
+        [Parameter(Mandatory)][string]$Apk
+    )
+    $applicationId = 'com.inakara.aypitivi'
+    # The installed ID differs from the unchanged Kotlin namespace/activity class.
+    $launcherActivity = 'com.example.iptv.SplashActivity'
+    Write-Host 'Installing update (saved app data is kept)...'
+    Invoke-CheckedNative -Executable $Adb -Arguments @('-s', $Device, 'install', '-r', $Apk) `
+        -Failure 'Installation failed. The app was not uninstalled or cleared.'
+    Invoke-CheckedNative -Executable $Adb -Arguments @('-s', $Device, 'shell', 'am', 'force-stop', $applicationId) `
+        -Failure 'Could not stop the previous app process.'
+    $launchOutput = & $Adb -s $Device shell am start -W -n "$applicationId/$launcherActivity" 2>&1
+    if ($LASTEXITCODE -ne 0 -or ($launchOutput -join "`n") -notmatch '(?m)^Status:\s*ok\s*$') {
+        throw 'The update installed, but launch did not report success. Check the TV and device logs.'
+    }
+    Write-Host 'Installed and launched. Confirm login, picture, sound and remote controls on the TV.'
+}
+
 if ($BuildOnly -and $InstallOnly) { throw 'Choose either -BuildOnly or -InstallOnly.' }
 if ($InstallOnly -and $Check) { throw '-Check requires a build; omit -InstallOnly.' }
 
@@ -107,16 +128,7 @@ try {
     if ($LASTEXITCODE -ne 0 -or ($stateOutput -join "`n").Trim() -ne 'device') {
         throw 'Firestick is not ready. Check its IP, ADB Debugging, network and TV authorization prompt.'
     }
-    Write-Host 'Installing update (saved app data is kept)...'
-    Invoke-CheckedNative -Executable $adb -Arguments @('-s', $device, 'install', '-r', $apk) `
-        -Failure 'Installation failed. The app was not uninstalled or cleared.'
-    Invoke-CheckedNative -Executable $adb -Arguments @('-s', $device, 'shell', 'am', 'force-stop', 'com.example.iptv') `
-        -Failure 'Could not stop the previous app process.'
-    $launchOutput = & $adb -s $device shell am start -W -n com.example.iptv/.SplashActivity 2>&1
-    if ($LASTEXITCODE -ne 0 -or ($launchOutput -join "`n") -notmatch '(?m)^Status:\s*ok\s*$') {
-        throw 'The update installed, but launch did not report success. Check the TV and device logs.'
-    }
-    Write-Host 'Installed and launched. Confirm login, picture, sound and remote controls on the TV.'
+    Install-FirestickApp -Adb $adb -Device $device -Apk $apk
 } finally {
     $env:JAVA_HOME = $previousJavaHome
     $env:ANDROID_HOME = $previousAndroidHome

@@ -48,8 +48,11 @@
 
 ## Architecture and behavior
 
-- Single app module; package/application ID com.example.iptv. Exported launcher: .SplashActivity. MainActivity is internal.
+- Single app module; installed application ID com.inakara.aypitivi, Kotlin namespace com.example.iptv. Exported launcher component: com.inakara.aypitivi/com.example.iptv.SplashActivity. MainActivity is internal. OPS-006 identity/data migration was explicitly approved on 22 October 2026; normal updates target the new ID and must not uninstall it or repeat the legacy migration.
 - UI: Compose for TV; ViewModels: Hilt and StateFlow; repository: OkHttp; playback: Media3 ExoPlayer; logos: Coil; preferences: SharedPreferences/Gson.
+- UI-004 / DATA-003 / LOGIN-007 were explicitly approved on 22 October 2026. Logo investigation/tests must use local fixtures; the user declined external channel-logo probes. Keep the classic launcher branding separate from the neutral channel fallback and retain the matching Coil SVG decoder. Native Windows image tests use Robolectric 4.12.2.
+- BR-1 (UI-007–UI-009, BROWSE-009–BROWSE-012, SET-006, DATA-005) was explicitly approved on 22 October 2026. Preserve the two-level browser, four-icon sidebar, whole-control amber focus, Menu favorites, minimal name search and saved density. Playback stops on leaving the player; do not add programme-data features, generated channel numbers or a browsing PLAYING badge. See BROWSER_DESIGN_REVIEW.md; publication/deployment was not part of this approval.
+- Startup diagnostics are debug-only and accept fixed phase/outcome names and numeric durations/counts. Never add URLs, account/channel names or raw exceptions. Download and parsing overlap in a single streaming span; measure total Connect-to-first-browse-layout time instead of adding overlapping phases or inferring performance from loading labels.
 - Keep network and parsing work off the main thread; release the player when leaving playback.
 - Remote focus is functionality. Check empty categories, offscreen lazy-list items, sidebar/grid transitions and return from playback when touching browsing.
 - Do not claim HLS/DASH/RTMP support without checking player modules and testing an appropriate stream.

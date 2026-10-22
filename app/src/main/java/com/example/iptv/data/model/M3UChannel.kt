@@ -8,5 +8,6 @@ data class M3UChannel(
     val userAgent: String?,
     val tvgId: String?,
     val tvgName: String?,
-    val isVod: Boolean
+    val isVod: Boolean,
+    val providerNumber: String? = null
 )

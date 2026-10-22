@@ -10,14 +10,16 @@ For every new wish, update the catalog first and present the affected IDs and ch
 
 ## Code-review remediation
 
-The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) maps each finding to the remediation and its checks; that source baseline was committed/pushed as `ec11bdc`. The initial catalog's unrelated product decisions still await review. The previously installed app remains the latest Firestick acceptance baseline.
+The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) maps each finding to the remediation and its checks; that source baseline was committed/pushed as `ec11bdc`. The initial catalog's unrelated product decisions still await review. Latest launcher, local-logo, startup-timing and identity-migration device checks are recorded in the deployment guide; playback and other unchecked criteria remain separate.
 
 ## Current app
 
 1. A two-second splash screen shows the classic logo and Aypi Tivi name.
 2. Login accepts a server address, username and password. Connect receives initial focus. Successful connections save the fields on the device. The playlist is downloaded again on subsequent connections.
-3. A persistent category sidebar sits beside a four-column channel grid. Recently viewed appears first (up to 20 entries), followed by categories beginning with TR, then other categories alphabetically. A new installation's recent category is empty; select another category to find channels.
-4. Selecting a channel opens ExoPlayer. Back returns to browsing. Back from browsing offers an exit confirmation.
+3. Categories and Channels share a dark tile browser with a persistent four-icon sidebar: Categories, Favorites, Search and Settings. Recently viewed appears first (up to 20 entries), followed by TR categories and other categories alphabetically. Select a category to see its channels; Back restores the category grid. Empty recents remain available without filler channels.
+4. The default grid fits five columns and four rows. Settings offers Large (4 x 3), Standard (5 x 4) and Compact (6 x 4), saved across launches. Amber fill marks focus without enlarging controls; the active sidebar destination has its own quieter indicator.
+5. Menu on a focused channel opens Add/Remove Favorite; keyboard Context Menu or Shift+F10 opens the same action. Favorites persist per account and appear in playlist order. Back from Favorites restores the preceding Categories/category-channel view. Search matches channel names from the loaded playlist and returns to the previous view when closed.
+6. Selecting a channel opens ExoPlayer. Leaving the player stops/releases playback and restores the originating view, focus and scroll; no stream runs beneath browsing. Back at Categories root offers the existing exit confirmation. Channel cards display an optional provider `tvg-chno` number without invented numbering.
 
 The server field is a base address such as `https://provider.example:8080`, without a trailing slash or `/get.php` query. A missing scheme now defaults to HTTPS. Explicit HTTP is retained with an on-screen encryption warning. Requests never silently downgrade HTTPS. The repository encodes each query parameter:
 
@@ -25,7 +27,11 @@ The server field is a base address such as `https://provider.example:8080`, with
 <base-address>/get.php?username=<username>&password=<password>&type=m3u_plus
 ```
 
-This is an M3U download endpoint in Xtream-style URL format, not a full Xtream API integration. Parsing preserves commas in names and ignores URL queries/fragments during VOD detection. Coil caches channel logos. Per-channel user-agent metadata reaches playback, alongside HLS/DASH and progressive HTTP(S) support. RTMP is not claimed supported.
+This is an M3U download endpoint in Xtream-style URL format, not a full Xtream API integration. Parsing preserves commas in names and ignores URL queries/fragments during VOD detection. Coil caches channel logos, including SVGs through its matching 2.5.0 decoder extension. Missing, blank, failed and unsupported logos use one centered gray play-symbol fallback. Per-channel user-agent metadata reaches playback, alongside HLS/DASH and progressive HTTP(S) support. RTMP is not claimed supported.
+
+Connecting includes the entire streaming playlist download/parser span and recent-history preparation. Loading channels then groups the downloaded list. Their individual screen durations are not an end-to-end speed measurement. Debug builds report private-data-free phase timings under the `AypiStartup` log tag, ending at the first browsing-list layout; release builds disable these diagnostics. See [UX_INVESTIGATION.md](UX_INVESTIGATION.md) for measurements and their limits.
+
+The future startup-directly-to-channel-list flow is recorded as LOGIN-008. Its download/cache/refresh policy is undecided and it is not implemented in this change. Current diagnostics remain reusable; no optimization specific to manual login was introduced.
 
 Default login fields come from a private local `.env` at build time. Optional retired server addresses in that file can replace old saved addresses; other custom addresses and saved credentials are preserved. Release builds and checkouts without `.env` have empty defaults. Remote Select/Enter explicitly requests the keyboard on a focused login field. Physical-device confirmation of this recovery update is recorded in the deployment guide.
 
@@ -35,8 +41,12 @@ Default login fields come from a private local `.env` at build time. Optional re
 | --- | --- |
 | Login / D-pad and Select | Move between fields and Connect; select to edit |
 | Categories / Select | Activate category |
-| Categories / Right | Request focus on the first channel |
-| Grid / Left from leftmost column | Request focus on the active category |
+| Sidebar / Up or Down | Move among its four icons without activating them |
+| Sidebar / Right | Restore the last focused grid item; empty grids keep usable sidebar focus |
+| Grid / Arrows | Move by column/row, without wrapping; scroll further rows into view |
+| Grid / Left from leftmost column | Focus the active sidebar destination |
+| Channel / Menu or Context Menu / Shift+F10 | Open Add/Remove Favorite |
+| Channel grid / Back | Restore Categories with its focus/scroll |
 | Player / Up or Channel Up | Next channel in the current category |
 | Player / Down or Channel Down | Previous channel in the current category |
 | Player / Select or Play/Pause | Toggle playback |
@@ -59,6 +69,7 @@ The repository pins these versions. An updated Android Studio installation does 
 | Lint runtime override | 8.3.2 (artifact 31.3.2) |
 | Media3 / Hilt | 1.2.1 / 2.50 |
 | OkHttp / Coil / Gson | 4.12.0 / 2.5.0 / 2.10.1 |
+| Robolectric (test only) | 4.12.2; native rendering on Windows |
 | Minimum / compile / target SDK | 26 / 34 / 34 |
 | SDK Build Tools | 34.0.0 |
 
@@ -100,7 +111,7 @@ app/src/main/java/com/example/iptv/
   util/                    Global exception handler
 ```
 
-Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death returns to the saved login form. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the application ID is `com.example.iptv`. Launch through `com.example.iptv/.SplashActivity`, because MainActivity is not exported.
+Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death returns to the saved login form. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the installed application ID is `com.inakara.aypitivi`, while the Kotlin namespace remains `com.example.iptv`. Launch through `com.inakara.aypitivi/com.example.iptv.SplashActivity`, because MainActivity is not exported. OPS-006 moves away from the old installation identity to resolve its incorrect Fire TV tile; see the deployment guide for the one-time private settings/history migration and current device evidence. Ordinary updates still use the same deployment command and preserve the new installation's saved data.
 
 ## Validation and known limitations
 
@@ -127,7 +138,7 @@ Detailed JSON and private logs are under the ignored app/build/reports/smoke/ di
 .\gradlew.bat :app:lintDebug
 ```
 
-Regression checks cover parsing, URL encoding, connection reuse/cancellation, login concurrency, history/schema migration, seek bounds, channel position and Compose focus using synthetic data. Physical-device checks are essential for D-pad focus, playback and resume behavior. See the deployment guide's verification record for the latest check results.
+Regression checks cover parsing, URL encoding, connection reuse/cancellation, login concurrency, history/schema migration, seek bounds, channel position and Compose focus using synthetic data. Image checks decode local PNG/SVG fixtures, exercise memory/disk caches, compare missing/failed fallback pixels and render application/activity branding. Startup checks cover phase ordering through the first browsing layout, duration arithmetic, safe output and retry/cancellation. Native rendering may download an additional test runtime on first use. Physical-device checks are essential for launcher thumbnails, D-pad focus, playback and resume behavior. See the deployment guide's verification record for the latest check results.
 
 - HLS/DASH modules and per-channel user-agent support are included; provider/codec compatibility and 4K still require device tests. RTMP requires separately selected support.
 - Saved credentials and stream references remain in unencrypted app-private preferences, excluded from backup/transfer. Explicit HTTP exposes credentials in transit; prefer verified provider HTTPS when available. App-controlled errors omit URLs/stacks; Android/platform diagnostics may still be private.

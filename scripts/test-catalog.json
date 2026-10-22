@@ -253,7 +253,7 @@
     {
       "id": "TC-APP-032",
       "key": "com.example.iptv.ui.AndroidContractTest#compiledManifestHasNamedTvLauncherWithoutTouchRequirement",
-      "title": "compiled Manifest Has Named Tv Launcher Without Touch Requirement",
+      "title": "Compiled TV manifest has the new app identity and resolves its exported unchanged launcher class without a touch requirement",
       "kind": "App",
       "group": "ui",
       "source": "app/src/testDebug/java/com/example/iptv/ui/AndroidContractTest.kt"
@@ -613,7 +613,7 @@
     {
       "id": "MC-DATA-003",
       "key": "manual#DATA-003",
-      "title": "Use a reachable local/provider logo to verify cache, missing-image and failed-image display on device.",
+      "title": "Verify local raster/SVG logos, repeat-load caching and one centered fallback for missing/failed/unsupported logos on Firestick; record device evidence separately from host automation.",
       "kind": "Manual",
       "group": "manual",
       "source": "REQUIREMENTS.md"
@@ -627,17 +627,9 @@
       "source": "REQUIREMENTS.md"
     },
     {
-      "id": "MC-BROWSE-002",
-      "key": "manual#BROWSE-002",
-      "title": "Visually confirm persistent opaque sidebar and readable labels while browsing/scrolling.",
-      "kind": "Manual",
-      "group": "manual",
-      "source": "REQUIREMENTS.md"
-    },
-    {
       "id": "MC-BROWSE-006",
       "key": "manual#BROWSE-006",
-      "title": "Open feature: agree/implement grid Back hierarchy before executable acceptance.",
+      "title": "Verify category-channel Back restores Categories before root Cancel/Exit; separately confirm physical remote and root exit-dialog focus.",
       "kind": "Manual",
       "group": "manual",
       "source": "REQUIREMENTS.md"
@@ -739,6 +731,14 @@
       "source": "REQUIREMENTS.md"
     },
     {
+      "id": "MC-OPS-006",
+      "key": "manual#OPS-006",
+      "title": "On an explicitly authorized legacy migration, verify the final identity and Firestick tile, private settings/history restoration, a normal update preserving data, coordinated deployment targets, and old-app removal only after acceptance.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
       "id": "MC-DEV-001",
       "key": "manual#DEV-001",
       "title": "Human review record must show requirements reviewed before implementation.",
@@ -785,6 +785,310 @@
       "kind": "Runner",
       "group": "runner",
       "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "MC-UI-004",
+      "key": "manual#UI-004",
+      "title": "Confirm classic centered icon/banner in the actual Firestick app-selection tile after an update and preserve credentials/history; record device acceptance separately from host automation.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-LOGIN-007",
+      "key": "manual#LOGIN-007",
+      "title": "Measure provider wait, overlapping download/parsing, history, grouping and Connect-to-usable-list time on the same Firestick/dataset; verify diagnostics contain no private data. Record device observations separately from the host suite.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-APP-042",
+      "key": "com.example.iptv.ui.ChannelLogoTest#localRasterAndSvgDecodeWithCorrectAspectAndPixels",
+      "title": "Local PNG and SVG decode through the production loader with correct aspect ratio and colored pixels",
+      "kind": "App",
+      "group": "logos",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/ChannelLogoTest.kt"
+    },
+    {
+      "id": "TC-APP-043",
+      "key": "com.example.iptv.ui.ChannelLogoTest#repeatLogoLoadsUseMemoryThenDiskWithoutAnotherRequest",
+      "title": "Repeat SVG loads use memory and disk caches without another HTTP request",
+      "kind": "App",
+      "group": "logos",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/ChannelLogoTest.kt"
+    },
+    {
+      "id": "TC-APP-044",
+      "key": "com.example.iptv.ui.ChannelLogoTest#missingBlankFailedAndUnsupportedImagesRenderTheSameCenteredFallback",
+      "title": "Missing, blank, failed and unsupported images render the same centered fallback pixels",
+      "kind": "App",
+      "group": "logos",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/ChannelLogoTest.kt"
+    },
+    {
+      "id": "TC-APP-045",
+      "key": "com.example.iptv.ui.LauncherRenderingTest#applicationAndLauncherActivityRenderClassicArtworkAndBanner",
+      "title": "Application and launcher activity actually render the classic icon and banner artwork",
+      "kind": "App",
+      "group": "branding",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/LauncherRenderingTest.kt"
+    },
+    {
+      "id": "TC-APP-046",
+      "key": "com.example.iptv.diagnostics.StartupTimingsTest#disabledDiagnosticsCreateNoAttemptOrOutput",
+      "title": "Disabled startup diagnostics create no attempt or output",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/test/java/com/example/iptv/diagnostics/StartupTimingsTest.kt"
+    },
+    {
+      "id": "TC-APP-047",
+      "key": "com.example.iptv.diagnostics.StartupTimingsTest#phaseDurationsAndTotalUseTheSameClockWithoutAddingOverlappingWork",
+      "title": "Phase and total durations use one monotonic clock without double counting streaming work",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/test/java/com/example/iptv/diagnostics/StartupTimingsTest.kt"
+    },
+    {
+      "id": "TC-APP-048",
+      "key": "com.example.iptv.diagnostics.StartupTimingsTest#retryCannotMixPlaylistsOrCompleteANewerAttempt",
+      "title": "Retries isolate playlist identity and ignore stale or duplicate completion events",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/test/java/com/example/iptv/diagnostics/StartupTimingsTest.kt"
+    },
+    {
+      "id": "TC-APP-049",
+      "key": "com.example.iptv.diagnostics.StartupTimingsTest#outputContainsOnlyFixedPhasesAndNumericMetadata",
+      "title": "Startup output contains only fixed phases and numeric metadata, never playlist/private text",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/test/java/com/example/iptv/diagnostics/StartupTimingsTest.kt"
+    },
+    {
+      "id": "TC-APP-050",
+      "key": "com.example.iptv.ui.StartupFlowTest#loginThroughFirstBrowseLayoutReportsEachPhaseOnceAndFailureAllowsRetry",
+      "title": "Actual local HTTP login through first browse layout reports each phase once and supports failure/retry",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupFlowTest.kt"
+    },
+    {
+      "id": "TC-APP-051",
+      "key": "com.example.iptv.ui.StartupProviderTest#debugProviderUsesInfoPriorityVisibleWithFireOsDefaultLogThreshold",
+      "title": "Production debug timing provider uses INFO priority visible under the Fire OS default log threshold",
+      "kind": "App",
+      "group": "timing",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupProviderTest.kt"
+    },
+    {
+      "id": "MC-LOGIN-008",
+      "key": "manual#LOGIN-008",
+      "title": "Future startup-direct-to-channel-list flow awaits refresh/cache, setup and error-policy decisions and implementation approval; no current pass is inferred.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-PROJECT-04",
+      "key": "project#deployUpdatesNewIdentityAndLaunchesUnchangedActivity",
+      "title": "Deployment preserves data with install -r, targets the new app ID, and launches the unchanged activity class",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "TC-PROJECT-05",
+      "key": "project#failedInstallStopsBeforeFurtherDeviceChanges",
+      "title": "Failed installation stops before force-stop or launch and never removes apps",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "TC-PROJECT-06",
+      "key": "project#launchStatusErrorRejectsDeploymentEvenWithZeroExitCode",
+      "title": "A launch error rejects deployment even when the native command exits zero",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "MC-UI-007",
+      "key": "manual#UI-007",
+      "title": "Verify BR-1 on Fire TV: Native host rendering and Compose destination/focus behavior are automated; actual TV proportions, accessible naming with assistive technology and subjective visual acceptance remain device checks.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-008",
+      "key": "manual#UI-008",
+      "title": "Verify BR-1 on Fire TV: Tile activation, optional provider labels, fallback reuse and whole-control amber pixels without scaling are automated. Actual television contrast, logo legibility and appearance remain manual.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-009",
+      "key": "manual#UI-009",
+      "title": "Verify BR-1 on Fire TV: Host geometry checks every visible tile for all three densities at 960x540 dp and asserts clipping/row/column counts; physical TV readability and other resolutions require visual acceptance.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-009",
+      "key": "manual#BROWSE-009",
+      "title": "Verify BR-1 on Fire TV: Hierarchy, ordering, Back handlers and retained return state are automated with synthetic data. Real decoder/player release and root exit dialog integration remain separate device checks.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-010",
+      "key": "manual#BROWSE-010",
+      "title": "Verify BR-1 on Fire TV: Pure boundary/identity/bookmark policies and Compose empty/scrolled/sidebar/density/re-entry focus paths are covered. Full activity recreation and physical remote repeat timing remain manual acceptance.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-011",
+      "key": "manual#BROWSE-011",
+      "title": "Verify BR-1 on Fire TV: Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-012",
+      "key": "manual#BROWSE-012",
+      "title": "Verify BR-1 on Fire TV: Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-SET-006",
+      "key": "manual#SET-006",
+      "title": "Verify BR-1 on Fire TV: Default/invalid/saved density, settings selection/return and all grid geometries are automated. Physical remote reflow/readability and settings return from every origin remain manual acceptance.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "MC-DATA-005",
+      "key": "manual#DATA-005",
+      "title": "Verify BR-1 on Fire TV: Synthetic InputStream fixtures cover optional/blank/trimmed provider numbers without inference; search tile rendering verifies supplied-number display. Real-provider numbering availability is not established or required.",
+      "kind": "Manual",
+      "group": "browser-review",
+      "source": "BROWSER_DESIGN_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-052",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#providerNumbersAreOptionalTrimmedAndNeverInferred",
+      "title": "Provider numbers are optional, trimmed and never inferred",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-053",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#hierarchyAndNestedAuxiliaryBackPreserveSeparateBookmarks",
+      "title": "Hierarchy and nested auxiliary Back preserve separate bookmarks",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-054",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#identitiesKeepDuplicatesSeparateWhileMetadataAndOrderingChange",
+      "title": "Stable identities keep duplicates separate through metadata and order changes",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-055",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#remoteTargetsStopAtBoundariesAndScrollOnlyNecessaryRows",
+      "title": "Remote targets stop at boundaries and scroll only necessary rows",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-056",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#cachedSearchIsCaseInsensitiveAndRejectsStaleOrBlankQueries",
+      "title": "Cached search preserves order and rejects stale or blank queries",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-057",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#favoritesUsePlaylistOrderAndRetainUnavailableReferences",
+      "title": "Favorites use playlist order and retain unavailable references",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-058",
+      "key": "com.example.iptv.data.storage.BrowserPreferencesTest#favoritesAndDensitySurviveRestartAndAccountsStaySeparate",
+      "title": "Favorites and density survive restart with account separation",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/data/storage/BrowserPreferencesTest.kt"
+    },
+    {
+      "id": "TC-APP-059",
+      "key": "com.example.iptv.data.storage.BrowserPreferencesTest#corruptAndFutureFavoritesArePreservedAndInvalidDensityUsesStandard",
+      "title": "Unknown favorite schemas are preserved and invalid density uses Standard",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/data/storage/BrowserPreferencesTest.kt"
+    },
+    {
+      "id": "TC-APP-060",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#gridEdgesAndAllSidebarButtonsMoveFocusWithoutActivating",
+      "title": "Grid edges and all sidebar buttons move focus without activating",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-061",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#menuFavoritesAndBackRestorePriorCategoryWithoutPlayback",
+      "title": "Menu favorites and Back restore the prior category without playback",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-062",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#searchKeyboardQueryAndResultFocusSurvivePlaybackAndAuxiliaryReturn",
+      "title": "Search editing, query and result focus survive playback and auxiliary return",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-063",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#returningFromPlaybackTracksSwitchedChannelAndKeepsCategoryScroll",
+      "title": "Playback return tracks the switched channel and keeps category scroll",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-064",
+      "key": "com.example.iptv.ui.BrowserLayoutTest#allDensitiesFitAndTileAndSidebarHaveWholeAmberFocusWithoutScaling",
+      "title": "All densities fit and tile/sidebar amber focus fills controls without scaling",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserLayoutTest.kt"
     }
   ],
   "requirements": [
@@ -798,7 +1102,7 @@
         "TC-APP-041"
       ],
       "gap": "Host focus paths pass/fail here; physical remote/keyboard acceptance remains separate.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
     },
     {
       "id": "FIX-002",
@@ -990,13 +1294,15 @@
     },
     {
       "id": "UI-004",
-      "fingerprint": "e7a99b995dbe7b1a117cd3fefebf2bdfb98b0297fcb1d0efe25c00d3a0a30dc8",
+      "fingerprint": "0fd67807172a5fb1ecc30b0800bdc8b5a8feebfa0c5eeeb7665eadd9942b8904",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-034"
+        "TC-APP-034",
+        "TC-APP-045",
+        "MC-UI-004"
       ],
-      "gap": "Compiled launcher/banner resources; visual launcher acceptance remains manual.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Manifest/intent and native pixel checks cover the new-ID app/activity icons and banner. Physical tile/update appearance is recorded separately in FIRESTICK_DEPLOYMENT.md; this host suite does not execute a launcher refresh or guarantee other devices.",
+      "reviewNote": "Approved identity migration implemented. Retained compiled launcher/intent and native artwork checks plus three real deployment fixture cases. Implemented status follows actual signing match, private migration, tile verification, normal 3-to-4 upgrade with unchanged preferences and old-app removal. Device acceptance is separate from the host suite; unrelated BR-1 proposals remain Open."
     },
     {
       "id": "UI-005",
@@ -1112,13 +1418,16 @@
     },
     {
       "id": "DATA-003",
-      "fingerprint": "2cdb58d4ddbf289ad65467b419202a9c7dd6e44e163e837d1f1f299b5da003c0",
-      "coverage": "Manual",
+      "fingerprint": "b6529ed3d9c2625764f7b265e40b1b1f30f402b413cf461ef581e4176566749f",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-042",
+        "TC-APP-043",
+        "TC-APP-044",
         "MC-DATA-003"
       ],
-      "gap": "Use a reachable local/provider logo to verify cache, missing-image and failed-image display on device.",
-      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+      "gap": "Local native raster/SVG decoding, memory/disk caching and matching fallback pixels are covered. Arbitrary provider reachability/format support and Firestick appearance remain separate; live logo probes are not authorized.",
+      "reviewNote": "Approved reinstall/backup restoration completed; device launcher appearance still fails after restart, while original preferences match exactly. UI-004 remains Partial with unchanged criteria/status; native artwork checks remain useful but cannot prove launcher metadata refresh. Manual logo/timing case descriptions now reflect implemented automation and separate device records."
     },
     {
       "id": "DATA-004",
@@ -1139,17 +1448,15 @@
         "TC-APP-038"
       ],
       "gap": "Grouping/grid selection callback covered; actual playback handoff still needs device acceptance.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
     },
     {
       "id": "BROWSE-002",
-      "fingerprint": "42fa80c47f7e86b47ec89b2cd3528ee80cd64a6865283678b0fc92ecaf7ea799",
-      "coverage": "Manual",
-      "cases": [
-        "MC-BROWSE-002"
-      ],
-      "gap": "Visually confirm persistent opaque sidebar and readable labels while browsing/scrolling.",
-      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+      "fingerprint": "662635253396bcbc4efa38cd8fb933b6898efc7e3436fe6ed46fe1c49e202da0",
+      "coverage": "Not applicable",
+      "cases": [],
+      "gap": "Historical sidebar/focus requirement superseded by approved BR-1. Active assertions are mapped to UI-007 and BROWSE-010; no obsolete acceptance is claimed.",
+      "reviewNote": "Approved BR-1 replaces the text category sidebar and top-left-only return. Preserve BROWSE-002/004/005 as Superseded without obsolete active mappings; retain and update real TC-040/041 under FIX-001/BROWSE-010. BROWSE-006 now has state/Compose Back assertions and an honest root/device gap; BROWSE-007 adds switched-channel return coverage."
     },
     {
       "id": "BROWSE-003",
@@ -1159,38 +1466,36 @@
         "TC-APP-022"
       ],
       "gap": "All stated category ordering rules are exercised with synthetic groups.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
     },
     {
       "id": "BROWSE-004",
-      "fingerprint": "effe81575ef6a45848ba90bc1d80c4498eaede0f54446efed84191bdd10bab6c",
-      "coverage": "Partial",
-      "cases": [
-        "TC-APP-040",
-        "TC-APP-041"
-      ],
-      "gap": "Empty and scrolled-grid behavior in host Compose; physical remote remains separate.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "fingerprint": "7a895eee838d3dd8c7145dbeee2d4466d0968f7f9f1c6f7e75c03b12b016719d",
+      "coverage": "Not applicable",
+      "cases": [],
+      "gap": "Historical sidebar/focus requirement superseded by approved BR-1. Active assertions are mapped to UI-007 and BROWSE-010; no obsolete acceptance is claimed.",
+      "reviewNote": "Approved BR-1 replaces the text category sidebar and top-left-only return. Preserve BROWSE-002/004/005 as Superseded without obsolete active mappings; retain and update real TC-040/041 under FIX-001/BROWSE-010. BROWSE-006 now has state/Compose Back assertions and an honest root/device gap; BROWSE-007 adds switched-channel return coverage."
     },
     {
       "id": "BROWSE-005",
-      "fingerprint": "912578da05860e1d8a3f100495e250ce3e67ff6cafb73d33621ea11356f584fa",
-      "coverage": "Partial",
-      "cases": [
-        "TC-APP-041"
-      ],
-      "gap": "Offscreen active sidebar focus is exercised; every non-leftmost grid position is not covered.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "fingerprint": "6bb3102c5f82fd86d1f58cfce8bfabf6e8563f4d7084e73dc64055a83a8df4e3",
+      "coverage": "Not applicable",
+      "cases": [],
+      "gap": "Historical sidebar/focus requirement superseded by approved BR-1. Active assertions are mapped to UI-007 and BROWSE-010; no obsolete acceptance is claimed.",
+      "reviewNote": "Approved BR-1 replaces the text category sidebar and top-left-only return. Preserve BROWSE-002/004/005 as Superseded without obsolete active mappings; retain and update real TC-040/041 under FIX-001/BROWSE-010. BROWSE-006 now has state/Compose Back assertions and an honest root/device gap; BROWSE-007 adds switched-channel return coverage."
     },
     {
       "id": "BROWSE-006",
-      "fingerprint": "f3fd846f4f19e4a7ac63414f7739a38c252c2276699ede90ddbe30f74c77576a",
-      "coverage": "Manual",
+      "fingerprint": "f9bbafece6ef360d0c06670b9f58c83a3c8a1fe31264940c05fd5a5a02856fd4",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-053",
+        "TC-APP-061",
+        "TC-APP-063",
         "MC-BROWSE-006"
       ],
-      "gap": "Open feature: agree/implement grid Back hierarchy before executable acceptance.",
-      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+      "gap": "State/Compose channel-level and auxiliary Back paths are automated. Root Cancel/Exit and physical remote acceptance remain device checks.",
+      "reviewNote": "Approved BR-1 replaces the text category sidebar and top-left-only return. Preserve BROWSE-002/004/005 as Superseded without obsolete active mappings; retain and update real TC-040/041 under FIX-001/BROWSE-010. BROWSE-006 now has state/Compose Back assertions and an honest root/device gap; BROWSE-007 adds switched-channel return coverage."
     },
     {
       "id": "BROWSE-007",
@@ -1198,10 +1503,11 @@
       "coverage": "Partial",
       "cases": [
         "TC-APP-029",
-        "TC-APP-023"
+        "TC-APP-023",
+        "TC-APP-063"
       ],
-      "gap": "Session/category ownership tested without native playback; actual Back integration remains device acceptance.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Grouping/recent return and Compose playback-destination re-entry restore the category and switched channel; real decoder release/physical playback return remain device checks.",
+      "reviewNote": "Approved BR-1 replaces the text category sidebar and top-left-only return. Preserve BROWSE-002/004/005 as Superseded without obsolete active mappings; retain and update real TC-040/041 under FIX-001/BROWSE-010. BROWSE-006 now has state/Compose Back assertions and an honest root/device gap; BROWSE-007 adds switched-channel return coverage."
     },
     {
       "id": "BROWSE-008",
@@ -1245,7 +1551,7 @@
         "TC-APP-023"
       ],
       "gap": "Storage object restart and reactive return refresh; physical app relaunch remains separate.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
     },
     {
       "id": "PLAY-001",
@@ -1509,22 +1815,25 @@
     {
       "id": "OPS-001",
       "fingerprint": "598943cc86c8b03eef4ce592a9775fc5df28eccc9df94a2d8b16b82e4508e502",
-      "coverage": "Manual",
+      "coverage": "Partial",
       "cases": [
+        "TC-PROJECT-04",
         "MC-OPS-001"
       ],
-      "gap": "Run deployment on an explicitly selected Firestick; omitted from the default non-device suite.",
-      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+      "gap": "New-ID install/update/launch commands are exercised with an isolated tool double. Full build, real ADB connection and physical-device acceptance remain separate.",
+      "reviewNote": "OPS-006 explicitly approved. Retained manifest case now checks the new installed identity and actual Leanback intent resolution to the unchanged namespace; native artwork case retained. Added synthetic deployment command/order and install/launch failure cases; real migration, signing, tile and update persistence remain manual device acceptance."
     },
     {
       "id": "OPS-002",
       "fingerprint": "4e9f406a7a842d742d22d6e1afcd1c548bfb4cdeb5134262f63f7b175ce8eb2c",
       "coverage": "Partial",
       "cases": [
-        "TC-PROJECT-02"
+        "TC-PROJECT-02",
+        "TC-PROJECT-05",
+        "TC-PROJECT-06"
       ],
-      "gap": "Native failure guard tested without executing deployment body; ADB failure/device addressing remain separate.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Native failure handling, stopping after installation failure, explicit device arguments and launch-status rejection are exercised without a real device. Connection failures and all ADB failure modes remain separate.",
+      "reviewNote": "OPS-006 explicitly approved. Retained manifest case now checks the new installed identity and actual Leanback intent resolution to the unchanged namespace; native artwork case retained. Added synthetic deployment command/order and install/launch failure cases; real migration, signing, tile and update persistence remain manual device acceptance."
     },
     {
       "id": "OPS-003",
@@ -1682,6 +1991,176 @@
       "cases": [],
       "gap": "Retained historical requirement; replacement has active tests.",
       "reviewNote": "Superseded."
+    },
+    {
+      "id": "LOGIN-007",
+      "fingerprint": "1d9465a9d2894208c12743e59498c652cee623fa62cc12182ac614c515644e07",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-046",
+        "TC-APP-047",
+        "TC-APP-048",
+        "TC-APP-049",
+        "TC-APP-050",
+        "TC-APP-026",
+        "MC-LOGIN-007",
+        "TC-APP-051"
+      ],
+      "gap": "Monotonic arithmetic, retry/cancellation, output safety and complete local login-to-layout phase wiring are automated. Actual device/provider performance remains a measurement, not a fast-suite timing threshold.",
+      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
+    },
+    {
+      "id": "LOGIN-008",
+      "fingerprint": "803b2bbbbabe51c5fa0adf927953b35e71f1606414d96a43af92fdf780763fb6",
+      "coverage": "Manual",
+      "cases": [
+        "MC-LOGIN-008"
+      ],
+      "gap": "Future direction only. Download/cache/refresh and setup/failure behavior are undecided; no implementation or executable acceptance is authorized in this scope.",
+      "reviewNote": "Approved logo/timing work: native resource/decoder/cache/fallback and phase/privacy/Fire-INFO-priority tests are implemented; device timings are separate evidence. LOGIN-008 records only the future direction with undecided refresh/cache behavior; no login-specific performance refactor introduced."
+    },
+    {
+      "id": "OPS-006",
+      "fingerprint": "6a224618ac5d7f08909bb3577616ac655558d5ed70e2f117b3bc004eee937809",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-032",
+        "TC-APP-045",
+        "TC-PROJECT-04",
+        "TC-PROJECT-05",
+        "TC-PROJECT-06",
+        "MC-OPS-006"
+      ],
+      "gap": "Compiled identity/intent resolution, classic artwork and synthetic deployment command/error behavior are automated. Private migration/signing, physical tile appearance, ordinary-update persistence and old-app removal passed as separate device checks in FIRESTICK_DEPLOYMENT.md; this host suite does not repeat that migration.",
+      "reviewNote": "Approved identity migration implemented. Retained compiled launcher/intent and native artwork checks plus three real deployment fixture cases. Implemented status follows actual signing match, private migration, tile verification, normal 3-to-4 upgrade with unchanged preferences and old-app removal. Device acceptance is separate from the host suite; unrelated BR-1 proposals remain Open."
+    },
+    {
+      "id": "UI-007",
+      "fingerprint": "72c23f855acec4c6926d5b05fee84f89db9cbb92fa4531fe18b89c1b32314bef",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-060",
+        "TC-APP-064",
+        "MC-UI-007"
+      ],
+      "gap": "Native host rendering and Compose destination/focus behavior are automated; actual TV proportions, accessible naming with assistive technology and subjective visual acceptance remain device checks.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "UI-008",
+      "fingerprint": "80c01b9fa57fdd059661232b56c9e3b2ca24b2c34c1d051d75c9bf8caf6bf9b3",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-038",
+        "TC-APP-052",
+        "TC-APP-061",
+        "TC-APP-062",
+        "TC-APP-064",
+        "MC-UI-008"
+      ],
+      "gap": "Tile activation, optional provider labels, fallback reuse and whole-control amber pixels without scaling are automated. Actual television contrast, logo legibility and appearance remain manual.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "UI-009",
+      "fingerprint": "19a99db042113b35633b33df4350af958be648133853b0cb8cbc00aee5582a9f",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-055",
+        "TC-APP-060",
+        "TC-APP-064",
+        "MC-UI-009"
+      ],
+      "gap": "Host geometry checks every visible tile for all three densities at 960x540 dp and asserts clipping/row/column counts; physical TV readability and other resolutions require visual acceptance.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "BROWSE-009",
+      "fingerprint": "4b798d10860722a9416866ba10583d818a17f02056da586b42a3a78b2e36bbfe",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-022",
+        "TC-APP-023",
+        "TC-APP-038",
+        "TC-APP-040",
+        "TC-APP-041",
+        "TC-APP-053",
+        "TC-APP-061",
+        "TC-APP-063",
+        "MC-BROWSE-009"
+      ],
+      "gap": "Hierarchy, ordering, Back handlers and retained return state are automated with synthetic data. Real decoder/player release and root exit dialog integration remain separate device checks.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "BROWSE-010",
+      "fingerprint": "96640172f52e7ed63c9feaa25e0a33c06a632710890e9e7442fb0ca9a931fd89",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-040",
+        "TC-APP-041",
+        "TC-APP-053",
+        "TC-APP-054",
+        "TC-APP-055",
+        "TC-APP-060",
+        "TC-APP-063",
+        "MC-BROWSE-010"
+      ],
+      "gap": "Pure boundary/identity/bookmark policies and Compose empty/scrolled/sidebar/density/re-entry focus paths are covered. Full activity recreation and physical remote repeat timing remain manual acceptance.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "BROWSE-011",
+      "fingerprint": "86e955e5a83b2c1ce3e4133fa51a6838b4b7ab9652856a0b38ba0a5bd289530d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-053",
+        "TC-APP-057",
+        "TC-APP-058",
+        "TC-APP-059",
+        "TC-APP-061",
+        "MC-BROWSE-011"
+      ],
+      "gap": "Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "BROWSE-012",
+      "fingerprint": "463787fc4ebb4d005fcbad5fd9aee68753427611813324c94bda3e60dd9125b9",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-056",
+        "TC-APP-062",
+        "MC-BROWSE-012"
+      ],
+      "gap": "Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "SET-006",
+      "fingerprint": "affa32098ef1a615832ed815ba2aec30a7d0e132f445a6d7a296eab169afb5d3",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-058",
+        "TC-APP-059",
+        "TC-APP-060",
+        "TC-APP-064",
+        "MC-SET-006"
+      ],
+      "gap": "Default/invalid/saved density, settings selection/return and all grid geometries are automated. Physical remote reflow/readability and settings return from every origin remain manual acceptance.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "DATA-005",
+      "fingerprint": "ba48f7171824debd2d211f716bd49589a07a7947645291a46529a144d1096222",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-052",
+        "TC-APP-062",
+        "MC-DATA-005"
+      ],
+      "gap": "Synthetic InputStream fixtures cover optional/blank/trimmed provider numbers without inference; search tile rendering verifies supplied-number display. Real-provider numbering availability is not established or required.",
+      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
     }
   ]
 }

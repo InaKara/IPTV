@@ -50,7 +50,10 @@ if ($mode -eq 'build-error') { exit 7 }
 $element = if ($mode -eq 'test-failure') { '<failure>synthetic-private-detail</failure>' } else { '' }
 [IO.File]::WriteAllText((Join-Path $directory 'app-tests/TEST-fixture.xml'),('<testsuite><testcase classname="sample" name="case">'+$element+'</testcase></testsuite>'))
 [IO.File]::WriteAllText((Join-Path $directory 'environment-gradle.json'),'[{"key":"fixture#gradle","status":"Passed"}]')
-if ($mode -eq 'test-failure') { exit 1 } else { exit 0 }
+if ($mode -eq 'test-failure') {
+    [Console]::Error.WriteLine('synthetic-private-detail: native stderr must not interrupt fresh XML collection')
+    exit 1
+} else { exit 0 }
 '@
     [IO.File]::WriteAllText((Join-Path $project 'mode.txt'),$Mode)
     [IO.File]::WriteAllText((Join-Path $project 'fake-gradle.ps1'),$fakeGradle)
