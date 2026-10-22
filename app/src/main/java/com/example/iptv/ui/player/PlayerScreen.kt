@@ -118,7 +118,7 @@ fun PlayerScreen(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun TimedOverlay(event: Any, text: String, bottomPadding: Int) {
+internal fun TimedOverlay(event: Any, text: String, bottomPadding: Int) {
     var visible by remember(event) { mutableStateOf(true) }
     LaunchedEffect(event) { delay(PlayerViewModel.OVERLAY_MS); visible = false }
     if (visible) {

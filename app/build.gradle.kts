@@ -35,13 +35,30 @@ tasks.register("verifyLocalEnvironment") {
     inputs.file(rootProject.file("scripts/env-fixtures.json"))
     doLast {
         val fixtures = groovy.json.JsonSlurper().parse(rootProject.file("scripts/env-fixtures.json")) as List<*>
-        fixtures.forEach { item ->
+        val results = fixtures.map { item ->
             val fixture = item as Map<*, *>
             val result = runCatching { parseLocalEnvironment(fixture["text"] as String) }
-            if (fixture["invalid"] == true) check(result.isFailure) { "Accepted invalid environment fixture" }
-            else check(result.getOrThrow() == fixture["expected"]) { "Literal environment fixture mismatch" }
+            val passed = if (fixture["invalid"] == true) result.isFailure
+                else result.isSuccess && result.getOrNull() == fixture["expected"]
+            mapOf("key" to "env-gradle#${fixture["name"]}", "status" to if (passed) "Passed" else "Failed")
         }
+        providers.gradleProperty("smokeReportDirectory").orNull?.let { path ->
+            file(path).resolve("environment-gradle.json").writeText(groovy.json.JsonOutput.toJson(results))
+        }
+        check(results.isNotEmpty() && results.all { it["status"] == "Passed" }) { "Literal environment fixtures failed" }
         logger.lifecycle("Gradle literal environment fixtures passed (${fixtures.size})")
+    }
+}
+
+// Only smoke runs force fresh test execution; normal compilation remains incremental.
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        providers.gradleProperty("smokeReportDirectory").orNull?.let { path ->
+            if (name == "testDebugUnitTest") {
+                reports.junitXml.outputLocation.set(file(path).resolve("app-tests"))
+                outputs.upToDateWhen { false }
+            }
+        }
     }
 }
 

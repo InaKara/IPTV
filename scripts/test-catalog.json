@@ -1,0 +1,1687 @@
+{
+  "version": 1,
+  "runtimeTargetSeconds": 90,
+  "cases": [
+    {
+      "id": "TC-APP-001",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#preservesNameCommasAndQuotedMetadata",
+      "title": "preserves Name Commas And Quoted Metadata",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-002",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#nameAttributesDoNotOverwriteMetadata",
+      "title": "name Attributes Do Not Overwrite Metadata",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-003",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#blankNameUsesFallback",
+      "title": "blank Name Uses Fallback",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-004",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#queryAndFragmentDoNotHideVodExtension",
+      "title": "query And Fragment Do Not Hide Vod Extension",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-005",
+      "key": "com.example.iptv.data.parser.M3UParserEdgeTest#queryDoesNotMakeLiveStreamVod",
+      "title": "query Does Not Make Live Stream Vod",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserEdgeTest.kt"
+    },
+    {
+      "id": "TC-APP-006",
+      "key": "com.example.iptv.data.parser.M3UParserTest#parse_validM3U_returnsCorrectChannels",
+      "title": "parse_valid M3U_returns Correct Channels",
+      "kind": "App",
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/M3UParserTest.kt"
+    },
+    {
+      "id": "TC-APP-007",
+      "key": "com.example.iptv.data.repository.ChannelRepositoryTest#queryParametersRoundTripReservedAndUnicodeCharacters",
+      "title": "query Parameters Round Trip Reserved And Unicode Characters",
+      "kind": "App",
+      "group": "repository",
+      "source": "app/src/test/java/com/example/iptv/data/repository/ChannelRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-008",
+      "key": "com.example.iptv.data.repository.ChannelRepositoryTest#explicitHttpRemainsExplicit",
+      "title": "explicit Http Remains Explicit",
+      "kind": "App",
+      "group": "repository",
+      "source": "app/src/test/java/com/example/iptv/data/repository/ChannelRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-009",
+      "key": "com.example.iptv.data.repository.ChannelRepositoryTest#rejectsCredentialBearingBaseAddress",
+      "title": "rejects Credential Bearing Base Address",
+      "kind": "App",
+      "group": "repository",
+      "source": "app/src/test/java/com/example/iptv/data/repository/ChannelRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-010",
+      "key": "com.example.iptv.data.repository.ChannelRepositoryTest#errorResponseClosesAndConnectionCanBeReused",
+      "title": "error Response Closes And Connection Can Be Reused",
+      "kind": "App",
+      "group": "repository",
+      "source": "app/src/test/java/com/example/iptv/data/repository/ChannelRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-011",
+      "key": "com.example.iptv.data.repository.ChannelRepositoryTest#cancellationStopsPendingCall",
+      "title": "cancellation Stops Pending Call",
+      "kind": "App",
+      "group": "repository",
+      "source": "app/src/test/java/com/example/iptv/data/repository/ChannelRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-012",
+      "key": "com.example.iptv.data.storage.CredentialsBehaviorTest#defaultsAndSavedAccountRoundTripWithoutOverwritingCustomServer",
+      "title": "defaults And Saved Account Round Trip Without Overwriting Custom Server",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/CredentialsBehaviorTest.kt"
+    },
+    {
+      "id": "TC-APP-013",
+      "key": "com.example.iptv.data.storage.RecentHistoryCodecTest#schemaRoundTripsAndDeduplicatesReferences",
+      "title": "schema Round Trips And Deduplicates References",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/RecentHistoryCodecTest.kt"
+    },
+    {
+      "id": "TC-APP-014",
+      "key": "com.example.iptv.data.storage.RecentHistoryCodecTest#movingToFrontRetainsLimit",
+      "title": "moving To Front Retains Limit",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/RecentHistoryCodecTest.kt"
+    },
+    {
+      "id": "TC-APP-015",
+      "key": "com.example.iptv.data.storage.RecentHistoryCodecTest#migrationUsesOnlyValidReferencesInActivePlaylist",
+      "title": "migration Uses Only Valid References In Active Playlist",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/RecentHistoryCodecTest.kt"
+    },
+    {
+      "id": "TC-APP-016",
+      "key": "com.example.iptv.data.storage.RecentHistoryCodecTest#futureAndMalformedSchemasAreRejectedInsteadOfSilentlyReset",
+      "title": "future And Malformed Schemas Are Rejected Instead Of Silently Reset",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/RecentHistoryCodecTest.kt"
+    },
+    {
+      "id": "TC-APP-017",
+      "key": "com.example.iptv.data.storage.StorageTest#credentialsClearDoesNotEraseHistory",
+      "title": "credentials Clear Does Not Erase History",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/StorageTest.kt"
+    },
+    {
+      "id": "TC-APP-018",
+      "key": "com.example.iptv.data.storage.StorageTest#historyIsScopedAndUsesLatestPlaylistMetadata",
+      "title": "history Is Scoped And Uses Latest Playlist Metadata",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/StorageTest.kt"
+    },
+    {
+      "id": "TC-APP-019",
+      "key": "com.example.iptv.data.storage.StorageTest#futureHistoryIsNeverOverwritten",
+      "title": "future History Is Never Overwritten",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/StorageTest.kt"
+    },
+    {
+      "id": "TC-APP-020",
+      "key": "com.example.iptv.data.storage.StorageTest#legacyHistoryMigratesOnlyMatchingReferencesAndSurvivesRestart",
+      "title": "legacy History Migrates Only Matching References And Survives Restart",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/StorageTest.kt"
+    },
+    {
+      "id": "TC-APP-021",
+      "key": "com.example.iptv.data.storage.StorageTest#crashNoticeDelegatesWithoutSavingExceptionDetails",
+      "title": "crash Notice Delegates Without Saving Exception Details",
+      "kind": "App",
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/StorageTest.kt"
+    },
+    {
+      "id": "TC-APP-022",
+      "key": "com.example.iptv.ui.home.HomeBehaviorTest#categoriesAreGroupedWithRecentThenTrThenAlphabetical",
+      "title": "categories Are Grouped With Recent Then Tr Then Alphabetical",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/test/java/com/example/iptv/ui/home/HomeBehaviorTest.kt"
+    },
+    {
+      "id": "TC-APP-023",
+      "key": "com.example.iptv.ui.home.HomeBehaviorTest#returningRefreshesRecentMetadataWithoutResettingCategory",
+      "title": "returning Refreshes Recent Metadata Without Resetting Category",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/test/java/com/example/iptv/ui/home/HomeBehaviorTest.kt"
+    },
+    {
+      "id": "TC-APP-024",
+      "key": "com.example.iptv.ui.login.LoginFailureTest#missingFieldsDoNotCallProviderAndFailureAllowsRetryWithoutLeakingDetails",
+      "title": "missing Fields Do Not Call Provider And Failure Allows Retry Without Leaking Details",
+      "kind": "App",
+      "group": "login",
+      "source": "app/src/test/java/com/example/iptv/ui/login/LoginFailureTest.kt"
+    },
+    {
+      "id": "TC-APP-025",
+      "key": "com.example.iptv.ui.login.LoginViewModelTest#oneAttemptSavesSubmittedSnapshotEvenWhenFormIsEdited",
+      "title": "one Attempt Saves Submitted Snapshot Even When Form Is Edited",
+      "kind": "App",
+      "group": "login",
+      "source": "app/src/test/java/com/example/iptv/ui/login/LoginViewModelTest.kt"
+    },
+    {
+      "id": "TC-APP-026",
+      "key": "com.example.iptv.ui.login.LoginViewModelTest#clearingViewModelCancelsLoginWithoutErrorState",
+      "title": "clearing View Model Cancels Login Without Error State",
+      "kind": "App",
+      "group": "login",
+      "source": "app/src/test/java/com/example/iptv/ui/login/LoginViewModelTest.kt"
+    },
+    {
+      "id": "TC-APP-027",
+      "key": "com.example.iptv.ui.player.PlayerPolicyTest#seekRequiresCapabilityAndKnownDuration",
+      "title": "seek Requires Capability And Known Duration",
+      "kind": "App",
+      "group": "seek",
+      "source": "app/src/test/java/com/example/iptv/ui/player/PlayerPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-028",
+      "key": "com.example.iptv.ui.player.PlayerPolicyTest#allSeekDirectionsClampIncludingOverflow",
+      "title": "all Seek Directions Clamp Including Overflow",
+      "kind": "App",
+      "group": "seek",
+      "source": "app/src/test/java/com/example/iptv/ui/player/PlayerPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-029",
+      "key": "com.example.iptv.ui.SessionBehaviorTest#browsingRetainsSessionAndDuplicatePositionsAcrossControllerRecreation",
+      "title": "browsing Retains Session And Duplicate Positions Across Controller Recreation",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/test/java/com/example/iptv/ui/SessionBehaviorTest.kt"
+    },
+    {
+      "id": "TC-APP-030",
+      "key": "com.example.iptv.ui.SessionPolicyTest#duplicateValuesDoNotAffectPositionOrWrapping",
+      "title": "duplicate Values Do Not Affect Position Or Wrapping",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/test/java/com/example/iptv/ui/SessionPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-031",
+      "key": "com.example.iptv.ui.SessionPolicyTest#invalidOrEmptySelectionDoesNotJumpToAnArbitraryChannel",
+      "title": "invalid Or Empty Selection Does Not Jump To An Arbitrary Channel",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/test/java/com/example/iptv/ui/SessionPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-032",
+      "key": "com.example.iptv.ui.AndroidContractTest#compiledManifestHasNamedTvLauncherWithoutTouchRequirement",
+      "title": "compiled Manifest Has Named Tv Launcher Without Touch Requirement",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AndroidContractTest.kt"
+    },
+    {
+      "id": "TC-APP-033",
+      "key": "com.example.iptv.ui.AndroidContractTest#compiledBackupPolicyExcludesPrivatePreferences",
+      "title": "compiled Backup Policy Excludes Private Preferences",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AndroidContractTest.kt"
+    },
+    {
+      "id": "TC-APP-034",
+      "key": "com.example.iptv.ui.AndroidContractTest#classicBrandingResourcesAreUsedByLaunchAndBanner",
+      "title": "classic Branding Resources Are Used By Launch And Banner",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AndroidContractTest.kt"
+    },
+    {
+      "id": "TC-APP-035",
+      "key": "com.example.iptv.ui.RemoteFocusTest#loginStartsOnConnectShowsBrandAndMasksPassword",
+      "title": "login Starts On Connect Shows Brand And Masks Password",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-036",
+      "key": "com.example.iptv.ui.RemoteFocusTest#explicitHttpDisplaysWarningAndHttpsDoesNot",
+      "title": "explicit Http Displays Warning And Https Does Not",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-037",
+      "key": "com.example.iptv.ui.RemoteFocusTest#overlayHidesAndRepeatedEqualTextRestartsItsTimer",
+      "title": "overlay Hides And Repeated Equal Text Restarts Its Timer",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-038",
+      "key": "com.example.iptv.ui.RemoteFocusTest#selectingCategoryAndChannelDeliversExactPositionAndList",
+      "title": "selecting Category And Channel Delivers Exact Position And List",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-039",
+      "key": "com.example.iptv.ui.RemoteFocusTest#loadingLoginRetainsConnectFocusTarget",
+      "title": "loading Login Retains Connect Focus Target",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-040",
+      "key": "com.example.iptv.ui.RemoteFocusTest#emptyRecentCategoryDoesNotRequestMissingGridFocus",
+      "title": "empty Recent Category Does Not Request Missing Grid Focus",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-APP-041",
+      "key": "com.example.iptv.ui.RemoteFocusTest#remoteCanReachGridAndSidebarTargetsAfterScrolling",
+      "title": "remote Can Reach Grid And Sidebar Targets After Scrolling",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-01",
+      "key": "env-powershell#empty",
+      "title": "powershell literal environment: empty",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-02",
+      "key": "env-powershell#literal",
+      "title": "powershell literal environment: literal",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-03",
+      "key": "env-powershell#bom",
+      "title": "powershell literal environment: bom",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-04",
+      "key": "env-powershell#duplicate",
+      "title": "powershell literal environment: duplicate",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-05",
+      "key": "env-powershell#casevariant",
+      "title": "powershell literal environment: casevariant",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-06",
+      "key": "env-powershell#lowercase",
+      "title": "powershell literal environment: lowercase",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-07",
+      "key": "env-powershell#missingseparator",
+      "title": "powershell literal environment: missingseparator",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-POWERSHELL-08",
+      "key": "env-powershell#badkey",
+      "title": "powershell literal environment: badkey",
+      "kind": "EnvironmentPowerShell",
+      "group": "env",
+      "source": "scripts/Test-LocalEnvironment.ps1"
+    },
+    {
+      "id": "TC-ENV-GRADLE-01",
+      "key": "env-gradle#empty",
+      "title": "gradle literal environment: empty",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-02",
+      "key": "env-gradle#literal",
+      "title": "gradle literal environment: literal",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-03",
+      "key": "env-gradle#bom",
+      "title": "gradle literal environment: bom",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-04",
+      "key": "env-gradle#duplicate",
+      "title": "gradle literal environment: duplicate",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-05",
+      "key": "env-gradle#casevariant",
+      "title": "gradle literal environment: casevariant",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-06",
+      "key": "env-gradle#lowercase",
+      "title": "gradle literal environment: lowercase",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-07",
+      "key": "env-gradle#missingseparator",
+      "title": "gradle literal environment: missingseparator",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-ENV-GRADLE-08",
+      "key": "env-gradle#badkey",
+      "title": "gradle literal environment: badkey",
+      "kind": "EnvironmentGradle",
+      "group": "env",
+      "source": "app/build.gradle.kts"
+    },
+    {
+      "id": "TC-RUNNER-01",
+      "key": "runner#definitionsIgnoreGeneratedRows",
+      "title": "definitions Ignore Generated Rows",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-02",
+      "key": "runner#staleDefinitionRejected",
+      "title": "stale Definition Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-03",
+      "key": "runner#statusChangeRequiresReview",
+      "title": "status Change Requires Review",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-04",
+      "key": "runner#removedRequirementRejected",
+      "title": "removed Requirement Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-05",
+      "key": "runner#missingMappingRejected",
+      "title": "missing Mapping Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-06",
+      "key": "runner#unknownTestcaseRejected",
+      "title": "unknown Testcase Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-07",
+      "key": "runner#missingExecutionIsError",
+      "title": "missing Execution Is Error",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-08",
+      "key": "runner#skippedIsNotPassed",
+      "title": "skipped Is Not Passed",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-09",
+      "key": "runner#unexpectedExecutionRejected",
+      "title": "unexpected Execution Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-10",
+      "key": "runner#duplicateExecutionRejected",
+      "title": "duplicate Execution Rejected",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-11",
+      "key": "runner#junitPreservesOutcomesAndOmitsDetails",
+      "title": "junit Preserves Outcomes And Omits Details",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-12",
+      "key": "runner#junitRejectsDtd",
+      "title": "junit Rejects Dtd",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-13",
+      "key": "runner#missingDirectoryDoesNotReuseOldEvidence",
+      "title": "missing Directory Does Not Reuse Old Evidence",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-14",
+      "key": "runner#rowsAreIdempotentAndPreserveAuthoredText",
+      "title": "rows Are Idempotent And Preserve Authored Text",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-15",
+      "key": "runner#staleRowsCannotClaimPassed",
+      "title": "stale Rows Cannot Claim Passed",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-PROJECT-01",
+      "key": "project#publicExampleHasAllSettingsAndNoAccountDefaults",
+      "title": "public Example Has All Settings And No Account Defaults",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "TC-PROJECT-02",
+      "key": "project#nativeCommandFailureStopsCaller",
+      "title": "native Command Failure Stops Caller",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "TC-PROJECT-03",
+      "key": "project#gitIgnoresPrivateSettingsAndBuildArtifacts",
+      "title": "git Ignores Private Settings And Build Artifacts",
+      "kind": "Project",
+      "group": "project",
+      "source": "scripts/Test-ProjectContracts.ps1"
+    },
+    {
+      "id": "MC-UI-002",
+      "key": "manual#UI-002",
+      "title": "Review Cinema Dark appearance, theme consistency and focus contrast on the TV; subjective visual acceptance.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DATA-003",
+      "key": "manual#DATA-003",
+      "title": "Use a reachable local/provider logo to verify cache, missing-image and failed-image display on device.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DATA-004",
+      "key": "manual#DATA-004",
+      "title": "Serve a fixture stream that requires its user-agent and observe actual player requests; provider/decoder integration not in the fast host suite.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-BROWSE-002",
+      "key": "manual#BROWSE-002",
+      "title": "Visually confirm persistent opaque sidebar and readable labels while browsing/scrolling.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-BROWSE-006",
+      "key": "manual#BROWSE-006",
+      "title": "Open feature: agree/implement grid Back hierarchy before executable acceptance.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-BROWSE-008",
+      "key": "manual#BROWSE-008",
+      "title": "Exercise browsing Back, Cancel and Exit on the device; dialog integration not in fast suite.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-001",
+      "key": "manual#PLAY-001",
+      "title": "Confirm compatible stream picture and sound on the Firestick.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-003",
+      "key": "manual#PLAY-003",
+      "title": "Open product decision: resolve channel direction before locking acceptance into tests.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-004",
+      "key": "manual#PLAY-004",
+      "title": "Check Select and dedicated Play/Pause/Play/Pause actions against native playback.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-005",
+      "key": "manual#PLAY-005",
+      "title": "Check resource release, reopening and background/resume with the native player.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-006",
+      "key": "manual#PLAY-006",
+      "title": "Needs verification using actual 4K content, decoder and display.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-VOD-002",
+      "key": "manual#VOD-002",
+      "title": "Verify pause/resume with real VOD playback.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-VOD-004",
+      "key": "manual#VOD-004",
+      "title": "Open product decision: define Stop behavior before implementing its acceptance case.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-OPS-001",
+      "key": "manual#OPS-001",
+      "title": "Run deployment on an explicitly selected Firestick; omitted from the default non-device suite.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-OPS-003",
+      "key": "manual#OPS-003",
+      "title": "Exercise build/install/check CLI modes with isolated native-tool doubles or explicit device acceptance; not in initial fast suite.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-OPS-004",
+      "key": "manual#OPS-004",
+      "title": "Review pinned setup/deployment instructions and clean-checkout tool availability; runtime/build evidence is separate.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-OPS-005",
+      "key": "manual#OPS-005",
+      "title": "Inspect GitHub publication/history and privacy audit; the smoke suite makes no remote requests.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DEV-001",
+      "key": "manual#DEV-001",
+      "title": "Human review record must show requirements reviewed before implementation.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DEV-002",
+      "key": "manual#DEV-002",
+      "title": "Human review must compare approved scope and actual change.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DEV-003",
+      "key": "manual#DEV-003",
+      "title": "Human review must confirm architecture choices/tradeoffs were presented.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-RUNNER-16",
+      "key": "runner#entryPointPublishesSuccessfulCountsAndRows",
+      "title": "entry Point Publishes Successful Counts And Rows",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-17",
+      "key": "runner#entryPointFailureExitsNonzeroAndUpdatesRows",
+      "title": "entry Point Failure Exits Nonzero And Updates Rows",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    },
+    {
+      "id": "TC-RUNNER-18",
+      "key": "runner#entryPointBuildErrorCannotReuseOldPassingXml",
+      "title": "entry Point Build Error Cannot Reuse Old Passing Xml",
+      "kind": "Runner",
+      "group": "runner",
+      "source": "scripts/Test-SmokeSupport.ps1"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "FIX-001",
+      "fingerprint": "eecccf7378ec0a6d2a93439aa5516f4cdcd7b5f4922e27b22cac4ee9d1beb2ee",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-039",
+        "TC-APP-040",
+        "TC-APP-041"
+      ],
+      "gap": "Host focus paths pass/fail here; physical remote/keyboard acceptance remains separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-002",
+      "fingerprint": "5d4419517c4226251eed5cd304c708606ae56800f0aba105ad32b9f666de2ace",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-001",
+        "TC-APP-002",
+        "TC-APP-003",
+        "TC-APP-004",
+        "TC-APP-005",
+        "TC-APP-006",
+        "TC-APP-007",
+        "TC-APP-008",
+        "TC-APP-009",
+        "TC-APP-010",
+        "TC-APP-011",
+        "TC-APP-024",
+        "TC-APP-025",
+        "TC-APP-026"
+      ],
+      "gap": "Synthetic request/parser/login behavior; real provider compatibility is outside the local suite.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-003",
+      "fingerprint": "f5b0483adf7af7e24a49e112502e37049a794b86015b4bdeb0deca280ddfc40a",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-027",
+        "TC-APP-028",
+        "TC-APP-037"
+      ],
+      "gap": "Seek policy and overlay timing; decoder, native controller, background engine release and resume require device checks.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-004",
+      "fingerprint": "426e973e14dc49c967ecbad8fbd79bf1ea73e03e3170e499d1727bf690170187",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-029",
+        "TC-APP-022",
+        "TC-APP-023",
+        "TC-APP-030",
+        "TC-APP-031"
+      ],
+      "gap": "Session store, position and groups covered; real activity/process lifecycle and cache performance remain unverified.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-005",
+      "fingerprint": "10f4fb9f2cb743ee364e8763a964bd765256d0b1030bf74305dd80eb8c464645",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-012",
+        "TC-APP-013",
+        "TC-APP-014",
+        "TC-APP-015",
+        "TC-APP-016",
+        "TC-APP-017",
+        "TC-APP-018",
+        "TC-APP-019",
+        "TC-APP-020",
+        "TC-APP-021"
+      ],
+      "gap": "Storage/schema/account cases covered; rapid physical switching and restart acceptance remain separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-006",
+      "fingerprint": "cc4837e277f6119f54a8c3983661fbbf2b694f54a8f107795520c8bfbce7aeae",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-035"
+      ],
+      "gap": "Form rendering/state contracts exercised; DI/readability cleanup remains source-review evidence.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-007",
+      "fingerprint": "57c583571ffec89d6ffd66c4c2169af64ceb2e30d924846c9dd68ac5efb20017",
+      "coverage": "Partial",
+      "cases": [
+        "TC-ENV-POWERSHELL-01",
+        "TC-ENV-POWERSHELL-02",
+        "TC-ENV-POWERSHELL-03",
+        "TC-ENV-POWERSHELL-04",
+        "TC-ENV-POWERSHELL-05",
+        "TC-ENV-POWERSHELL-06",
+        "TC-ENV-POWERSHELL-07",
+        "TC-ENV-POWERSHELL-08",
+        "TC-ENV-GRADLE-01",
+        "TC-ENV-GRADLE-02",
+        "TC-ENV-GRADLE-03",
+        "TC-ENV-GRADLE-04",
+        "TC-ENV-GRADLE-05",
+        "TC-ENV-GRADLE-06",
+        "TC-ENV-GRADLE-07",
+        "TC-ENV-GRADLE-08",
+        "TC-RUNNER-01",
+        "TC-RUNNER-02",
+        "TC-RUNNER-03",
+        "TC-RUNNER-04",
+        "TC-RUNNER-05",
+        "TC-RUNNER-06",
+        "TC-RUNNER-07",
+        "TC-RUNNER-08",
+        "TC-RUNNER-09",
+        "TC-RUNNER-10",
+        "TC-RUNNER-11",
+        "TC-RUNNER-12",
+        "TC-RUNNER-13",
+        "TC-RUNNER-14",
+        "TC-RUNNER-15",
+        "TC-RUNNER-16",
+        "TC-RUNNER-17",
+        "TC-RUNNER-18"
+      ],
+      "gap": "Environment/report regression checks; optional lint and optimized release/device acceptance remain separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-008",
+      "fingerprint": "f780edbefa4bc3ba707086464c92c045f87ef40a4480e4d9e20673bc5e3b13bd",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-021",
+        "TC-APP-033",
+        "TC-APP-024"
+      ],
+      "gap": "Backup rules, safe login errors and crash delegation; Android backup/transfer and next-launch crash UX still need device checks.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-009",
+      "fingerprint": "b7bdb00e06d8431e47b75954de52c841ff0feff7cd083cf4a67c38fbf262b91e",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-007",
+        "TC-APP-036",
+        "TC-APP-008"
+      ],
+      "gap": "Transport/default warning policy; actual user-agent/HLS/DASH playback is not proven by these cases.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "FIX-010",
+      "fingerprint": "4130d7ee2635c4a0148970f813799094f65ba6fa1a0128d5f63d8b998f53a721",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-034",
+        "TC-APP-032",
+        "TC-APP-035"
+      ],
+      "gap": "Compiled resource/label references covered; actual cold-start/launcher appearance needs visual acceptance.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "UI-001",
+      "fingerprint": "172f507628ed5627df4015e68c5d4e8a0cdc73b4261d947d5c3fb165e05b9b26",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-035",
+        "TC-APP-032"
+      ],
+      "gap": "Login and installed label; custom splash visual text remains a manual check.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "UI-002",
+      "fingerprint": "0e809cc55b7c0c0f44111de8e72e1d6c17748795d883fcb25fc35253689c62df",
+      "coverage": "Manual",
+      "cases": [
+        "MC-UI-002"
+      ],
+      "gap": "Review Cinema Dark appearance, theme consistency and focus contrast on the TV; subjective visual acceptance.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "UI-003",
+      "fingerprint": "687da6a1edb34301fc79c766b5c997122442a162dbb02ecf571233046e4a5112",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-034"
+      ],
+      "gap": "Compiled launch/logo/name references; cold-start appearance and splash timing need a device.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "UI-004",
+      "fingerprint": "e7a99b995dbe7b1a117cd3fefebf2bdfb98b0297fcb1d0efe25c00d3a0a30dc8",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-034"
+      ],
+      "gap": "Compiled launcher/banner resources; visual launcher acceptance remains manual.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "UI-005",
+      "fingerprint": "b1e8b9803027aa1a764d2bf94d451403b6f1b3a23b7363730b25e13ff7527655",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-038"
+      ],
+      "gap": "Visible card name, focus semantics and selection; visual focus-border appearance needs review.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "UI-006",
+      "fingerprint": "e64f2d3a3d45e1f21996415e75c6a2862fe09a54625b2ff0e5033d2028d80b68",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-037"
+      ],
+      "gap": "Shared three-second timing and repeated events; actual player stream/name binding remains device/source evidence.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-001",
+      "fingerprint": "3df28caead1fc9da8c968487f797d6cedf6949359b70282e7e0d99ac66d0a177",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-035"
+      ],
+      "gap": "Form labels and password masking; complete text-entry cycle remains device/manual.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-002",
+      "fingerprint": "8d57558693ddac1270feebffd408f474165d09f0df3e828ad1adf3636f987f4d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-035"
+      ],
+      "gap": "Connect focus/visibility; Fire TV keyboard suppression needs device acceptance.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-003",
+      "fingerprint": "a9090293b98580849fdefb4f5ace9c535f9cbb330f6cb4a9048d371347cacffe",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-039"
+      ],
+      "gap": "Remote focus round trip; Select/edit and keyboard-on-focus behavior remain incomplete/unverified.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-004",
+      "fingerprint": "bec3d527387c62dd7a2e8686f94e96b0c8b95ab2d5585191b3aab6080c593845",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-007",
+        "TC-APP-008",
+        "TC-APP-009",
+        "TC-APP-010",
+        "TC-APP-011"
+      ],
+      "gap": "Encoded endpoint, schemes, error/response/cancellation behavior use a loopback provider; real service remains separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-005",
+      "fingerprint": "b17d138bc14340e8ed390339bc797f9d9e8f3477c304c22e0d73adf58dccd6cd",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-024",
+        "TC-APP-039",
+        "TC-APP-025"
+      ],
+      "gap": "Missing/failed/empty/retry/single-flight paths; all malformed playlist dialects and TV error readability are not proven.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "LOGIN-006",
+      "fingerprint": "5fba11d7eafd96c1c39b7fd4bff8d2c46fc3fa2ff0417690073f664b0f8bd2b8",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-012",
+        "TC-APP-025"
+      ],
+      "gap": "Successful submitted snapshot and preference restart; installed-app relaunch remains manual.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "DATA-001",
+      "fingerprint": "4297e6971c5174b989ba3628e2c99d8192ccefa2d60168dd199aa1e11d3ac79d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-001",
+        "TC-APP-002",
+        "TC-APP-003",
+        "TC-APP-004",
+        "TC-APP-005",
+        "TC-APP-006"
+      ],
+      "gap": "Representative metadata/comments/name edge cases; no exhaustive M3U dialect coverage.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "DATA-002",
+      "fingerprint": "3dcfc6fa293cec07640ad58fb35b7b09b8de22c293cd7424732f6906fd561511",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-003"
+      ],
+      "gap": "Blank-name fallback; every missing-category dialect is not yet covered.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "DATA-003",
+      "fingerprint": "2cdb58d4ddbf289ad65467b419202a9c7dd6e44e163e837d1f1f299b5da003c0",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DATA-003"
+      ],
+      "gap": "Use a reachable local/provider logo to verify cache, missing-image and failed-image display on device.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "DATA-004",
+      "fingerprint": "57f39072bf2c26f4a2d77126400d647d2d0f949e60b9314da65c11409122e844",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DATA-004"
+      ],
+      "gap": "Serve a fixture stream that requires its user-agent and observe actual player requests; provider/decoder integration not in the fast host suite.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "BROWSE-001",
+      "fingerprint": "9b3c000ed2dfa40de0041c1c8237bcfbb0d044de4347e665e85fd6234cddae19",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-022",
+        "TC-APP-038"
+      ],
+      "gap": "Grouping/grid selection callback covered; actual playback handoff still needs device acceptance.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "BROWSE-002",
+      "fingerprint": "42fa80c47f7e86b47ec89b2cd3528ee80cd64a6865283678b0fc92ecaf7ea799",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-002"
+      ],
+      "gap": "Visually confirm persistent opaque sidebar and readable labels while browsing/scrolling.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "BROWSE-003",
+      "fingerprint": "fb3ba264ddc70f018e2559924beaed24793010769cddc5261f69080d56a449ac",
+      "coverage": "Full",
+      "cases": [
+        "TC-APP-022"
+      ],
+      "gap": "All stated category ordering rules are exercised with synthetic groups.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "BROWSE-004",
+      "fingerprint": "effe81575ef6a45848ba90bc1d80c4498eaede0f54446efed84191bdd10bab6c",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-040",
+        "TC-APP-041"
+      ],
+      "gap": "Empty and scrolled-grid behavior in host Compose; physical remote remains separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "BROWSE-005",
+      "fingerprint": "912578da05860e1d8a3f100495e250ce3e67ff6cafb73d33621ea11356f584fa",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-041"
+      ],
+      "gap": "Offscreen active sidebar focus is exercised; every non-leftmost grid position is not covered.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "BROWSE-006",
+      "fingerprint": "f3fd846f4f19e4a7ac63414f7739a38c252c2276699ede90ddbe30f74c77576a",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-006"
+      ],
+      "gap": "Open feature: agree/implement grid Back hierarchy before executable acceptance.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "BROWSE-007",
+      "fingerprint": "7ae58f358d0baf05402eacf5ff653362af52f9e6013594705562f2c37db76974",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-029",
+        "TC-APP-023"
+      ],
+      "gap": "Session/category ownership tested without native playback; actual Back integration remains device acceptance.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "BROWSE-008",
+      "fingerprint": "2fddbf48dce87712dea01f81a819464d07f13b9fe34e02fdac16dbdbd41b1cd2",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-008"
+      ],
+      "gap": "Exercise browsing Back, Cancel and Exit on the device; dialog integration not in fast suite.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "RECENT-001",
+      "fingerprint": "e41ebe139f631a8fbd5592861d8defd978cc32d28da853d609a488d29bc44775",
+      "coverage": "Full",
+      "cases": [
+        "TC-APP-022",
+        "TC-APP-040"
+      ],
+      "gap": "Empty recent group remains first and navigable.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "RECENT-002",
+      "fingerprint": "a58960b71a8090aa230ce78bf7cd4c406bbf7d103c5c880e742e882bc1cf76ca",
+      "coverage": "Full",
+      "cases": [
+        "TC-APP-014",
+        "TC-APP-013",
+        "TC-APP-018"
+      ],
+      "gap": "Limit, uniqueness, ordering and active-account reconciliation exercised.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "RECENT-003",
+      "fingerprint": "022f3e216ea894d6deb96b433b571a575d9fa53b76a70b22476aa004e77a31df",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-020",
+        "TC-APP-023"
+      ],
+      "gap": "Storage object restart and reactive return refresh; physical app relaunch remains separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "PLAY-001",
+      "fingerprint": "2ed11eef02ecc2c553d59a944b9ef657a5aaf5ecbe07db7606e9306f6999edd6",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-001"
+      ],
+      "gap": "Confirm compatible stream picture and sound on the Firestick.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "PLAY-002",
+      "fingerprint": "a6ae621ac74db225d08344213fed6cc6c2ce5dd6d47edb7c0d17459bad50e778",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-030",
+        "TC-APP-031",
+        "TC-APP-029"
+      ],
+      "gap": "Position/wrapping; physical key-to-player handoff remains manual.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "PLAY-003",
+      "fingerprint": "2e920ea4f066aec4f1ce07da7863ec1369fa47bba4e14e095474da04434e196b",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-003"
+      ],
+      "gap": "Open product decision: resolve channel direction before locking acceptance into tests.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "PLAY-004",
+      "fingerprint": "493c121894af9585075a3250904e7f4e81f84f053b216a7c8b5b2a543ab1546f",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-004"
+      ],
+      "gap": "Check Select and dedicated Play/Pause/Play/Pause actions against native playback.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "PLAY-005",
+      "fingerprint": "45ac49e4423d1a3790011e01b8ff25b04e05f7a6eb21d09929005bfbf30ed79b",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-005"
+      ],
+      "gap": "Check resource release, reopening and background/resume with the native player.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "PLAY-006",
+      "fingerprint": "d7db6ce7ae7a07d0fa66609de06d1ac432fbd3cdc58a1a66e07986a3fa5796a6",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-006"
+      ],
+      "gap": "Needs verification using actual 4K content, decoder and display.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "VOD-001",
+      "fingerprint": "41349bab09dafd40f9b820d0bcc6a5e19a82f068981d7ed9be022598d8b317c2",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-004",
+        "TC-APP-005"
+      ],
+      "gap": "URL heuristic regressions; category/path keyword variants are not exhaustively covered.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "VOD-002",
+      "fingerprint": "c1c8e4f6ae799c714bc8042a8a16d80adc2c2be2ea19441b1da1241488bab5bb",
+      "coverage": "Manual",
+      "cases": [
+        "MC-VOD-002"
+      ],
+      "gap": "Verify pause/resume with real VOD playback.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "VOD-003",
+      "fingerprint": "3c5da0b88cb5fe9642ae80074143f2ae487ad4d217a7ecfcd239aa6a235a0ca1",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-027",
+        "TC-APP-028"
+      ],
+      "gap": "Bounds/capability policy; physical D-pad/dedicated/native-controller increments and decoder behavior remain device checks.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "VOD-004",
+      "fingerprint": "6c81c317b5e4622694666c283428e9ac33b932e15569de54c8cf8db595d5bfcf",
+      "coverage": "Manual",
+      "cases": [
+        "MC-VOD-004"
+      ],
+      "gap": "Open product decision: define Stop behavior before implementing its acceptance case.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "VOD-005",
+      "fingerprint": "36613e7677c45538e6a4d77770d4c53267904759f6f3a7ba3c8f1398d088e9fd",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-037"
+      ],
+      "gap": "Shared overlay expires and repeats identical text; end-to-end accepted-seek event binding remains device evidence.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "SET-001",
+      "fingerprint": "d06ffe278159209394c5701beeac585e0ac63e45a9d731b9229473753784ca3f",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-012",
+        "TC-ENV-POWERSHELL-01",
+        "TC-ENV-POWERSHELL-02",
+        "TC-ENV-POWERSHELL-03",
+        "TC-ENV-POWERSHELL-04",
+        "TC-ENV-POWERSHELL-05",
+        "TC-ENV-POWERSHELL-06",
+        "TC-ENV-POWERSHELL-07",
+        "TC-ENV-POWERSHELL-08",
+        "TC-ENV-GRADLE-01",
+        "TC-ENV-GRADLE-02",
+        "TC-ENV-GRADLE-03",
+        "TC-ENV-GRADLE-04",
+        "TC-ENV-GRADLE-05",
+        "TC-ENV-GRADLE-06",
+        "TC-ENV-GRADLE-07",
+        "TC-ENV-GRADLE-08"
+      ],
+      "gap": "Literal configuration and generated debug default consumption; default values are never echoed.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "SET-002",
+      "fingerprint": "e9f04f09a97a739a72e401cdc5dbcd671923c65e3d160d6a3001da4403e6ad3d",
+      "coverage": "Full",
+      "cases": [
+        "TC-PROJECT-01"
+      ],
+      "gap": "All required public example keys and blank account defaults checked.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "SET-003",
+      "fingerprint": "11e24ae5f09147464093c2189b3afd44b17adef09a15d5bc847cd81d240ffc1e",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-012"
+      ],
+      "gap": "Current debug default consumption only; fresh no-.env build and release empty defaults require separate build checks.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "SET-004",
+      "fingerprint": "9864d7e96d1dc130deb1dd47e7153facea9c633245d7f8fe568afef5f63401cc",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-012"
+      ],
+      "gap": "Custom saved server preservation; configured retired-address migration remains a manual/build configuration check.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "SET-005",
+      "fingerprint": "cb50754ff44b39b82a3725591e11afc0a928028bce8eb5a64730f19d2e0b799a",
+      "coverage": "Full",
+      "cases": [
+        "TC-ENV-POWERSHELL-01",
+        "TC-ENV-POWERSHELL-02",
+        "TC-ENV-POWERSHELL-03",
+        "TC-ENV-POWERSHELL-04",
+        "TC-ENV-POWERSHELL-05",
+        "TC-ENV-POWERSHELL-06",
+        "TC-ENV-POWERSHELL-07",
+        "TC-ENV-POWERSHELL-08",
+        "TC-ENV-GRADLE-01",
+        "TC-ENV-GRADLE-02",
+        "TC-ENV-GRADLE-03",
+        "TC-ENV-GRADLE-04",
+        "TC-ENV-GRADLE-05",
+        "TC-ENV-GRADLE-06",
+        "TC-ENV-GRADLE-07",
+        "TC-ENV-GRADLE-08"
+      ],
+      "gap": "Both readers execute the shared literal/case/duplicate/malformed fixture set.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "REL-001",
+      "fingerprint": "208527c5d935d4a0bad615e9c07659b61c98efc3f2757aa18b408d8e1ee3c3bf",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-011",
+        "TC-APP-022"
+      ],
+      "gap": "Async download/group outcomes only; UI-thread performance/lazy behavior need profiling/device evidence.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "REL-002",
+      "fingerprint": "6b9be1afc6fb52190b3ce008bf4f7319897f15be2df3570eb72b792aeecfdede",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-024",
+        "TC-APP-021"
+      ],
+      "gap": "Safe errors/retry and generic crash marker/delegation; crash notice/playback UI on device unverified.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "REL-003",
+      "fingerprint": "01635f84df1753df7b53a4dae66428c7e31ddc3dec547886ea7f38da7bede367",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-032",
+        "TC-APP-041"
+      ],
+      "gap": "TV manifest and simulated remote; physical Fire TV compatibility remains separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "PRIV-001",
+      "fingerprint": "4cbb19c7bd6727eddcc74cd7ef7d61956f3334dbda7078703d415c2844886b5e",
+      "coverage": "Partial",
+      "cases": [
+        "TC-PROJECT-03",
+        "TC-PROJECT-01"
+      ],
+      "gap": "Ignore/public-example contracts; not a comprehensive secret or Git-history audit.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "PRIV-002",
+      "fingerprint": "8220673b17899bab5910ddd0b7851c1f805ab75098f3f810971b356dea13ed1d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-017"
+      ],
+      "gap": "Credential-only clearing preserves unrelated keys; actual adb update preservation is not exercised.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "PRIV-003",
+      "fingerprint": "80c9917cde647f7ac4367c910417ad07ef07ed4e00677ac80b335d324ac7a2ba",
+      "coverage": "Partial",
+      "cases": [
+        "TC-PROJECT-03"
+      ],
+      "gap": "Artifact exclusion only; actual optimized release defaults and signing are separate checks.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "OPS-001",
+      "fingerprint": "598943cc86c8b03eef4ce592a9775fc5df28eccc9df94a2d8b16b82e4508e502",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-001"
+      ],
+      "gap": "Run deployment on an explicitly selected Firestick; omitted from the default non-device suite.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "OPS-002",
+      "fingerprint": "4e9f406a7a842d742d22d6e1afcd1c548bfb4cdeb5134262f63f7b175ce8eb2c",
+      "coverage": "Partial",
+      "cases": [
+        "TC-PROJECT-02"
+      ],
+      "gap": "Native failure guard tested without executing deployment body; ADB failure/device addressing remain separate.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "OPS-003",
+      "fingerprint": "f8eef1651f1ec0ed5c6ff54b8421801fbbf72988f071197f62c5a77ef0220fdf",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-003"
+      ],
+      "gap": "Exercise build/install/check CLI modes with isolated native-tool doubles or explicit device acceptance; not in initial fast suite.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "OPS-004",
+      "fingerprint": "2322d40d64cfc6a3af52c076b4b96e4a0980847467cb3dace39d5b7fb7d97cfb",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-004"
+      ],
+      "gap": "Review pinned setup/deployment instructions and clean-checkout tool availability; runtime/build evidence is separate.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "OPS-005",
+      "fingerprint": "9c3729d2001b128ef539e006becb54568b3212e53ef75e0e2104dcaba4662537",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-005"
+      ],
+      "gap": "Inspect GitHub publication/history and privacy audit; the smoke suite makes no remote requests.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "DEV-001",
+      "fingerprint": "5ba195bee8907fd9c77b8054cf0e69949277d01b019311d360ed93dbbb3eda86",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DEV-001"
+      ],
+      "gap": "Human review record must show requirements reviewed before implementation.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "DEV-002",
+      "fingerprint": "135b88bcfc157d5722cc1d56e9b81015213f627e0d79dcbbc3e9b83b9b3afad8",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DEV-002"
+      ],
+      "gap": "Human review must compare approved scope and actual change.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "DEV-003",
+      "fingerprint": "f0c5d2285455fcd6946172edc480e20e5d65ebd7a8033f7b5c23d9fbd30d01d6",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DEV-003"
+      ],
+      "gap": "Human review must confirm architecture choices/tradeoffs were presented.",
+      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+    },
+    {
+      "id": "DEV-004",
+      "fingerprint": "df1f6129b8f417e5d6840729813c6d901e35805f6748a92baa855b678d91cf7e",
+      "coverage": "Partial",
+      "cases": [
+        "TC-RUNNER-01",
+        "TC-RUNNER-02",
+        "TC-RUNNER-03",
+        "TC-RUNNER-04",
+        "TC-RUNNER-05",
+        "TC-RUNNER-06",
+        "TC-RUNNER-07",
+        "TC-RUNNER-08",
+        "TC-RUNNER-09",
+        "TC-RUNNER-10",
+        "TC-RUNNER-11",
+        "TC-RUNNER-12",
+        "TC-RUNNER-13",
+        "TC-RUNNER-14",
+        "TC-RUNNER-15",
+        "TC-RUNNER-16",
+        "TC-RUNNER-17",
+        "TC-RUNNER-18"
+      ],
+      "gap": "Catalog validation, row generation and result parsing exercised; human relevance of acceptance mappings still needs review.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "DEV-005",
+      "fingerprint": "a61518f2f315439538f5e878bdfe948f7a83e1309213ca37ee3baad4174900d8",
+      "coverage": "Partial",
+      "cases": [
+        "TC-RUNNER-01",
+        "TC-RUNNER-02",
+        "TC-RUNNER-03",
+        "TC-RUNNER-04",
+        "TC-RUNNER-05",
+        "TC-RUNNER-06",
+        "TC-RUNNER-07",
+        "TC-RUNNER-08",
+        "TC-RUNNER-09",
+        "TC-RUNNER-10",
+        "TC-RUNNER-11",
+        "TC-RUNNER-12",
+        "TC-RUNNER-13",
+        "TC-RUNNER-14",
+        "TC-RUNNER-15",
+        "TC-RUNNER-16",
+        "TC-RUNNER-17",
+        "TC-RUNNER-18"
+      ],
+      "gap": "Counting/parsing/stale/missing/error behavior; complete runner is exercised in the actual run and documented evidence.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "DEV-006",
+      "fingerprint": "0506db1081a08c50ec26e3ddc2563115834e421289d36ff4492d889a29f3c0c4",
+      "coverage": "Partial",
+      "cases": [
+        "TC-RUNNER-01",
+        "TC-RUNNER-02",
+        "TC-RUNNER-03",
+        "TC-RUNNER-04",
+        "TC-RUNNER-05",
+        "TC-RUNNER-06",
+        "TC-RUNNER-07",
+        "TC-RUNNER-08",
+        "TC-RUNNER-09",
+        "TC-RUNNER-10",
+        "TC-RUNNER-11",
+        "TC-RUNNER-12",
+        "TC-RUNNER-13",
+        "TC-RUNNER-14",
+        "TC-RUNNER-15",
+        "TC-RUNNER-16",
+        "TC-RUNNER-17",
+        "TC-RUNNER-18"
+      ],
+      "gap": "Definition/status drift enforcement; meaningful test updates and post-implementation discipline still require agent/reviewer compliance.",
+      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+    },
+    {
+      "id": "OLD-001",
+      "fingerprint": "8f6a19fe2b253c5ac1887ed697ea760a2ba36c152ba6012e23486c3b35536352",
+      "coverage": "Not applicable",
+      "cases": [],
+      "gap": "Retained historical requirement; replacement has active tests.",
+      "reviewNote": "Superseded."
+    },
+    {
+      "id": "OLD-002",
+      "fingerprint": "5f64393914302e0cd35668760e60d2704ef7a1d8f45500629120cf3031e906f7",
+      "coverage": "Not applicable",
+      "cases": [],
+      "gap": "Retained historical requirement; replacement has active tests.",
+      "reviewNote": "Superseded."
+    }
+  ]
+}

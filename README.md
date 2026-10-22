@@ -10,7 +10,7 @@ For every new wish, update the catalog first and present the affected IDs and ch
 
 ## Code-review remediation
 
-The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) maps each finding to the local review candidate and its checks. The initial catalog's unrelated product decisions still await review. The previously installed app remains the latest Firestick acceptance baseline.
+The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) maps each finding to the remediation and its checks; that source baseline was committed/pushed as `ec11bdc`. The initial catalog's unrelated product decisions still await review. The previously installed app remains the latest Firestick acceptance baseline.
 
 ## Current app
 
@@ -103,6 +103,23 @@ app/src/main/java/com/example/iptv/
 Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death returns to the saved login form. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the application ID is `com.example.iptv`. Launch through `com.example.iptv/.SplashActivity`, because MainActivity is not exported.
 
 ## Validation and known limitations
+
+Run the quick local regression suite after each implementation:
+
+```powershell
+.\test-smoke.ps1
+.\test-smoke.ps1 -Lint  # Also run Android lint
+```
+
+The command uses the private JDK/SDK paths from .env (or existing environment settings), runs fresh app tests, both sets of environment fixtures and reporting/project checks, then prints **X/Y passed** with failed/skipped/error counts. It does not install anything or contact your IPTV provider. Tests use synthetic data and a loopback fake server; first-time Gradle/dependency downloads still need network access. Compilation remains incremental while test execution is fresh. Use JDK 17 as documented above.
+
+Every requirement in [REQUIREMENTS.md](REQUIREMENTS.md) has a generated companion row listing testcase IDs, descriptions and latest results. [TEST_CASES.md](TEST_CASES.md) provides the complete testcase view; [scripts/test-catalog.json](scripts/test-catalog.json) owns stable IDs, selectors, coverage gaps and requirement-definition/status fingerprints. **Passed tests do not imply that every acceptance criterion or physical-device behavior is verified.** Manual cases remain Not run in this local suite; partial and superseded requirements retain their distinctions.
+
+After changing a requirement, first update its actual tests and mappings as appropriate (add, modify or retire cases). Explicitly review retained cases, then acknowledge the affected fingerprints with scripts/Update-TestMapping.ps1 and a specific review note. The runner rejects missing/stale mappings, missing or unexpected tests, skipped checks and failed builds. Generated result/timestamp changes do not require new tests. Future coding work follows this process automatically through AGENTS.md.
+
+The target is high useful coverage within approximately **90 seconds on a warm setup**, rather than 100% coverage. The script prints elapsed time; build setup, first-time downloads and optional lint may take longer. Real playback, keyboard/decoder behavior, 4K, provider compatibility, signing and device acceptance remain separate checks.
+
+Detailed JSON and private logs are under the ignored app/build/reports/smoke/ directory, with a latest.json summary and a separate directory for each run. Keep raw logs local. Failure returns a nonzero exit code and updates corresponding catalog results; it never labels a missing result as Passed. Build/lint results are not added to behavioral test counts.
 
 ```powershell
 .\gradlew.bat :app:assembleDebug

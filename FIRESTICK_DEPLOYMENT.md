@@ -20,6 +20,8 @@ Useful options:
 
 `-Check` can be combined with `-BuildOnly`. Use `-InstallOnly` only when the APK already contains your latest changes. Installing an APK does not compile source code.
 
+`-Check` now calls test-smoke.ps1 -Lint first, refreshing the testcase rows in REQUIREMENTS.md and TEST_CASES.md, then builds the APK. A failed suite prevents deployment. For the fast local suite alone, use .\test-smoke.ps1; it does not connect to the Firestick. Its summary separates tests from lint/build checks and keeps manual/partial requirement coverage explicit.
+
 Android Studio is optional for this command-line workflow. If PowerShell blocks the script, allow it for that process only:
 
 ```powershell

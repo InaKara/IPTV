@@ -3,6 +3,10 @@ package com.example.iptv.ui
 import android.app.Application
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.iptv.ui.player.TimedOverlay
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.iptv.data.model.M3UChannel
@@ -21,11 +25,57 @@ import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalTestApi::class)
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [28], application = Application::class)
+@Config(sdk = [28], application = Application::class, qualifiers = "w960dp-h540dp-land-mdpi")
 class RemoteFocusTest {
     @get:Rule val compose = createComposeRule()
     private fun focus(text: String) = compose.onAllNodesWithText(text).onFirst()
         .performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+
+    @Test fun loginStartsOnConnectShowsBrandAndMasksPassword() {
+        compose.setContent {
+            IPTVTheme { LoginContent("https://provider.example", "demo", "synthetic", LoginUiState.Idle, {}, {}, {}, {}) }
+        }
+        compose.onNodeWithText("Connect").assertIsFocused().assertIsDisplayed()
+        compose.onNodeWithText("Aypi Tivi").assertExists()
+        compose.onNodeWithText("Password").assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Password))
+        compose.onNodeWithText("synthetic").assertDoesNotExist()
+    }
+
+    @Test fun explicitHttpDisplaysWarningAndHttpsDoesNot() {
+        var server by androidx.compose.runtime.mutableStateOf("http://provider.example")
+        compose.setContent {
+            IPTVTheme { LoginContent(server, "demo", "", LoginUiState.Idle, {}, {}, {}, {}) }
+        }
+        compose.onNodeWithText("HTTP sends account details without encryption. Use HTTPS if your provider supports it.").assertExists()
+        compose.runOnIdle { server = "https://provider.example" }
+        compose.onNodeWithText("HTTP sends account details without encryption. Use HTTPS if your provider supports it.").assertDoesNotExist()
+    }
+
+    @Test fun overlayHidesAndRepeatedEqualTextRestartsItsTimer() {
+        var event by androidx.compose.runtime.mutableStateOf(1)
+        compose.mainClock.autoAdvance = false
+        compose.setContent { IPTVTheme { TimedOverlay(event, "+30 s", 120) } }
+        compose.onNodeWithText("+30 s").assertExists()
+        compose.mainClock.advanceTimeBy(3100)
+        compose.onNodeWithText("+30 s").assertDoesNotExist()
+        compose.runOnIdle { event++ }
+        compose.mainClock.autoAdvance = true
+        compose.onNodeWithText("+30 s").assertExists()
+    }
+
+    @Test fun selectingCategoryAndChannelDeliversExactPositionAndList() {
+        val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        val channels = listOf(M3UChannel("News", "Group", null, "https://provider.example/1", null, null, null, false))
+        var selected = -1
+        var delivered = emptyList<M3UChannel>()
+        compose.setContent { IPTVTheme { HomeScreen(channels, { index, entries -> selected = index; delivered = entries }, vm) } }
+        compose.waitUntil(5000) { compose.onAllNodesWithText("Group").fetchSemanticsNodes().isNotEmpty() }
+        focus("Group").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.waitUntil(5000) { compose.onAllNodesWithText("News").fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodesWithText("Group").onFirst().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithText("News").assertIsFocused().assertIsDisplayed().performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.runOnIdle { org.junit.Assert.assertEquals(0, selected); org.junit.Assert.assertEquals(channels, delivered) }
+    }
 
     @Test fun loadingLoginRetainsConnectFocusTarget() {
         compose.setContent {

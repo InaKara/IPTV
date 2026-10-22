@@ -1,6 +1,6 @@
 # Code-review remediation for review
 
-This is the implementation record for the 35 findings in [CODE_REVIEW.md](CODE_REVIEW.md), whose source baseline remains `7fbc654`. The user requested that the existing documentation first be committed/pushed, then that all suggested fixes be implemented in priority order. The documentation was published as `2387393`; the implementation is a local, uncommitted review candidate.
+This is the implementation record for the 35 findings in [CODE_REVIEW.md](CODE_REVIEW.md), whose source baseline remains `7fbc654`. The user requested that the existing documentation first be committed/pushed, then that all suggested fixes be implemented in priority order. The documentation was published as `2387393`; the remediation was subsequently committed/pushed as `ec11bdc` at the user's request. The requirement-linked smoke-suite follow-up is a separate change.
 
 The approved scope is recorded as FIX-001–FIX-010 in [REQUIREMENTS.md](REQUIREMENTS.md). Initial work addressed the P1 focus paths, followed by P2 correctness/state/privacy and their tests, then P3 cleanup. Tests and tooling alignment accompanied the fixes. Unrelated historical Back hierarchy, channel direction and Stop decisions remain pending.
 

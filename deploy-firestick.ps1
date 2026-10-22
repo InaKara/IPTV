@@ -86,8 +86,9 @@ try {
         $env:JAVA_HOME = $javaHome
         $tasks = @(':app:assembleDebug')
         if ($Check) {
-            & (Join-Path $projectRoot 'scripts/Test-LocalEnvironment.ps1')
-            $tasks += @(':app:verifyLocalEnvironment', ':app:testDebugUnitTest', ':app:lintDebug')
+            Invoke-CheckedNative -Executable 'powershell.exe' `
+                -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $projectRoot 'test-smoke.ps1'), '-Lint') `
+                -Failure 'Smoke tests or lint failed. Build/deployment was not continued.'
         }
         Write-Host 'Building Aypi Tivi...'
         Invoke-CheckedNative -Executable (Join-Path $projectRoot 'gradlew.bat') `
