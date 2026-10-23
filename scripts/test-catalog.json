@@ -276,8 +276,8 @@
     },
     {
       "id": "TC-APP-035",
-      "key": "com.example.iptv.ui.RemoteFocusTest#loginStartsOnConnectShowsBrandAndMasksPassword",
-      "title": "login Starts On Connect Shows Brand And Masks Password",
+      "key": "com.example.iptv.ui.RemoteFocusTest#settingsStartsOnSaveAndMasksPassword",
+      "title": "Settings setup starts on Save and load and masks the password",
       "kind": "App",
       "group": "ui",
       "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
@@ -308,8 +308,8 @@
     },
     {
       "id": "TC-APP-039",
-      "key": "com.example.iptv.ui.RemoteFocusTest#loadingLoginRetainsConnectFocusTarget",
-      "title": "loading Login Retains Connect Focus Target",
+      "key": "com.example.iptv.ui.RemoteFocusTest#loadingSettingsRetainsSaveFocusTarget",
+      "title": "Loading Settings retains the Save and load focus target",
       "kind": "App",
       "group": "ui",
       "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
@@ -701,7 +701,7 @@
     {
       "id": "MC-OPS-001",
       "key": "manual#OPS-001",
-      "title": "Run deployment on an explicitly selected Firestick; omitted from the default non-device suite.",
+      "title": "Only after user approval of deployment including stop/start, verify the full script on the selected Firestick; physical execution is omitted from the local suite.",
       "kind": "Manual",
       "group": "manual",
       "source": "REQUIREMENTS.md"
@@ -885,7 +885,7 @@
     {
       "id": "MC-LOGIN-008",
       "key": "manual#LOGIN-008",
-      "title": "Future startup-direct-to-channel-list flow awaits refresh/cache, setup and error-policy decisions and implementation approval; no current pass is inferred.",
+      "title": "Verify SC-1 on device: fresh/stale/no-cache startup, automatic Categories entry, account setup/error routes and absence of a recurring Connect step.",
       "kind": "Manual",
       "group": "manual",
       "source": "REQUIREMENTS.md"
@@ -1089,6 +1089,294 @@
       "kind": "App",
       "group": "browser",
       "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserLayoutTest.kt"
+    },
+    {
+      "id": "MC-LOGIN-002",
+      "key": "manual#LOGIN-002",
+      "title": "Verify SC-1 on device: Settings first-run account setup starts on its attached Save and load action with the keyboard closed; normal startup bypasses Connect and ordinary Settings return retains focus.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-LOGIN-003",
+      "key": "manual#LOGIN-003",
+      "title": "Verify SC-1 on device: remote movement among Settings account fields/actions does not open the keyboard, explicit editing works, and dismissal/loading restores usable focus.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DATA-006",
+      "key": "manual#DATA-006",
+      "title": "Verify SC-1 on device: private versioned snapshot round trips and account separation, corrupt/unknown-schema handling, complete metadata, backup exclusion and atomic failure retaining the working list/time.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-DATA-007",
+      "key": "manual#DATA-007",
+      "title": "Verify SC-1 on device: the exact 24-hour boundary, invalid age, manual force refresh, one in-flight request, failure/no-loop behavior, stale-response rejection and preserved browser/playback state.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-SET-007",
+      "key": "manual#SET-007",
+      "title": "Verify SC-1 on device: account/Refresh/status plus density in Settings, validation and save-on-success, failure/cancellation retaining the working account, account isolation and remote/focus return.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-007",
+      "key": "manual#PLAY-007",
+      "title": "Verify SC-1 on device: keep-screen-on during foreground playing/buffering and cleanup on pause/end/error/Back/background; separately exceed the actual Firestick saver timeout using a local video fixture.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-APP-065",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#snapshotRoundTripsMetadataInAccountScopedNoBackupStorage",
+      "title": "Metadata including blank/whitespace categories round trips in account-scoped no-backup storage",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt"
+    },
+    {
+      "id": "TC-APP-066",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#corruptFutureWrongAccountAndIncompleteSnapshotsAreCacheMisses",
+      "title": "Corrupt/future/wrong-account snapshots and missing/null required category fields are rejected",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt"
+    },
+    {
+      "id": "TC-APP-067",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#unfinishedOrRejectedReplacementPreservesLastCompleteSnapshot",
+      "title": "Interrupted or rejected replacement preserves the complete snapshot",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt"
+    },
+    {
+      "id": "TC-APP-068",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#refreshAgeUsesExactBoundaryAndTreatsInvalidClockValuesAsStale",
+      "title": "Exact 24-hour boundary and invalid cache ages",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt"
+    },
+    {
+      "id": "TC-APP-069",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#freshStartupSkipsNetworkButManualRefreshIsSingleFlightAndUpdatesSnapshot",
+      "title": "Fresh startup skips network; manual refresh is single flight and updates data",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-070",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#staleStartupWaitsForBrowseAndFailedRefreshRetainsDataAndSuccessTime",
+      "title": "Stale startup waits for layout; failed and empty refreshes retain data/time",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-071",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#missingSnapshotDownloadsAutomaticallyAndInitialFailureCanRetryFromSettings",
+      "title": "Missing snapshot downloads automatically; initial failure allows Settings retry",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-072",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#missingCredentialsOpenSetupWithoutNetwork",
+      "title": "Missing credentials open setup without requesting the provider",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-073",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#cancelledAccountEditAndLateResponseCannotReplaceWorkingAccount",
+      "title": "Cancelled account edits and late responses retain the working account",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-074",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#failedSnapshotWriteRejectsAccountEditAndPreservesWorkingSettings",
+      "title": "Snapshot write failure rejects the edit without losing working settings",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-075",
+      "key": "com.example.iptv.ui.login.CachedStartupTest#incompatibleEditCancelsOldResponseBeforeItCanCommit",
+      "title": "A superseded request cannot commit after a new account edit",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/login/CachedStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-076",
+      "key": "com.example.iptv.ui.player.PlaybackDisplayTest#displayStaysAwakeOnlyForForegroundRequestedPlaybackAndCleansUp",
+      "title": "Keep-screen-on follows player/lifecycle state and removes listeners on disposal",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/player/PlaybackDisplayTest.kt"
+    },
+    {
+      "id": "TC-APP-077",
+      "key": "com.example.iptv.ui.AccountSettingsTest#fieldsOpenKeyboardOnlyOnSelectAndLoadingActionsStayFocusableWithoutDuplicateCalls",
+      "title": "Settings keyboard requires Select; loading actions retain focus without duplicates",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AccountSettingsTest.kt"
+    },
+    {
+      "id": "TC-APP-078",
+      "key": "com.example.iptv.ui.AccountSettingsTest#browserSettingsConnectDensityAccountAndReturnFocusWithoutDiscardingCategory",
+      "title": "Settings density/account controls connect and return to the previous channel focus",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AccountSettingsTest.kt"
+    },
+    {
+      "id": "TC-APP-079",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#refreshRebuildsSearchRetainsBookmarksAndRecoversRemovedCategory",
+      "title": "Refresh updates search while retaining bookmarks and recovers removed categories",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-080",
+      "key": "com.example.iptv.ui.StartupFlowTest#freshFileSnapshotStartsBrowserWithoutProviderOrConnectAndReportsCacheLayout",
+      "title": "A fresh file snapshot reaches browser layout without a provider request or Connect",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupFlowTest.kt"
+    },
+    {
+      "id": "MC-OPS-007",
+      "key": "manual#OPS-007",
+      "title": "Review that the agent asked before deployment or any other app start; combined deployment approval explicitly describes install/force-stop/start, followed only by the requested script and result report.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-APP-081",
+      "key": "com.example.iptv.ui.StartupFlowTest#downloadedBlankCategoriesReachBrowserAndSurviveFreshCachedStartup",
+      "title": "Blank categories download, persist unchanged, reach browser and reload from fresh cache without another request",
+      "kind": "App",
+      "group": "startup-settings-display",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupFlowTest.kt"
+    },
+    {
+      "id": "MC-UI-010",
+      "key": "manual#UI-010",
+      "title": "Verify UX-1 on device: verify continuous branded startup with status beneath logo, ready-browser handoff, Settings-only load controls and setup/error/background-refresh paths.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LATEST_APP_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-011",
+      "key": "manual#UI-011",
+      "title": "Verify UX-1 on device: compare larger fitted channel logos across all densities, Favorites and Search using local wide/tall/raster/SVG/fallback fixtures without cropping or label/grid changes.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LATEST_APP_REVIEW.md"
+    },
+    {
+      "id": "MC-PLAY-008",
+      "key": "manual#PLAY-008",
+      "title": "Verify UX-1 on device: diagnose reported TRT 1 HD silence, establish audio presence/support/selection/output and verify a justified correction against affected and known-good playback.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LATEST_APP_REVIEW.md"
+    },
+    {
+      "id": "MC-PLAY-009",
+      "key": "manual#PLAY-009",
+      "title": "Verify UX-1 on device: verify amber focus and Menu reveal, visible-controller arrows/OK/Back, hidden shortcuts, dedicated media keys, timeout, unavailable controls and VOD seek guards.",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LATEST_APP_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-082",
+      "key": "com.example.iptv.ui.StartupPresentationTest#automaticPhasesKeepLogoStillAndFailureOpensExplicitSettingsRetry",
+      "title": "Startup phases keep logo still and route errors through explicit Settings retry",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "TC-APP-083",
+      "key": "com.example.iptv.ui.StartupPresentationTest#missingAccountStartsInSettingsWithoutExposingPassword",
+      "title": "Missing account opens usable Settings setup with masked password",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "TC-APP-084",
+      "key": "com.example.iptv.ui.TvPlayerControlsTest#menuFocusesAmberControlAndVisibleArrowsDoNotSwitchChannels",
+      "title": "Menu focuses amber native controls and visible navigation does not switch channels",
+      "kind": "App",
+      "group": "player",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/TvPlayerControlsTest.kt"
+    },
+    {
+      "id": "TC-APP-085",
+      "key": "com.example.iptv.ui.TvPlayerControlsTest#timeoutResetsOnInteractionAndHiddenRepeatsDoNotRevealController",
+      "title": "Controller timeout resets with interaction and hidden repeats do not reveal it",
+      "kind": "App",
+      "group": "player",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/TvPlayerControlsTest.kt"
+    },
+    {
+      "id": "TC-APP-086",
+      "key": "com.example.iptv.ui.player.PlaybackAudioDiagnosticsTest#distinguishesAbsentUnsupportedAndSelectedAudioWithoutLeakingMetadata",
+      "title": "Audio diagnostics distinguish missing unsupported and selected tracks without private metadata",
+      "kind": "App",
+      "group": "player",
+      "source": "app/src/test/java/com/example/iptv/ui/player/PlaybackAudioDiagnosticsTest.kt"
+    },
+    {
+      "id": "TC-APP-087",
+      "key": "com.example.iptv.ui.BrowserLayoutTest#logosUseRemainingTileSpaceAndKeepWideTallAndSvgAspectAcrossDensities",
+      "title": "Larger artwork fits wide tall and SVG logos without distortion across all densities",
+      "kind": "App",
+      "group": "ui",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserLayoutTest.kt"
+    },
+    {
+      "id": "MC-PLAY-010",
+      "key": "manual#PLAY-010",
+      "title": "Pending AU-1: review reproducible official MP2 software decoder build, native ABI packaging/loading, synthetic non-silent PCM decode, fallback selection and separately authorized device audio",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LATEST_APP_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-088",
+      "key": "com.example.iptv.ui.TvPlayerControlsTest#nativeSettingsRowsHaveRemoteFocusAndReadableAmberContrast",
+      "title": "Native settings rows retain required IDs and have remote focus with readable amber contrast",
+      "kind": "App",
+      "group": "player",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/TvPlayerControlsTest.kt"
     }
   ],
   "requirements": [
@@ -1266,11 +1554,10 @@
       "fingerprint": "172f507628ed5627df4015e68c5d4e8a0cdc73b4261d947d5c3fb165e05b9b26",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-035",
         "TC-APP-032"
       ],
-      "gap": "Login and installed label; custom splash visual text remains a manual check.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Compiled installed app label is asserted; custom splash visual text remains a manual check. The retired login heading is no longer used as branding evidence.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
     },
     {
       "id": "UI-002",
@@ -1336,23 +1623,30 @@
     },
     {
       "id": "LOGIN-002",
-      "fingerprint": "8d57558693ddac1270feebffd408f474165d09f0df3e828ad1adf3636f987f4d",
+      "fingerprint": "2eb60eb6d6d244ccd3b7fd073ee54389d050677e97dea2686934493c05428706",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-035"
+        "TC-APP-035",
+        "TC-APP-072",
+        "TC-APP-077",
+        "TC-APP-080",
+        "MC-LOGIN-002"
       ],
-      "gap": "Connect focus/visibility; Fire TV keyboard suppression needs device acceptance.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Setup focus and hidden keyboard, missing-account routing and cached file-to-browser layout are automated. Physical first-run/ordinary Settings focus acceptance remains pending.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
     },
     {
       "id": "LOGIN-003",
-      "fingerprint": "a9090293b98580849fdefb4f5ace9c535f9cbb330f6cb4a9048d371347cacffe",
+      "fingerprint": "cc9176125d7872633300bf838d282f1bd37f6ac7dcbaed0e8ebcca795f3bcb58",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-039"
+        "TC-APP-039",
+        "TC-APP-077",
+        "TC-APP-078",
+        "MC-LOGIN-003"
       ],
-      "gap": "Remote focus round trip; Select/edit and keyboard-on-focus behavior remain incomplete/unverified.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Actual Compose focus/Select keyboard commands and stable loading/return targets are automated. Fire TV IME text entry and dismissal still need physical acceptance.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
     },
     {
       "id": "LOGIN-004",
@@ -1756,8 +2050,8 @@
         "TC-APP-011",
         "TC-APP-022"
       ],
-      "gap": "Async download/group outcomes only; UI-thread performance/lazy behavior need profiling/device evidence.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Async download/group outcomes only; UI-thread performance/lazy behavior need profiling/device evidence. Actual Android parsing memory exhaustion is confirmed historically; default local tests do not establish large-list Android heap safety.",
+      "reviewNote": "SF-1 investigation only: retain existing schema/account/durability/startup assertions but mark the explicit uncovered blank-category defect and actual provider startup failure. Acceptance/status proposals await review before adding synthetic blank-category implementation tests. Historical Android OOM/consumed notice evidence is separate from host results; memory safety remains unverified. No app code or implementation tests changed."
     },
     {
       "id": "REL-002",
@@ -1767,8 +2061,8 @@
         "TC-APP-024",
         "TC-APP-021"
       ],
-      "gap": "Safe errors/retry and generic crash marker/delegation; crash notice/playback UI on device unverified.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Safe errors/retry and generic crash marker/delegation; crash notice/playback UI on device unverified. Separate device evidence on 23 October confirms a consumed prior-crash marker and no new fatal error in the controlled restart; exact old heap retention cause is unresolved.",
+      "reviewNote": "SF-1 investigation only: retain existing schema/account/durability/startup assertions but mark the explicit uncovered blank-category defect and actual provider startup failure. Acceptance/status proposals await review before adding synthetic blank-category implementation tests. Historical Android OOM/consumed notice evidence is separate from host results; memory safety remains unverified. No app code or implementation tests changed."
     },
     {
       "id": "REL-003",
@@ -1814,14 +2108,14 @@
     },
     {
       "id": "OPS-001",
-      "fingerprint": "598943cc86c8b03eef4ce592a9775fc5df28eccc9df94a2d8b16b82e4508e502",
+      "fingerprint": "121d31263a21debdbd368d83eb1607f427b56698334c8125eb6003d14d40632a",
       "coverage": "Partial",
       "cases": [
         "TC-PROJECT-04",
         "MC-OPS-001"
       ],
-      "gap": "New-ID install/update/launch commands are exercised with an isolated tool double. Full build, real ADB connection and physical-device acceptance remain separate.",
-      "reviewNote": "OPS-006 explicitly approved. Retained manifest case now checks the new installed identity and actual Leanback intent resolution to the unchanged namespace; native artwork case retained. Added synthetic deployment command/order and install/launch failure cases; real migration, signing, tile and update persistence remain manual device acceptance."
+      "gap": "Existing isolated native-tool fixtures assert data-preserving install to the configured device, force-stop, exact launcher component and launch-status rejection. The user retained that behavior. Full build/real ADB/device acceptance and the agent permission process remain separate.",
+      "reviewNote": "Latest user decision cancels DP-1 removal before implementation and retains script force-stop/start. Existing isolated native-call/identity/failure/launch-status assertions stay unchanged and relevant. New permission requirement is documented with an explicit manual conduct-review case; no invented automated approval coverage. No device actions authorized or performed."
     },
     {
       "id": "OPS-002",
@@ -1833,7 +2127,7 @@
         "TC-PROJECT-06"
       ],
       "gap": "Native failure handling, stopping after installation failure, explicit device arguments and launch-status rejection are exercised without a real device. Connection failures and all ADB failure modes remain separate.",
-      "reviewNote": "OPS-006 explicitly approved. Retained manifest case now checks the new installed identity and actual Leanback intent resolution to the unchanged namespace; native artwork case retained. Added synthetic deployment command/order and install/launch failure cases; real migration, signing, tile and update persistence remain manual device acceptance."
+      "reviewNote": "Latest user decision cancels DP-1 removal before implementation and retains script force-stop/start. Existing isolated native-call/identity/failure/launch-status assertions stay unchanged and relevant. New permission requirement is documented with an explicit manual conduct-review case; no invented automated approval coverage. No device actions authorized or performed."
     },
     {
       "id": "OPS-003",
@@ -2004,20 +2298,27 @@
         "TC-APP-050",
         "TC-APP-026",
         "MC-LOGIN-007",
-        "TC-APP-051"
+        "TC-APP-051",
+        "TC-APP-080"
       ],
-      "gap": "Monotonic arithmetic, retry/cancellation, output safety and complete local login-to-layout phase wiring are automated. Actual device/provider performance remains a measurement, not a fast-suite timing threshold.",
-      "reviewNote": "BR-1 explicitly approved. Added meaningful provider-number, identity/boundary/Back, favorite persistence, search, remote UI/re-entry and native layout/focus-pixel assertions. Retained testcase IDs 023/038/040/041 with current two-level and icon-sidebar assertions; startup phase checks follow BrowserScreen. Nine manual cases retain explicit physical/coverage gaps; no device acceptance inferred."
+      "gap": "Fixed numeric diagnostic output, streaming phase arithmetic, network retry and file-cache-to-browser layout are automated. Real-provider performance and large cached-start device timing are not measured by this suite.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
     },
     {
       "id": "LOGIN-008",
-      "fingerprint": "803b2bbbbabe51c5fa0adf927953b35e71f1606414d96a43af92fdf780763fb6",
-      "coverage": "Manual",
+      "fingerprint": "65e430540c6234f9b7f7141cac26234f8f059dc907ccfa3b2c92fad33d2fdd3d",
+      "coverage": "Partial",
       "cases": [
-        "MC-LOGIN-008"
+        "TC-APP-069",
+        "TC-APP-070",
+        "TC-APP-071",
+        "TC-APP-072",
+        "TC-APP-080",
+        "MC-LOGIN-008",
+        "TC-APP-081"
       ],
-      "gap": "Future direction only. Download/cache/refresh and setup/failure behavior are undecided; no implementation or executable acceptance is authorized in this scope.",
-      "reviewNote": "Approved logo/timing work: native resource/decoder/cache/fallback and phase/privacy/Fire-INFO-priority tests are implemented; device timings are separate evidence. LOGIN-008 records only the future direction with undecided refresh/cache behavior; no login-specific performance refactor introduced."
+      "gap": "Fresh/stale/missing/error/missing-account coordination and file-to-first-browser layout are automated. Full activity cold-start/resume integration and large cached-start timing remain device checks. SF-1 blank/whitespace exact metadata and null/missing required-field assertions plus HTTP/parser/file/browser/recreated-session coverage pass. Separate Firestick evidence confirms 100,967-record first load and fresh-cache Categories, no startup download on the latter and account/history preservation. The host suite does not repeat real-provider/device acceptance or prove general Android heap safety.",
+      "reviewNote": "SF-1 explicitly approved, implemented and separately device-verified. 065 preserves blank/whitespace metadata, 066 rejects null/missing required fields, and 081 covers HTTP/parser/file/browser plus recreated-session cache reuse with one request. Full provider first load and cached Categories (100,967 records) passed on Firestick; no new fatal crash or cached download phases. Account/history preserved. These device observations do not replace local assertions or establish a fix for the earlier memory failure."
     },
     {
       "id": "OPS-006",
@@ -2032,7 +2333,7 @@
         "MC-OPS-006"
       ],
       "gap": "Compiled identity/intent resolution, classic artwork and synthetic deployment command/error behavior are automated. Private migration/signing, physical tile appearance, ordinary-update persistence and old-app removal passed as separate device checks in FIRESTICK_DEPLOYMENT.md; this host suite does not repeat that migration.",
-      "reviewNote": "Approved identity migration implemented. Retained compiled launcher/intent and native artwork checks plus three real deployment fixture cases. Implemented status follows actual signing match, private migration, tile verification, normal 3-to-4 upgrade with unchanged preferences and old-app removal. Device acceptance is separate from the host suite; unrelated BR-1 proposals remain Open."
+      "reviewNote": "Latest user decision cancels DP-1 removal before implementation and retains script force-stop/start. Existing isolated native-call/identity/failure/launch-status assertions stay unchanged and relevant. New permission requirement is documented with an explicit manual conduct-review case; no invented automated approval coverage. No device actions authorized or performed."
     },
     {
       "id": "UI-007",
@@ -2138,17 +2439,18 @@
     },
     {
       "id": "SET-006",
-      "fingerprint": "affa32098ef1a615832ed815ba2aec30a7d0e132f445a6d7a296eab169afb5d3",
+      "fingerprint": "44481e07b4a2db8270eacfb93e61c79fef22e01ce3640efa8a0f0e5cf169064f",
       "coverage": "Partial",
       "cases": [
         "TC-APP-058",
         "TC-APP-059",
         "TC-APP-060",
         "TC-APP-064",
+        "TC-APP-078",
         "MC-SET-006"
       ],
-      "gap": "Default/invalid/saved density, settings selection/return and all grid geometries are automated. Physical remote reflow/readability and settings return from every origin remain manual acceptance.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "gap": "Retained density persistence/geometry and density/account/previous-category focus paths are automated. Physical remote reflow/readability/return acceptance remains pending.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
     },
     {
       "id": "DATA-005",
@@ -2161,6 +2463,145 @@
       ],
       "gap": "Synthetic InputStream fixtures cover optional/blank/trimmed provider numbers without inference; search tile rendering verifies supplied-number display. Real-provider numbering availability is not established or required.",
       "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+    },
+    {
+      "id": "DATA-006",
+      "fingerprint": "dab26617f0a6bce6d5f96bc9205304260834879624cc4a169d7177f201eae411",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-065",
+        "TC-APP-066",
+        "TC-APP-067",
+        "TC-APP-074",
+        "TC-APP-080",
+        "MC-DATA-006",
+        "TC-APP-081"
+      ],
+      "gap": "Versioned metadata/account/no-backup location, corruption/schema, interrupted/rejected replacement and coordinator storage failure are automated. Physical OS transfer exclusion and minified APK read-back are not established by host tests; release assembly is separate. SF-1 blank/whitespace exact metadata and null/missing required-field assertions plus HTTP/parser/file/browser/recreated-session coverage pass. Separate Firestick evidence confirms 100,967-record first load and fresh-cache Categories, no startup download on the latter and account/history preservation. The host suite does not repeat real-provider/device acceptance or prove general Android heap safety.",
+      "reviewNote": "SF-1 explicitly approved, implemented and separately device-verified. 065 preserves blank/whitespace metadata, 066 rejects null/missing required fields, and 081 covers HTTP/parser/file/browser plus recreated-session cache reuse with one request. Full provider first load and cached Categories (100,967 records) passed on Firestick; no new fatal crash or cached download phases. Account/history preserved. These device observations do not replace local assertions or establish a fix for the earlier memory failure."
+    },
+    {
+      "id": "DATA-007",
+      "fingerprint": "6565fbf4ea1ef8dc413c6d1b8754a8dae6b86a7a8684cae97f9348e0dd6c0421",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-029",
+        "TC-APP-068",
+        "TC-APP-069",
+        "TC-APP-070",
+        "TC-APP-071",
+        "TC-APP-073",
+        "TC-APP-075",
+        "TC-APP-079",
+        "MC-DATA-007"
+      ],
+      "gap": "Age boundary, cached layout gating, manual/single-flight, failure/no-loop, cancellation/obsolete responses, search/bookmarks and retained playback session are automated. Real decoder continuity and full physical lifecycle remain manual.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
+    },
+    {
+      "id": "SET-007",
+      "fingerprint": "d688e99c7d8e5854bbb359c0741de24a08a72769ab6adbefb10e9ae52fdeae6d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-025",
+        "TC-APP-035",
+        "TC-APP-036",
+        "TC-APP-039",
+        "TC-APP-073",
+        "TC-APP-074",
+        "TC-APP-075",
+        "TC-APP-077",
+        "TC-APP-078",
+        "MC-SET-007"
+      ],
+      "gap": "Account masking, draft snapshot, delayed save, failed/cancelled/obsolete edit handling and actual Settings keyboard/focus/single-flight controls are automated. Complete Fire TV account-entry, last-download readability and full activity routing remain manual.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
+    },
+    {
+      "id": "PLAY-007",
+      "fingerprint": "448aa81cc3aeba105cec0a461d5ae7e0fce1442e3fc2680029df8e5cab843a12",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-076",
+        "MC-PLAY-007"
+      ],
+      "gap": "Real Android view flag ownership, player listener events and LifecycleRegistry transitions cover requested ready/buffering, pause/end/error/background/disposal. Actual Firestick inactivity beyond its five-minute timeout and vendor-specific behavior remain untested.",
+      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
+    },
+    {
+      "id": "OPS-007",
+      "fingerprint": "eccc57edebdb4bc94430f092f74f66c049da501318bb379a7260ca4a87b50034",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-007"
+      ],
+      "gap": "Agent approval/conduct requirements are documented. The retained script's stop/start behavior is covered under OPS-001/002/006; whether the agent obtained the user's prior approval is a manual conversation/workflow check, not an automated app test.",
+      "reviewNote": "Latest user decision cancels DP-1 removal before implementation and retains script force-stop/start. Existing isolated native-call/identity/failure/launch-status assertions stay unchanged and relevant. New permission requirement is documented with an explicit manual conduct-review case; no invented automated approval coverage. No device actions authorized or performed."
+    },
+    {
+      "id": "UI-010",
+      "fingerprint": "036efef85f7629601d35bd1f1993a660c949f3e60a90c9066a4c1ef69a5889cd",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-082",
+        "TC-APP-083",
+        "TC-APP-069",
+        "TC-APP-070",
+        "TC-APP-081",
+        "MC-UI-010"
+      ],
+      "gap": "Automatic presentation phases, stable logo geometry, error-to-Settings retry and missing-account setup are tested locally alongside existing cached/download startup coordination. Complete Activity handoff and cold-start readability remain physical acceptance.",
+      "reviewNote": "UX-1 approved implementation: real startup status/geometry/error/setup focus, native raster/SVG artwork/density pixels, native controller key/focus/timeout and bounded audio diagnostics assertions reviewed. UI source is implemented; audio remains Partial because codec presence/support diagnosis is not an audible fix. PC MP2 and approved read-only device declarations are separate evidence. No tests claim physical startup, popup/remote or decoder acceptance; AU-1 remains unapproved."
+    },
+    {
+      "id": "UI-011",
+      "fingerprint": "581562c5fc80f93f31dff0c22257f38aa44450bfe31d416cb0b71fcbb5459ddc",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-087",
+        "TC-APP-064",
+        "TC-APP-042",
+        "TC-APP-043",
+        "MC-UI-011"
+      ],
+      "gap": "Native local wide/tall/raster/SVG artwork pixels, larger available area and all density geometry are covered; existing fallback/cache cases remain. Physical television logo legibility and provider image-internal margins remain separate.",
+      "reviewNote": "UX-1 approved implementation: real startup status/geometry/error/setup focus, native raster/SVG artwork/density pixels, native controller key/focus/timeout and bounded audio diagnostics assertions reviewed. UI source is implemented; audio remains Partial because codec presence/support diagnosis is not an audible fix. PC MP2 and approved read-only device declarations are separate evidence. No tests claim physical startup, popup/remote or decoder acceptance; AU-1 remains unapproved."
+    },
+    {
+      "id": "PLAY-008",
+      "fingerprint": "c0fa31725e58f6b8ec004d99a86bc85cb5fa95fe937156b455695890bfd89160",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-086",
+        "MC-PLAY-008"
+      ],
+      "gap": "PC metadata confirms MP2 stereo 48 kHz; approved read-only device codec declarations show MP3 but no MP2 declaration. This is separate diagnostic evidence, not a runtime MediaCodecList/selected-track/audible output test. Local diagnostics assertions distinguish absent/unsupported/selected tracks and redact private metadata. Software decoding is unimplemented and awaits PLAY-010 approval.",
+      "reviewNote": "UX-1 approved implementation: real startup status/geometry/error/setup focus, native raster/SVG artwork/density pixels, native controller key/focus/timeout and bounded audio diagnostics assertions reviewed. UI source is implemented; audio remains Partial because codec presence/support diagnosis is not an audible fix. PC MP2 and approved read-only device declarations are separate evidence. No tests claim physical startup, popup/remote or decoder acceptance; AU-1 remains unapproved."
+    },
+    {
+      "id": "PLAY-009",
+      "fingerprint": "3cb837509b7ab1294d19f7faa7720e4b16c945f079acacf12ab02ddfb3afdb03",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-084",
+        "TC-APP-085",
+        "TC-APP-088",
+        "TC-APP-027",
+        "TC-APP-028",
+        "MC-PLAY-009"
+      ],
+      "gap": "Native local controls cover Menu/initial focus/amber pixels, OK activation, visible versus hidden key ownership, repeats and timeout. Inflated native settings/submenu rows retain required IDs and exercise focus order plus background/text contrast; existing VOD seek guards remain. Complete Compose-to-native/pop-up routing and physical remote acceptance remain separate.",
+      "reviewNote": "UX-1 native focus/routing/timeout and VOD guards retained. Added an actual inflated settings/submenu row check for remote focus order, required Media3 IDs and rendered amber/readable text contrast after release resource linking exposed missing declarations. Full popup routing/physical remote acceptance remains manual."
+    },
+    {
+      "id": "PLAY-010",
+      "fingerprint": "153ff9f299d6425b68d1d37a6b20106fc4dea393ae5317d679549147fef4bf00",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-010"
+      ],
+      "gap": "New native decoder/build proposal, not implemented. No software decoder, synthetic decode test or package verification exists yet; actual device decoding/output is also unverified.",
+      "reviewNote": "AU-1 proposed after PC probe identified MP2. This new native dependency/build scope is explicitly awaiting approval; no existing test validates software decoding or packaged native loading. Pending manual disposition is honest, and real assertions must follow approval."
     }
   ]
 }

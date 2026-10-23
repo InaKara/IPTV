@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +32,10 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.example.iptv.ui.home.BrowserScreen
 import com.example.iptv.ui.home.HomeViewModel
-import com.example.iptv.ui.login.LoginScreen
+import com.example.iptv.ui.login.AccountSettingsContent
+import com.example.iptv.ui.login.LoginViewModel
+import com.example.iptv.ui.login.LoginUiState
+import com.example.iptv.ui.login.StartupContent
 import com.example.iptv.ui.player.PlayerScreen
 import com.example.iptv.ui.SessionViewModel
 import com.example.iptv.ui.theme.IPTVTheme
@@ -41,6 +46,12 @@ class MainActivity : ComponentActivity() {
 
     private val session: SessionViewModel by viewModels()
     private val browser: HomeViewModel by viewModels()
+    private val connection: LoginViewModel by viewModels()
+
+    override fun onResume() {
+        super.onResume()
+        connection.onForeground()
+    }
 
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +60,11 @@ class MainActivity : ComponentActivity() {
             IPTVTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val state by session.state.collectAsStateWithLifecycle()
+                    val loading by connection.uiState.collectAsStateWithLifecycle()
+                    val directory = loading as? LoginUiState.Success
+                    LaunchedEffect(directory?.channels, directory?.accountKey) {
+                        directory?.let { session.updateChannels(it.channels, it.accountKey) }
+                    }
                     val selectedChannel = state.selected
 
                     if (selectedChannel != null) {
@@ -59,18 +75,33 @@ class MainActivity : ComponentActivity() {
                             onNextChannel = { session.step(1) },
                             onPreviousChannel = { session.step(-1) }
                         )
-                    } else if (state.channels.isNotEmpty()) {
+                    } else if (directory != null) {
                         ExitConfirmDialog(onExit = { finish() })
 
                         BrowserScreen(
-                            channels = state.channels,
+                            channels = directory.channels,
                             onChannelClick = session::select,
-                            viewModel = browser
+                            viewModel = browser,
+                            onBrowseReady = connection::onBrowseReady,
+                            accountSettings = { modifier, focus, leave ->
+                                DisposableEffect(Unit) { onDispose { connection.cancelAccountEdit() } }
+                                AccountSettingsContent(connection.serverUrl, connection.username, connection.password, loading,
+                                    { connection.serverUrl = it }, { connection.username = it }, { connection.password = it },
+                                    connection::onConnect, connection::refresh, modifier, focus,
+                                    requestInitialFocus = false, onLeave = leave)
+                            }
                         )
                     } else {
-                        LoginScreen(onLoginSuccess = { loadedChannels ->
-                            session.login(loadedChannels)
-                        })
+                        ExitConfirmDialog(onExit = { finish() })
+                        StartupContent(loading, connection.startupStatusRes) {
+                          DisposableEffect(Unit) { onDispose { connection.cancelAccountEdit() } }
+                          Column(Modifier.fillMaxSize().padding(32.dp)) {
+                            Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineMedium)
+                            AccountSettingsContent(connection.serverUrl, connection.username, connection.password, loading,
+                                { connection.serverUrl = it }, { connection.username = it }, { connection.password = it },
+                                connection::onConnect, connection::refresh, Modifier.width(520.dp))
+                          }
+                        }
                     }
                 }
             }

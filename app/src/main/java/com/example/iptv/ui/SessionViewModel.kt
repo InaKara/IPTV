@@ -29,8 +29,18 @@ class SessionViewModel @Inject constructor(private val recents: RecentlyWatchedM
     private val _state = MutableStateFlow(SessionState())
     val state = _state.asStateFlow()
     private var historyWrite: Job? = null
+    private var accountKey: String? = null
 
-    fun login(channels: List<M3UChannel>) { _state.value = SessionState(channels = channels) }
+    fun updateChannels(channels: List<M3UChannel>, account: String) {
+        if (accountKey != account) {
+            historyWrite?.cancel()
+            _state.value = SessionState(channels = channels)
+            accountKey = account
+        } else {
+            // Keep the active playback sequence stable until the viewer leaves the player.
+            _state.value = _state.value.copy(channels = channels)
+        }
+    }
 
     fun select(index: Int, category: List<M3UChannel>) {
         val channel = category.getOrNull(index) ?: return

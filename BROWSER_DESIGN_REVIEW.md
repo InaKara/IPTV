@@ -100,6 +100,8 @@ Search: a separate screen headed **Search**, with one remote-editable query fiel
 
 Settings: a separate screen headed **Settings**, with only the three grid-density choices, Standard selected by default. Save the selected choice across app launches using the existing local preference mechanism, apply it to all browser grids and search results, and restore focus by stable ID after reflow. Do not add account editing, themes, startup/cache policy or unrelated controls.
 
+This records BR-1's approved boundary. The later [SC-1 proposal](STARTUP_REFRESH_REVIEW.md) would expand Settings with account/refresh controls and automatic cached startup. It awaits review and does not retroactively change BR-1's approval or claim implementation of these new controls.
+
 Provider numbers: read the optional playlist `tvg-chno` value, trimming whitespace and treating blank/missing values as absent. Display it as supplied rather than renumbering, synthesizing a value from `tvg-id`/array position, or changing playlist order. Support for other provider-specific numbering fields would need a sample/requirement revision; this proposal does not assume the real provider supplies numbers. Verify with synthetic local playlists.
 
 ## Implementation approach and tradeoffs

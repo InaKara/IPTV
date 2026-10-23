@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.example.iptv.R
+import com.example.iptv.ui.login.StartupBranding
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.ui.browser.*
 import kotlinx.coroutines.flow.first
@@ -71,16 +72,16 @@ private data class FocusCommand(val target: String, val sequence: Int)
 fun BrowserScreen(
     channels: List<M3UChannel>,
     onChannelClick: (Int, List<M3UChannel>) -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onBrowseReady: () -> Unit = {},
+    accountSettings: (@Composable (Modifier, FocusRequester, () -> Unit) -> Unit)? = null
 ) {
     LaunchedEffect(channels) { viewModel.loadChannels(channels) }
     val loading by viewModel.uiState.collectAsStateWithLifecycle()
     val state by viewModel.browser.state.collectAsStateWithLifecycle()
     val controller = viewModel.browser
     if (loading !is HomeUiState.Success) {
-        Box(Modifier.fillMaxSize().background(BrowserColors.page), contentAlignment = Alignment.Center) {
-            Text(stringResource(R.string.loading_channels), color = BrowserColors.text)
-        }
+        StartupBranding(R.string.loading_channels)
         return
     }
 
@@ -88,11 +89,12 @@ fun BrowserScreen(
     val items = state.items
     val bookmark = state.bookmark
     val density = state.density
-    val gridState = remember(viewKey, density, state.query) {
+    val gridState = remember(viewKey, density, state.query, items) {
         LazyGridState(restoredIndex(items, bookmark.firstVisibleId, bookmark.firstVisibleIndex), bookmark.scrollOffset)
     }
     val sidebarRequesters = remember { List(4) { FocusRequester() } }
     val queryRequester = remember { FocusRequester() }
+    val accountRequester = remember { FocusRequester() }
     val densityRequesters = remember { GridDensity.values().associateWith { FocusRequester() } }
     val itemRequesters = remember(viewKey) { mutableMapOf<String, FocusRequester>() }
     var command by remember(viewKey) { mutableStateOf<FocusCommand?>(null) }
@@ -108,6 +110,7 @@ fun BrowserScreen(
         val requester = when {
             target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()]
             target == "query" -> queryRequester
+            target == "account" -> accountRequester
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]
             visible != null && visible.offset.y >= 0 && visible.offset.y + visible.size.height <= gridState.layoutInfo.viewportSize.height -> itemRequesters[target]
             else -> null
@@ -142,6 +145,7 @@ fun BrowserScreen(
             target.startsWith("density:") -> {
                 val index = GridDensity.valueOf(target.substringAfter(':')).ordinal
                 if (horizontal < 0) move("sidebar:3")
+                else if (horizontal > 0 && accountSettings != null) move("account")
                 else if (vertical != 0) move("density:${GridDensity.values()[(index + vertical).coerceIn(0, 2)].name}")
             }
             else -> {
@@ -171,6 +175,7 @@ fun BrowserScreen(
             BrowserFocus.SIDEBAR -> request("sidebar:${saved.sidebarIndex}")
             BrowserFocus.QUERY -> request("query")
             BrowserFocus.DENSITY -> request("density:${saved.focusedId ?: density.name}")
+            BrowserFocus.ACCOUNT -> request("account")
             BrowserFocus.GRID -> requestGrid()
         }
     }
@@ -179,6 +184,7 @@ fun BrowserScreen(
         when {
             target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()].requestFocus()
             target == "query" -> queryRequester.requestFocus()
+            target == "account" -> accountRequester.requestFocus()
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]?.requestFocus()
             else -> {
                 val index = items.indexOfFirst { it.id == target }
@@ -213,7 +219,7 @@ fun BrowserScreen(
             BrowserDestination.SETTINGS -> R.string.settings
         }
         Box(Modifier.size((1672 * scale).dp, (941 * scale).dp).align(Alignment.Center)
-            .onGloballyPositioned { viewModel.onBrowseReady() }.testTag("browser")) {
+            .onGloballyPositioned { viewModel.onBrowseReady(); onBrowseReady() }.testTag("browser")) {
             Box(Modifier.width((120 * scale).dp).fillMaxHeight().background(BrowserColors.sidebar)) {
                 Box(Modifier.width(1.dp).fillMaxHeight().align(Alignment.CenterEnd).background(BrowserColors.border))
                 BrowserDestination.values().forEachIndexed { index, destination ->
@@ -244,17 +250,23 @@ fun BrowserScreen(
                 modifier = Modifier.offset((152 * scale).dp, (40 * scale).dp).testTag("browser_heading"))
 
             if (isSettings) {
-                Column(Modifier.offset((152 * scale).dp, (120 * scale).dp), verticalArrangement = Arrangement.spacedBy((16 * scale).dp)) {
-                    Text(stringResource(R.string.grid_density), color = BrowserColors.secondary, fontSize = (22 * scale).sp)
-                    GridDensity.values().forEach { value ->
-                        val label = stringResource(when (value) { GridDensity.LARGE -> R.string.density_large; GridDensity.STANDARD -> R.string.density_standard; GridDensity.COMPACT -> R.string.density_compact })
-                        BrowserControl(Modifier.width((650 * scale).dp).height((74 * scale).dp)
-                            .focusRequester(densityRequesters.getValue(value)).testTag("density_${value.name}"), scale,
-                            active = density == value, onFocus = { focused("density:${value.name}"); controller.focusArea(BrowserFocus.DENSITY, id = value.name) },
-                            onKey = { key -> direction(key, "density:${value.name}") }, onClick = { viewModel.setDensity(value) }
-                        ) { tint -> Text("$label  ·  ${value.columns} × ${value.rows}", color = tint, fontSize = (24 * scale).sp,
-                            modifier = Modifier.padding((18 * scale).dp).align(Alignment.CenterStart)) }
+                Row(Modifier.offset((152 * scale).dp, (120 * scale).dp).size((1496 * scale).dp, (800 * scale).dp),
+                    horizontalArrangement = Arrangement.spacedBy((32 * scale).dp)) {
+                    Column(Modifier.width(((if (accountSettings == null) 650 else 420) * scale).dp), verticalArrangement = Arrangement.spacedBy((16 * scale).dp)) {
+                        Text(stringResource(R.string.grid_density), color = BrowserColors.secondary, fontSize = (22 * scale).sp)
+                        GridDensity.values().forEach { value ->
+                            val label = stringResource(when (value) { GridDensity.LARGE -> R.string.density_large; GridDensity.STANDARD -> R.string.density_standard; GridDensity.COMPACT -> R.string.density_compact })
+                            BrowserControl(Modifier.fillMaxWidth().height((74 * scale).dp)
+                                .focusRequester(densityRequesters.getValue(value)).testTag("density_${value.name}"), scale,
+                                active = density == value, onFocus = { focused("density:${value.name}"); controller.focusArea(BrowserFocus.DENSITY, id = value.name) },
+                                onKey = { key -> direction(key, "density:${value.name}") }, onClick = { viewModel.setDensity(value) }
+                            ) { tint -> Text("$label  ·  ${value.columns} × ${value.rows}", color = tint, fontSize = (24 * scale).sp,
+                                modifier = Modifier.padding((18 * scale).dp).align(Alignment.CenterStart)) }
+                        }
                     }
+                    accountSettings?.invoke(Modifier.weight(1f).fillMaxHeight().onFocusChanged {
+                        if (it.hasFocus) { focused("account"); controller.focusArea(BrowserFocus.ACCOUNT) }
+                    }, accountRequester, { move("density:${density.name}") })
                 }
             } else {
                 if (isSearch) {
@@ -364,7 +376,7 @@ private fun BoxScope.BrowserTileContent(tile: BrowserTile, tint: Color, scale: F
     Column(Modifier.fillMaxSize().padding(horizontal = (18 * scale).dp, vertical = (18 * scale).dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-            if (tile.entry != null) ChannelLogo(tile.entry.channel.logoUrl, Modifier.fillMaxWidth().height((84 * scale).dp))
+            if (tile.entry != null) ChannelLogo(tile.entry.channel.logoUrl, Modifier.fillMaxSize().testTag("channel_logo_${tile.id}"))
             else BrowserIcon(4, tint, Modifier.size((58 * scale).dp))
         }
         val category = tile.category

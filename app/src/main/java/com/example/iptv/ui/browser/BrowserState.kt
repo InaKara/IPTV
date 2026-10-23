@@ -10,7 +10,7 @@ enum class GridDensity(val columns: Int, val rows: Int) {
 }
 
 enum class BrowserDestination { CATEGORIES, FAVORITES, SEARCH, SETTINGS }
-enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY }
+enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT }
 
 data class BrowserLocation(
     val destination: BrowserDestination = BrowserDestination.CATEGORIES,
@@ -111,6 +111,8 @@ class BrowserController {
     fun load(catalog: BrowserCatalog, recent: List<M3UChannel>) {
         this.catalog = catalog
         mutableState.value = state.value.copy(categories = catalog.withRecent(recent))
+        // Search against the new directory, retaining the current query and its bookmark.
+        searchResults = catalog.search(state.value.query)
         render()
     }
 
@@ -199,7 +201,11 @@ class BrowserController {
     }
 
     private fun render() {
-        val current = state.value
+        var current = state.value
+        if (current.location.destination == BrowserDestination.CATEGORIES && current.location.categoryId != null &&
+            current.categories.none { it.id == current.location.categoryId }) {
+            current = current.copy(location = BrowserLocation())
+        }
         val items = when (current.location.destination) {
             BrowserDestination.CATEGORIES -> if (current.location.categoryId == null) {
                 current.categories.map { BrowserTile(it.id, category = it) }

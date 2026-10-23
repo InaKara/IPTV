@@ -1,5 +1,33 @@
 # Deploy Aypi Tivi to a Firestick
 
+**Agent deployment rule:** consult the user and obtain explicit approval before each installation/deployment. Approval to implement a requirement does not authorize installing it. Use `test-smoke.ps1 -Lint` and `deploy-firestick.ps1 -BuildOnly` for local validation while approval is absent.
+
+**Ask before deploying or starting the app.** Before deployment, ask for approval and explain that the script installs, force-stops and starts Aypi Tivi. One explicit approval of that combined operation covers that invocation's stop/start. For any other app start, including tests or investigation, obtain approval first. The user may be using the Firestick.
+
+After deployment approval, run only `deploy-firestick.ps1` and report its result. Do not add unrequested flags or extra ADB/device commands, tests, preference changes or remote/UI actions. The user withdrew DP-1's removal of force-stop/start before implementation; the existing script remains unchanged. This documentation update does not authorize a deployment or app start.
+
+## Startup/connection investigation — 23 October 2026
+
+The latest user-approved deployment built, installed and reported a successful app start. The subsequent user report establishes that this was not successful browsing acceptance. The user explicitly granted repeated stop/start/deploy permission for the current investigation session; normal future deployment/start consultation rules remain unchanged.
+
+[STARTUP_FAILURE_INVESTIGATION.md](STARTUP_FAILURE_INVESTIGATION.md) records a historical 22 October, 192 MiB out-of-memory parsing crash, its preserved next-launch notice, and the current cache rejection of 95 blank category values in an otherwise valid 100,961-channel list. Saved account values still match private configuration. One unchanged-app restart reproduced download-then-failure timing without a new recorded fatal crash. No implementation/deployment/settings change was made during diagnosis; the account was not cleared. The user then explicitly approved SF-1; its implementation and subsequent device acceptance are recorded below. Historical large-list memory safety remains unresolved.
+## SF-1 deployed and browsing verified — 23 October 2026
+
+After explicit SF-1 implementation approval, the local smoke/lint suite passed 121/121 checks and the optimized release build passed separately. The unchanged deploy-firestick.ps1 built, installed with -r and launched the fix under the user's session-wide stop/start/deploy approval. No uninstall, global data clear or account/settings replacement was used.
+
+The real provider list of 100,967 records saved successfully and reached visible Categories. An idle display initially deferred UI work; waking it allowed browsing to finish. That first trace includes the idle interval and is not an app processing benchmark. A subsequent fresh process reached visible Categories from cache, with no provider/download phases and no new fatal crash. Its one main-startup trace was 14.857 seconds after the separate two-second splash (cache 5.010 s; history 0.247 s; grouping/indexing 7.903 s). This is a single sample, not an average or instant-loading claim.
+
+Saved account fields remained identical and pre-existing recent-history references were preserved. Private screenshots, UI dumps, backups and traces remain ignored. Temporary UI dump files and the debugger bridge were removed. The app was left at Categories. See STARTUP_FAILURE_INVESTIGATION.md for the exact scope and limits. Physical playback/screensaver and general memory/refresh stress acceptance remain unverified; the earlier parsing OOM is not claimed fixed. Future unrelated deployments/starts still require approval.
+## SC-1 local implementation and paused device validation — 22 October 2026
+
+Automatic saved-list startup, 24-hour background refresh, account/manual refresh controls in Settings and playback-scoped keep-screen-on are implemented. Final local smoke/lint passed 120/120 checks (80 app plus 40 environment/project/runner checks), with no failures/skips/errors, in 39.6 seconds. Debug and optimized release assembly plus release lint passed separately. Both lint variants reported zero errors and 26 warnings. All four release defaults remain empty; R8 output retains the snapshot schema-version field through targeted rules. The requirement-linked outcomes are recorded in TEST_CASES.md.
+
+A debug update was installed using `install -r` and launched with synthetic localhost fixture settings before the user required consultation before every deployment. Original preferences were backed up and verified first; there was no pre-existing playlist cache. This installation is not evidence of usable playback, cached-start performance or screensaver prevention. Further device validation is paused. The user then explicitly approved restoring the original settings. The verified original preference backup was restored byte-for-byte and the app was left closed, with no additional install/uninstall or global data clear. The temporary localhost server was stopped. The installed test build predates final local refinements; the final local APK has not been deployed.
+
+Read-only idle settings showed a five-minute screensaver timeout and twenty-minute sleep timeout. Neither was changed. The planned local-video inactivity test and large saved-list startup measurements have **not** been completed; no performance or physical acceptance claim is made.
+
+After a separately approved deployment, expected behavior is: startup loads an existing current-account snapshot automatically; a fresh snapshot makes no playlist request; one over 24 hours old appears first and refreshes once in the background. Without a usable snapshot, complete saved/default account settings trigger a download; missing settings or initial failure expose Settings setup/retry. Settings contains density, masked account fields, Save and load, Refresh channel list and last-success/error status. Failed refreshes retain working data. Pause, Back and backgrounding must restore normal idle behavior.
+
 ## One command for normal development
 
 Create your private `.env` once (see below), then open PowerShell in this project and run:
@@ -158,6 +186,12 @@ Local debug assembly and the fresh smoke suite with lint passed on 22 October 20
 After authorized installation, verify Categories and Channels with all three densities, including 20 fully visible Standard tiles. Check amber focus on every sidebar icon and both tile variants; focus movement must not activate a destination or playback. Exercise empty recents/Favorites, partial final rows, long/scrolled category and channel lists, and sidebar return to the saved grid item. Back from a category restores Categories before the root exit dialog.
 
 Use Menu to add/remove a channel, restart to verify favorites/density persistence, and confirm Favorites Back restores its previous browser view. In Search, focus the field without opening the keyboard, use OK to edit, dismiss the keyboard before leaving Search, and verify results and focus survive playback return. Closing Settings must restore the prior view. Play a compatible existing stream, switch channels with the unchanged controls, then return: playback/audio must stop and the correct originating channel must regain focus. These are pending physical-device checks, not claims based on a local build or simulated playback destination.
+
+## UX-1 local validation and read-only audio inspection — 23 October 2026
+
+UI-010/011 and PLAY-009 implement branded startup status, larger fitted tile artwork and native player focus/key routing. Fresh smoke with debug lint passed 128/128 in 34.3 seconds; debug and optimized unsigned-release builds plus release lint passed. Debug/release lint have zero errors (26/33 warnings, including seven release-only private-override/library-resource warnings for the pinned native settings rows). The release shrinker report confirms the two layouts and focus/tint resources remain reachable; future Media3 upgrades must revalidate these overrides. Native settings-row resource declarations were corrected and covered by inflation/focus/contrast checks. The current local APK has not been installed; physical startup, complete remote/popup behavior and readable larger logos remain acceptance checks after separately approved deployment.
+
+PLAY-008 remains Partial. A bounded PC metadata probe found H.264 video plus MP2 stereo audio at 48 kHz on the reported channel. The user explicitly approved read-only codec inspection; six system/vendor codec files declare an MP3 decoder for audio/mpeg but no MP2 declaration. The debugging transport was connected solely to read these files. No install, app stop/start, navigation, input, power or setting changes were performed. This supports a codec-compatibility explanation but does not prove runtime decoder selection or audible output. AU-1 / PLAY-010 proposes a software decoder and awaits separate approval. See LATEST_APP_REVIEW.md; private probe/device data stays ignored.
 
 ## References
 

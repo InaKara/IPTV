@@ -102,4 +102,23 @@ class BrowserStateTest {
         assertNull(browser.state.value.location.categoryId)
         assertEquals("Recently viewed", browser.state.value.items.first().category!!.name)
     }
+
+    @Test fun refreshRebuildsSearchRetainsBookmarksAndRecoversRemovedCategory() {
+        val source = listOf(channel("News"), channel("Music"))
+        val browser = BrowserController().apply { load(BrowserCatalog.create(source), emptyList()) }
+        browser.openCategory("group:Group")
+        val focused = browser.state.value.items.last().id
+        browser.focusGrid(focused); browser.scroll(1, 3)
+        browser.open(BrowserDestination.SEARCH); browser.query("News")
+        browser.load(BrowserCatalog.create(listOf(source[0].copy(name = "News HD"), source[1])), emptyList())
+        assertEquals("News", browser.state.value.query)
+        assertEquals("News HD", browser.state.value.items.single().entry!!.channel.name)
+        browser.back()
+        assertEquals("group:Group", browser.state.value.location.categoryId)
+        assertEquals(focused, browser.state.value.bookmark.focusedId)
+        assertEquals(3, browser.state.value.bookmark.scrollOffset)
+        browser.load(BrowserCatalog.create(listOf(channel("Other", "Other"))), emptyList())
+        assertNull(browser.state.value.location.categoryId)
+        assertEquals(listOf("Recently viewed", "Other"), browser.state.value.items.map { it.category!!.name })
+    }
 }

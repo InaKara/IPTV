@@ -13,7 +13,7 @@ import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.data.storage.RecentlyWatchedManager
 import com.example.iptv.ui.home.BrowserScreen
 import com.example.iptv.ui.home.HomeViewModel
-import com.example.iptv.ui.login.LoginContent
+import com.example.iptv.ui.login.AccountSettingsContent
 import com.example.iptv.ui.login.LoginUiState
 import com.example.iptv.ui.theme.IPTVTheme
 import org.junit.Rule
@@ -31,12 +31,12 @@ class RemoteFocusTest {
     private fun focus(text: String) = compose.onAllNodesWithText(text).onFirst()
         .performSemanticsAction(SemanticsActions.RequestFocus) { it() }
 
-    @Test fun loginStartsOnConnectShowsBrandAndMasksPassword() {
+    @Test fun settingsStartsOnSaveAndMasksPassword() {
         compose.setContent {
-            IPTVTheme { LoginContent("https://provider.example", "demo", "synthetic", LoginUiState.Idle, {}, {}, {}, {}) }
+            IPTVTheme { AccountSettingsContent("https://provider.example", "demo", "synthetic", LoginUiState.Idle, {}, {}, {}, {}, {}) }
         }
-        compose.onNodeWithText("Connect").assertIsFocused().assertIsDisplayed()
-        compose.onNodeWithText("Aypi Tivi").assertExists()
+        compose.onNodeWithText("Save and load").assertIsFocused().assertIsDisplayed()
+        compose.onNodeWithText("Account").assertExists()
         compose.onNodeWithText("Password").assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Password))
         compose.onNodeWithText("synthetic").assertDoesNotExist()
     }
@@ -44,7 +44,7 @@ class RemoteFocusTest {
     @Test fun explicitHttpDisplaysWarningAndHttpsDoesNot() {
         var server by androidx.compose.runtime.mutableStateOf("http://provider.example")
         compose.setContent {
-            IPTVTheme { LoginContent(server, "demo", "", LoginUiState.Idle, {}, {}, {}, {}) }
+            IPTVTheme { AccountSettingsContent(server, "demo", "", LoginUiState.Idle, {}, {}, {}, {}, {}) }
         }
         compose.onNodeWithText("HTTP sends account details without encryption. Use HTTPS if your provider supports it.").assertExists()
         compose.runOnIdle { server = "https://provider.example" }
@@ -77,9 +77,9 @@ class RemoteFocusTest {
         compose.runOnIdle { org.junit.Assert.assertEquals(0, selected); org.junit.Assert.assertEquals(channels, delivered) }
     }
 
-    @Test fun loadingLoginRetainsConnectFocusTarget() {
+    @Test fun loadingSettingsRetainsSaveFocusTarget() {
         compose.setContent {
-            IPTVTheme { LoginContent("https://provider.example", "demo", "", LoginUiState.Loading, {}, {}, {}, {}) }
+            IPTVTheme { AccountSettingsContent("https://provider.example", "demo", "", LoginUiState.Loading, {}, {}, {}, {}, {}) }
         }
         focus("Password").performKeyInput { pressKey(Key.DirectionDown) }
         compose.onNodeWithText("Connecting…").assertIsFocused()

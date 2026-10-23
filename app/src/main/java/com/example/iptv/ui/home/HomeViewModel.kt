@@ -62,6 +62,7 @@ class HomeViewModel @Inject constructor(
                     browserAccount = saved.account
                     browser.preferences(saved.density, saved.favorites)
                 }
+                searchJob?.cancel()
                 browser.load(index, recents.recentChannels.value)
                 source = channels
                 timing?.record(Phase.GROUPING, groupingStarted)

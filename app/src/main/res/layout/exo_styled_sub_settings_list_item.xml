@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:minWidth="200dp" android:minHeight="48dp" android:gravity="center_vertical"
+    android:orientation="horizontal" android:padding="8dp"
+    android:focusable="true" android:focusableInTouchMode="true"
+    android:descendantFocusability="blocksDescendants" android:background="@drawable/player_control_focus">
+    <ImageView android:id="@+id/exo_check" android:layout_width="24dp" android:layout_height="24dp"
+        android:layout_marginEnd="12dp" android:duplicateParentState="true" android:visibility="invisible"
+        android:src="@drawable/exo_styled_controls_check" android:tint="@color/player_control_tint"
+        android:contentDescription="@null"/>
+    <TextView android:id="@+id/exo_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:textSize="16sp" android:textColor="@color/player_control_tint" android:duplicateParentState="true"/>
+</LinearLayout>

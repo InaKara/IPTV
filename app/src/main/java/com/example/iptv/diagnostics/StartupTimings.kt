@@ -28,7 +28,7 @@ class StartupTimings(
 
     fun forPlaylist(channels: List<M3UChannel>): Attempt? = active.get()?.takeIf { it.playlist === channels }
 
-    enum class Phase { CONNECT, PROVIDER_WAIT, DOWNLOAD_PARSE, HISTORY, GROUPING }
+    enum class Phase { CONNECT, CACHE, PROVIDER_WAIT, DOWNLOAD_PARSE, HISTORY, GROUPING }
     enum class Outcome { BROWSE_READY, FAILED, CANCELLED }
 
     class Attempt internal constructor(

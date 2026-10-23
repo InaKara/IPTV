@@ -8,10 +8,12 @@ import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.BuildConfig
@@ -60,7 +62,22 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
         engine = exo
         exo.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
             .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(), true)
+        if (BuildConfig.DEBUG) exo.addAnalyticsListener(object : AnalyticsListener {
+            override fun onAudioCodecError(eventTime: AnalyticsListener.EventTime, audioCodecError: Exception) {
+                android.util.Log.i("AypiAudio", "event=codec_error")
+            }
+            override fun onAudioSinkError(eventTime: AnalyticsListener.EventTime, audioSinkError: Exception) {
+                android.util.Log.i("AypiAudio", "event=sink_error")
+            }
+            override fun onAudioDecoderInitialized(eventTime: AnalyticsListener.EventTime, decoderName: String,
+                initializedTimestampMs: Long, initializationDurationMs: Long) {
+                android.util.Log.i("AypiAudio", "event=decoder_initialized")
+            }
+        })
         exo.addListener(object : Player.Listener {
+            override fun onTracksChanged(tracks: Tracks) {
+                if (BuildConfig.DEBUG) audioTrackDiagnostics(tracks).forEach { android.util.Log.i("AypiAudio", it) }
+            }
             override fun onEvents(player: Player, events: Player.Events) {
                 _uiState.value = when {
                     player.playerError != null -> PlayerUiState.Error
@@ -79,6 +96,11 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
         })
         // The native time bar and its buttons go through the same policy as remote seeks.
         _player.value = object : ForwardingPlayer(exo) {
+            override fun getAvailableCommands(): Player.Commands = super.getAvailableCommands().buildUpon().apply {
+                if (!canSeek(exo) || exo.duration <= 0) removeAll(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM,
+                    Player.COMMAND_SEEK_BACK, Player.COMMAND_SEEK_FORWARD)
+            }.build()
+            override fun isCommandAvailable(command: Int): Boolean = availableCommands.contains(command)
             override fun seekTo(positionMs: Long) { seekAbsolute(positionMs) }
             override fun seekTo(mediaItemIndex: Int, positionMs: Long) {
                 if (mediaItemIndex == 0) seekAbsolute(positionMs)

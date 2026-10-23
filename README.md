@@ -15,9 +15,9 @@ The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_F
 ## Current app
 
 1. A two-second splash screen shows the classic logo and Aypi Tivi name.
-2. Login accepts a server address, username and password. Connect receives initial focus. Successful connections save the fields on the device. The playlist is downloaded again on subsequent connections.
+2. Startup automatically loads the current account's saved channel list, keeping the classic logo/name visible with status underneath through connection and list preparation. A fresh list needs no download; one more than 24 hours old appears before a background refresh starts. With no usable snapshot, complete account settings trigger an automatic download. Missing settings open Settings setup; initial errors offer Open Settings for retry/edit. Load/refresh controls stay in Settings.
 3. Categories and Channels share a dark tile browser with a persistent four-icon sidebar: Categories, Favorites, Search and Settings. Recently viewed appears first (up to 20 entries), followed by TR categories and other categories alphabetically. Select a category to see its channels; Back restores the category grid. Empty recents remain available without filler channels.
-4. The default grid fits five columns and four rows. Settings offers Large (4 x 3), Standard (5 x 4) and Compact (6 x 4), saved across launches. Amber fill marks focus without enlarging controls; the active sidebar destination has its own quieter indicator.
+4. The default grid fits five columns and four rows. Settings offers saved Large (4 x 3), Standard (5 x 4) and Compact (6 x 4) density, account fields, Save and load, Refresh channel list and the last successful download time. Account edits are saved only after their list loads successfully. Amber fill marks focus without enlarging controls; the active sidebar destination has its own quieter indicator.
 5. Menu on a focused channel opens Add/Remove Favorite; keyboard Context Menu or Shift+F10 opens the same action. Favorites persist per account and appear in playlist order. Back from Favorites restores the preceding Categories/category-channel view. Search matches channel names from the loaded playlist and returns to the previous view when closed.
 6. Selecting a channel opens ExoPlayer. Leaving the player stops/releases playback and restores the originating view, focus and scroll; no stream runs beneath browsing. Back at Categories root offers the existing exit confirmation. Channel cards display an optional provider `tvg-chno` number without invented numbering.
 
@@ -29,9 +29,11 @@ The server field is a base address such as `https://provider.example:8080`, with
 
 This is an M3U download endpoint in Xtream-style URL format, not a full Xtream API integration. Parsing preserves commas in names and ignores URL queries/fragments during VOD detection. Coil caches channel logos, including SVGs through its matching 2.5.0 decoder extension. Missing, blank, failed and unsupported logos use one centered gray play-symbol fallback. Per-channel user-agent metadata reaches playback, alongside HLS/DASH and progressive HTTP(S) support. RTMP is not claimed supported.
 
-Connecting includes the entire streaming playlist download/parser span and recent-history preparation. Loading channels then groups the downloaded list. Their individual screen durations are not an end-to-end speed measurement. Debug builds report private-data-free phase timings under the `AypiStartup` log tag, ending at the first browsing-list layout; release builds disable these diagnostics. See [UX_INVESTIGATION.md](UX_INVESTIGATION.md) for measurements and their limits.
+Connecting covers the streaming playlist download/parser span; Loading channels covers remaining preparation/grouping. These are short statuses below the startup logo, not separate forms. Their durations are not an end-to-end speed measurement. Debug builds report private-data-free phase timings under the `AypiStartup` log tag, ending at the first browsing-list layout; release builds disable these diagnostics. See [UX_INVESTIGATION.md](UX_INVESTIGATION.md) for measurements and their limits.
 
-The future startup-directly-to-channel-list flow is recorded as LOGIN-008. Its download/cache/refresh policy is undecided and it is not implemented in this change. Current diagnostics remain reusable; no optimization specific to manual login was introduced.
+Channel artwork fits the remaining tile space at each density without cropping or stretching. In playback, Menu reveals native controls with amber focus; arrows navigate while controls are visible, OK activates the focused control and Back hides them first. Controls hide after three seconds without interaction. Debug-only `AypiAudio` records use fixed codec/event names and counts to distinguish missing, unsupported and selected audio tracks without provider identifiers or raw exception messages. No software audio decoder is bundled; the MP2 follow-up in [LATEST_APP_REVIEW.md](LATEST_APP_REVIEW.md) is a separate proposal.
+
+The approved automatic startup/cache/settings flow is specified in [STARTUP_REFRESH_REVIEW.md](STARTUP_REFRESH_REVIEW.md). Snapshots are versioned, account scoped, atomically replaced off the UI thread and excluded from backup. Failed refreshes retain the working list and its age; successful refreshes preserve browser context and current playback. Freshness is checked at startup and foreground return, without a downloader running while the app is closed. Playback uses Android's keep-screen-on facility while playing or buffering with playback requested, clearing it on pause/end/error/Back/background. Local checks cover these paths. SF-1 also verifies real-provider first load and a fresh cached restart to Categories on Firestick (23 October); blank optional categories no longer reject the list. Other device acceptance, long screensaver tests and the earlier memory-exhaustion issue remain separate. See [STARTUP_FAILURE_INVESTIGATION.md](STARTUP_FAILURE_INVESTIGATION.md).
 
 Default login fields come from a private local `.env` at build time. Optional retired server addresses in that file can replace old saved addresses; other custom addresses and saved credentials are preserved. Release builds and checkouts without `.env` have empty defaults. Remote Select/Enter explicitly requests the keyboard on a focused login field. Physical-device confirmation of this recovery update is recorded in the deployment guide.
 
@@ -39,7 +41,7 @@ Default login fields come from a private local `.env` at build time. Optional re
 
 | Context / button | Action |
 | --- | --- |
-| Login / D-pad and Select | Move between fields and Connect; select to edit |
+| Settings account / D-pad and Select | Move between fields and actions; select a field to edit |
 | Categories / Select | Activate category |
 | Sidebar / Up or Down | Move among its four icons without activating them |
 | Sidebar / Right | Restore the last focused grid item; empty grids keep usable sidebar focus |
@@ -47,12 +49,15 @@ Default login fields come from a private local `.env` at build time. Optional re
 | Grid / Left from leftmost column | Focus the active sidebar destination |
 | Channel / Menu or Context Menu / Shift+F10 | Open Add/Remove Favorite |
 | Channel grid / Back | Restore Categories with its focus/scroll |
-| Player / Up or Channel Up | Next channel in the current category |
-| Player / Down or Channel Down | Previous channel in the current category |
-| Player / Select or Play/Pause | Toggle playback |
-| Player / Left or Right on detected VOD | Seek backward or forward 30 seconds |
+| Player / Menu | Reveal controls and focus Play/Pause |
+| Visible player controls / Arrows and OK | Move focus and activate the focused control |
+| Hidden player controls / Up or Down | Next or previous channel in the current category |
+| Player / Channel Up or Channel Down | Next or previous channel in the current category |
+| Hidden player controls / Select | Toggle playback |
+| Player / Play/Pause, Play or Pause | Perform the named media action |
+| Hidden player controls / Left or Right on detected VOD | Seek backward or forward 30 seconds |
 | Player / Rewind or Fast Forward | Seek backward or forward 10 seconds |
-| Player / Back | Return to browsing |
+| Player / Back | Hide visible controls first; when hidden, return to browsing |
 
 These are code mappings, not a completed device acceptance test. All seeking, including native controller seeking, requires detected VOD, stream seekability and a known positive duration; positions clamp to its bounds. Backgrounding releases the player. Returning restores VOD position and previous play/pause intent, while live playback returns to its current stream. VOD detection uses category keywords, URL paths and file extensions. Playback quality, including 4K, depends on the stream, codec, device and connection.
 
@@ -85,7 +90,9 @@ In PowerShell, from the project folder:
 .\deploy-firestick.ps1
 ```
 
-This builds, connects, updates the Firestick without clearing app data, and launches the app. Add `-Check` for environment fixtures, regression tests (including simulated remote focus) and Android lint, or use `-BuildOnly` / `-InstallOnly` as needed. See [FIRESTICK_DEPLOYMENT.md](FIRESTICK_DEPLOYMENT.md) for setup and troubleshooting.
+**Your deployment rule:** the agent must ask for your approval before deploying and explain that the script will install, force-stop and start Aypi Tivi. One explicit approval of that combined operation covers that invocation. After approval, it runs only `deploy-firestick.ps1` and reports the result, without extra flags or device operations unless requested. Any other app start, including for tests, requires approval first so your Firestick use is not interrupted. Implementation approval alone does not authorize deployment or launching.
+
+The script's existing build/connect/install/force-stop/start behavior is retained. You withdrew DP-1's proposed removal before implementation. `-BuildOnly` remains local. Optional `-Check` / `-InstallOnly` are available when you specifically request them; see [FIRESTICK_DEPLOYMENT.md](FIRESTICK_DEPLOYMENT.md).
 
 Gradle reads `.env` at build time; Android does not load it from the computer at runtime. Local debug APKs include those defaults and must stay private. Release defaults stay empty. Saved credentials on the device override defaults. Build output, local SDK settings, IDE state, logs and signing material are ignored by Git.
 
@@ -97,21 +104,21 @@ The APK is `app/build/outputs/apk/debug/app-debug.apk`. A fresh public checkout 
 app/src/main/java/com/example/iptv/
   IPTVApplication.kt       Hilt, Coil, exception handler
   SplashActivity.kt        Exported launcher activity
-  MainActivity.kt          Login/browse/player state and recent history
+  MainActivity.kt          Automatic startup, Settings/browse/player routing
   data/model/              Channel and category types
   data/parser/             M3U input-stream parser and VOD detection
   data/repository/         HTTP playlist download
-  data/storage/            Credentials and recent channels in SharedPreferences
+  data/storage/            Preferences/history and private atomic channel snapshots
   di/AppModule.kt          Dependency providers
-  ui/login/                Login form and connection state
-  ui/home/                 Category sidebar and channel grid
+  ui/login/                Settings account form and startup/refresh coordination
+  ui/home/                 Icon sidebar, categories/channels and Settings layout
   ui/player/               ExoPlayer lifecycle, controls, overlays
   ui/error/                Crash display
   ui/theme/                Dark theme with blue accent
   util/                    Global exception handler
 ```
 
-Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death returns to the saved login form. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the installed application ID is `com.inakara.aypitivi`, while the Kotlin namespace remains `com.example.iptv`. Launch through `com.inakara.aypitivi/com.example.iptv.SplashActivity`, because MainActivity is not exported. OPS-006 moves away from the old installation identity to resolve its incorrect Fire TV tile; see the deployment guide for the one-time private settings/history migration and current device evidence. Ordinary updates still use the same deployment command and preserve the new installation's saved data.
+Screens use ViewModels and StateFlow. SessionViewModel retains the playlist and explicit selected position across activity recreation; process death restarts automatic loading from the current account's snapshot. Recent history stores versioned, account-scoped stream references resolved against the current playlist, with JSON work off the UI thread. There is one application module, `app`; the installed application ID is `com.inakara.aypitivi`, while the Kotlin namespace remains `com.example.iptv`. Launch through `com.inakara.aypitivi/com.example.iptv.SplashActivity`, because MainActivity is not exported. OPS-006 moves away from the old installation identity to resolve its incorrect Fire TV tile; see the deployment guide for the one-time private settings/history migration and current device evidence. Ordinary updates still use the same deployment command and preserve the new installation's saved data.
 
 ## Validation and known limitations
 
@@ -141,8 +148,8 @@ Detailed JSON and private logs are under the ignored app/build/reports/smoke/ di
 Regression checks cover parsing, URL encoding, connection reuse/cancellation, login concurrency, history/schema migration, seek bounds, channel position and Compose focus using synthetic data. Image checks decode local PNG/SVG fixtures, exercise memory/disk caches, compare missing/failed fallback pixels and render application/activity branding. Startup checks cover phase ordering through the first browsing layout, duration arithmetic, safe output and retry/cancellation. Native rendering may download an additional test runtime on first use. Physical-device checks are essential for launcher thumbnails, D-pad focus, playback and resume behavior. See the deployment guide's verification record for the latest check results.
 
 - HLS/DASH modules and per-channel user-agent support are included; provider/codec compatibility and 4K still require device tests. RTMP requires separately selected support.
-- Saved credentials and stream references remain in unencrypted app-private preferences, excluded from backup/transfer. Explicit HTTP exposes credentials in transit; prefer verified provider HTTPS when available. App-controlled errors omit URLs/stacks; Android/platform diagnostics may still be private.
-- Empty/scrolled focus targets have regression checks; physical remote and keyboard acceptance remain pending. The login form scrolls to keep controls reachable on smaller screens.
+- Saved credentials/history remain in unencrypted app-private preferences; playlist records use private no-backup files. Both are excluded from backup/transfer. Explicit HTTP exposes credentials in transit; prefer verified provider HTTPS when available. App-controlled errors omit URLs/stacks; Android/platform diagnostics may still be private.
+- Empty/scrolled focus targets have regression checks; physical remote and keyboard acceptance remain pending. The Settings account panel scrolls to keep controls reachable on smaller screens.
 - Release builds enable R8/resource shrinking and have empty defaults. The generated release APK is unsigned; signing/distribution and minified device acceptance remain separate.
 - Generated build files, Gradle caches, IDE files and local settings are excluded from public history. Local debug APKs and caches can contain personal defaults; do not upload them.
 

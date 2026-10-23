@@ -31,7 +31,7 @@ class SessionBehaviorTest {
             val a = M3UChannel("Same", "Group", null, "https://provider.example/a", null, null, null, false)
             val b = a.copy(streamUrl = "https://provider.example/b")
             val channels = listOf(a, a.copy(), b)
-            vm.login(channels)
+            vm.updateChannels(channels, "account-a")
             vm.select(1, channels)
             vm.step(1)
             assertEquals(b, vm.state.value.selected)
@@ -45,6 +45,15 @@ class SessionBehaviorTest {
             assertEquals(channels, recreated.state.value.category)
             recreated.select(-1, channels)
             assertNull(recreated.state.value.selected)
+            recreated.select(1, channels)
+            val refreshed = listOf(b.copy(name = "Renamed"))
+            recreated.updateChannels(refreshed, "account-a")
+            assertEquals(channels[1], recreated.state.value.selected)
+            assertEquals(channels, recreated.state.value.category)
+            assertEquals(refreshed, recreated.state.value.channels)
+            recreated.updateChannels(refreshed, "account-b")
+            assertNull(recreated.state.value.selected)
+            assertTrue(recreated.state.value.category.isEmpty())
         } finally { store.clear(); Dispatchers.resetMain() }
     }
 }

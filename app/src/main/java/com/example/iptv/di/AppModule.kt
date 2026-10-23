@@ -58,4 +58,5 @@ object AppModule {
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
     @Binds abstract fun repository(implementation: ChannelRepositoryImpl): ChannelRepository
+    @Binds abstract fun snapshots(implementation: com.example.iptv.data.storage.FileChannelSnapshots): com.example.iptv.data.storage.ChannelSnapshots
 }

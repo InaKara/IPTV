@@ -65,7 +65,7 @@ class StartupTimingsTest {
         attempt.playlist = listOf(channel())
         Phase.values().forEach { attempt.record(it, 0) }
         attempt.finish(Outcome.FAILED)
-        val safeLine = Regex("attempt=\\d+ phase=(connect|provider_wait|download_parse|history|grouping|browse_ready|failed|cancelled) ms=\\d+( channels=\\d+)?")
+        val safeLine = Regex("attempt=\\d+ phase=(connect|cache|provider_wait|download_parse|history|grouping|browse_ready|failed|cancelled) ms=\\d+( channels=\\d+)?")
         assertTrue(lines.isNotEmpty())
         assertTrue(lines.all { safeLine.matches(it) })
         assertTrue(lines.none { "private" in it || "://" in it })
