@@ -2,7 +2,7 @@
 
 Review date: 21 October 2026. Application/build/deployment source baseline: `7fbc654`. The uncommitted requirement-catalog documentation was left intact. This review includes both the original application and the recently added configuration/deployment code; findings are not attributed to a particular model.
 
-**Review only. No fixes, requirement changes, dependency upgrades, commits, pushes or deployments were made for this review.** Recommendations below are proposals. Selected work must first be added to or clarified in REQUIREMENTS.md and approved by the user.
+**Review only. No fixes, requirement changes, dependency upgrades, commits, pushes or deployments were made for this review.** Recommendations below are proposals. Selected work must first be added to or clarified in docs/requirements/REQUIREMENTS.md and approved by the user.
 
 > Subsequent work: the user authorized remediation of all findings. This report retains the reviewed baseline; see [CODE_REVIEW_FIXES.md](CODE_REVIEW_FIXES.md) for the local implementation, evidence and pending device checks.
 
@@ -361,24 +361,24 @@ Readability cleanup can accompany an approved fix in the same area, but unrelate
 
 File links below and above refer to the reviewed local baseline; line numbers are stated with each finding. The external Android references support lifecycle/state and module guidance; the application-specific findings come from this repository and the stated probes.
 
-[HomeScreen]: app/src/main/java/com/example/iptv/ui/home/HomeScreen.kt
-[LoginScreen]: app/src/main/java/com/example/iptv/ui/login/LoginScreen.kt
-[HomeViewModel]: app/src/main/java/com/example/iptv/ui/home/HomeViewModel.kt
-[LoginViewModel]: app/src/main/java/com/example/iptv/ui/login/LoginViewModel.kt
-[MainActivity]: app/src/main/java/com/example/iptv/MainActivity.kt
-[SplashActivity]: app/src/main/java/com/example/iptv/SplashActivity.kt
-[PlayerScreen]: app/src/main/java/com/example/iptv/ui/player/PlayerScreen.kt
-[PlayerViewModel]: app/src/main/java/com/example/iptv/ui/player/PlayerViewModel.kt
-[ChannelRepositoryImpl]: app/src/main/java/com/example/iptv/data/repository/ChannelRepositoryImpl.kt
-[M3UParser]: app/src/main/java/com/example/iptv/data/parser/M3UParser.kt
-[CredentialsManager]: app/src/main/java/com/example/iptv/data/storage/CredentialsManager.kt
-[RecentlyWatchedManager]: app/src/main/java/com/example/iptv/data/storage/RecentlyWatchedManager.kt
-[M3UChannel]: app/src/main/java/com/example/iptv/data/model/M3UChannel.kt
-[AppModule]: app/src/main/java/com/example/iptv/di/AppModule.kt
-[GlobalExceptionHandler]: app/src/main/java/com/example/iptv/util/GlobalExceptionHandler.kt
-[Parser test]: app/src/test/java/com/example/iptv/data/parser/M3UParserTest.kt
-[App build]: app/build.gradle.kts
-[Root build]: build.gradle.kts
-[Deploy script]: deploy-firestick.ps1
-[Manifest]: app/src/main/AndroidManifest.xml
-[Launch background]: app/src/main/res/drawable/splash_background.xml
+[HomeScreen]: ../../app/src/main/java/com/example/iptv/ui/home/HomeScreen.kt
+[LoginScreen]: ../../app/src/main/java/com/example/iptv/ui/login/LoginScreen.kt
+[HomeViewModel]: ../../app/src/main/java/com/example/iptv/ui/home/HomeViewModel.kt
+[LoginViewModel]: ../../app/src/main/java/com/example/iptv/ui/login/LoginViewModel.kt
+[MainActivity]: ../../app/src/main/java/com/example/iptv/MainActivity.kt
+[SplashActivity]: ../../app/src/main/java/com/example/iptv/SplashActivity.kt
+[PlayerScreen]: ../../app/src/main/java/com/example/iptv/ui/player/PlayerScreen.kt
+[PlayerViewModel]: ../../app/src/main/java/com/example/iptv/ui/player/PlayerViewModel.kt
+[ChannelRepositoryImpl]: ../../app/src/main/java/com/example/iptv/data/repository/ChannelRepositoryImpl.kt
+[M3UParser]: ../../app/src/main/java/com/example/iptv/data/parser/M3UParser.kt
+[CredentialsManager]: ../../app/src/main/java/com/example/iptv/data/storage/CredentialsManager.kt
+[RecentlyWatchedManager]: ../../app/src/main/java/com/example/iptv/data/storage/RecentlyWatchedManager.kt
+[M3UChannel]: ../../app/src/main/java/com/example/iptv/data/model/M3UChannel.kt
+[AppModule]: ../../app/src/main/java/com/example/iptv/di/AppModule.kt
+[GlobalExceptionHandler]: ../../app/src/main/java/com/example/iptv/util/GlobalExceptionHandler.kt
+[Parser test]: ../../app/src/test/java/com/example/iptv/data/parser/M3UParserTest.kt
+[App build]: ../../app/build.gradle.kts
+[Root build]: ../../build.gradle.kts
+[Deploy script]: ../../deploy-firestick.ps1
+[Manifest]: ../../app/src/main/AndroidManifest.xml
+[Launch background]: ../../app/src/main/res/drawable/splash_background.xml

@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
                 preferences?.load()?.let { saved ->
                     if (browserAccount != null && browserAccount != saved.account) browser.reset()
                     browserAccount = saved.account
-                    browser.preferences(saved.density, saved.favorites)
+                    browser.preferences(saved.density, saved.favorites, saved.filterAdult)
                 }
                 searchJob?.cancel()
                 browser.load(index, recents.recentChannels.value)
@@ -91,7 +91,7 @@ class HomeViewModel @Inject constructor(
             if (preferences == null) {
                 val current = browser.state.value
                 browser.preferences(current.density, if (id in current.favorites) current.favorites - id else current.favorites + id)
-            } else preferences.toggle(id).let { browser.preferences(it.density, it.favorites) }
+            } else preferences.toggle(id).let { browser.preferences(it.density, it.favorites, it.filterAdult) }
         }
     }
 
@@ -100,7 +100,17 @@ class HomeViewModel @Inject constructor(
         preferenceWrite = viewModelScope.launch {
             preceding?.join()
             if (preferences == null) browser.preferences(density, browser.state.value.favorites)
-            else preferences.density(density).let { browser.preferences(it.density, it.favorites) }
+            else preferences.density(density).let { browser.preferences(it.density, it.favorites, it.filterAdult) }
+        }
+    }
+
+    fun toggleAdultFilter() {
+        val preceding = preferenceWrite
+        preferenceWrite = viewModelScope.launch {
+            preceding?.join()
+            val current = browser.state.value
+            if (preferences == null) browser.preferences(current.density, current.favorites, !current.filterAdult)
+            else preferences.adultFilter(!current.filterAdult).let { browser.preferences(it.density, it.favorites, it.filterAdult) }
         }
     }
 

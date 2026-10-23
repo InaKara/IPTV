@@ -183,6 +183,15 @@ class BrowserLayoutTest {
                 assertTrue(bounds.all { kotlin.math.abs(it.height - bounds.first().height) <= 1 && kotlin.math.abs(it.width - bounds.first().width) <= 1 })
                 compose.onNodeWithTag("tile_${density.columns * density.rows}").assertIsNotDisplayed()
             }
+            compose.runOnIdle { vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.SETTINGS) }
+            compose.onNodeWithTag("density_COMPACT").performKeyInput { pressKey(Key.DirectionDown) }
+            val filter = compose.onNodeWithTag("adult_filter").assertIsFocused().assertIsOn().assertIsDisplayed()
+            val filterBounds = filter.fetchSemanticsNode().boundsInRoot
+            val settingsImage = screenshot("browser-adult-filter-focus")
+            assertEquals(0xffffd15c.toInt(), settingsImage.getPixel((filterBounds.left + 8).roundToInt(), (filterBounds.top + 8).roundToInt()))
+            assertTrue(filterBounds.bottom < settingsImage.height)
+            filter.performKeyInput { pressKey(Key.DirectionCenter) }
+            filter.assertIsFocused().assertIsOff()
         } finally { compose.runOnIdle { store.clear() }; Dispatchers.resetMain() }
     }
 }

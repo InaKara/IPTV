@@ -608,7 +608,7 @@
       "title": "Review Cinema Dark appearance, theme consistency and focus contrast on the TV; subjective visual acceptance.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DATA-003",
@@ -616,7 +616,7 @@
       "title": "Verify local raster/SVG logos, repeat-load caching and one centered fallback for missing/failed/unsupported logos on Firestick; record device evidence separately from host automation.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DATA-004",
@@ -624,7 +624,7 @@
       "title": "Serve a fixture stream that requires its user-agent and observe actual player requests; provider/decoder integration not in the fast host suite.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-BROWSE-006",
@@ -632,7 +632,7 @@
       "title": "Verify category-channel Back restores Categories before root Cancel/Exit; separately confirm physical remote and root exit-dialog focus.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-BROWSE-008",
@@ -640,7 +640,7 @@
       "title": "Exercise browsing Back, Cancel and Exit on the device; dialog integration not in fast suite.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-001",
@@ -648,7 +648,7 @@
       "title": "Confirm compatible stream picture and sound on the Firestick.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-003",
@@ -656,7 +656,7 @@
       "title": "Open product decision: resolve channel direction before locking acceptance into tests.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-004",
@@ -664,7 +664,7 @@
       "title": "Check Select and dedicated Play/Pause/Play/Pause actions against native playback.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-005",
@@ -672,7 +672,7 @@
       "title": "Check resource release, reopening and background/resume with the native player.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-006",
@@ -680,7 +680,7 @@
       "title": "Needs verification using actual 4K content, decoder and display.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-VOD-002",
@@ -688,7 +688,7 @@
       "title": "Verify pause/resume with real VOD playback.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-VOD-004",
@@ -696,7 +696,7 @@
       "title": "Open product decision: define Stop behavior before implementing its acceptance case.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-OPS-001",
@@ -704,7 +704,7 @@
       "title": "Only after user approval of deployment including stop/start, verify the full script on the selected Firestick; physical execution is omitted from the local suite.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-OPS-003",
@@ -712,7 +712,7 @@
       "title": "Exercise build/install/check CLI modes with isolated native-tool doubles or explicit device acceptance; not in initial fast suite.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-OPS-004",
@@ -720,7 +720,7 @@
       "title": "Review pinned setup/deployment instructions and clean-checkout tool availability; runtime/build evidence is separate.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-OPS-005",
@@ -728,7 +728,7 @@
       "title": "Inspect GitHub publication/history and privacy audit; the smoke suite makes no remote requests.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-OPS-006",
@@ -736,7 +736,7 @@
       "title": "On an explicitly authorized legacy migration, verify the final identity and Firestick tile, private settings/history restoration, a normal update preserving data, coordinated deployment targets, and old-app removal only after acceptance.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DEV-001",
@@ -744,7 +744,7 @@
       "title": "Human review record must show requirements reviewed before implementation.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DEV-002",
@@ -752,7 +752,7 @@
       "title": "Human review must compare approved scope and actual change.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DEV-003",
@@ -760,7 +760,7 @@
       "title": "Human review must confirm architecture choices/tradeoffs were presented.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "TC-RUNNER-16",
@@ -792,7 +792,7 @@
       "title": "Confirm classic centered icon/banner in the actual Firestick app-selection tile after an update and preserve credentials/history; record device acceptance separately from host automation.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-LOGIN-007",
@@ -800,7 +800,7 @@
       "title": "Measure provider wait, overlapping download/parsing, history, grouping and Connect-to-usable-list time on the same Firestick/dataset; verify diagnostics contain no private data. Record device observations separately from the host suite.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "TC-APP-042",
@@ -888,7 +888,7 @@
       "title": "Verify SC-1 on device: fresh/stale/no-cache startup, automatic Categories entry, account setup/error routes and absence of a recurring Connect step.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "TC-PROJECT-04",
@@ -920,7 +920,7 @@
       "title": "Verify BR-1 on Fire TV: Native host rendering and Compose destination/focus behavior are automated; actual TV proportions, accessible naming with assistive technology and subjective visual acceptance remain device checks.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-UI-008",
@@ -928,7 +928,7 @@
       "title": "Verify BR-1 on Fire TV: Tile activation, optional provider labels, fallback reuse and whole-control amber pixels without scaling are automated. Actual television contrast, logo legibility and appearance remain manual.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-UI-009",
@@ -936,7 +936,7 @@
       "title": "Verify BR-1 on Fire TV: Host geometry checks every visible tile for all three densities at 960x540 dp and asserts clipping/row/column counts; physical TV readability and other resolutions require visual acceptance.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-009",
@@ -944,7 +944,7 @@
       "title": "Verify BR-1 on Fire TV: Hierarchy, ordering, Back handlers and retained return state are automated with synthetic data. Real decoder/player release and root exit dialog integration remain separate device checks.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-010",
@@ -952,7 +952,7 @@
       "title": "Verify BR-1 on Fire TV: Pure boundary/identity/bookmark policies and Compose empty/scrolled/sidebar/density/re-entry focus paths are covered. Full activity recreation and physical remote repeat timing remain manual acceptance.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-011",
@@ -960,7 +960,7 @@
       "title": "Verify BR-1 on Fire TV: Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-012",
@@ -968,7 +968,7 @@
       "title": "Verify BR-1 on Fire TV: Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-SET-006",
@@ -976,7 +976,7 @@
       "title": "Verify BR-1 on Fire TV: Default/invalid/saved density, settings selection/return and all grid geometries are automated. Physical remote reflow/readability and settings return from every origin remain manual acceptance.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "MC-DATA-005",
@@ -984,7 +984,7 @@
       "title": "Verify BR-1 on Fire TV: Synthetic InputStream fixtures cover optional/blank/trimmed provider numbers without inference; search tile rendering verifies supplied-number display. Real-provider numbering availability is not established or required.",
       "kind": "Manual",
       "group": "browser-review",
-      "source": "BROWSER_DESIGN_REVIEW.md"
+      "source": "docs/design/BROWSER_DESIGN_REVIEW.md"
     },
     {
       "id": "TC-APP-052",
@@ -1096,7 +1096,7 @@
       "title": "Verify SC-1 on device: Settings first-run account setup starts on its attached Save and load action with the keyboard closed; normal startup bypasses Connect and ordinary Settings return retains focus.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-LOGIN-003",
@@ -1104,7 +1104,7 @@
       "title": "Verify SC-1 on device: remote movement among Settings account fields/actions does not open the keyboard, explicit editing works, and dismissal/loading restores usable focus.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DATA-006",
@@ -1112,7 +1112,7 @@
       "title": "Verify SC-1 on device: private versioned snapshot round trips and account separation, corrupt/unknown-schema handling, complete metadata, backup exclusion and atomic failure retaining the working list/time.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-DATA-007",
@@ -1120,7 +1120,7 @@
       "title": "Verify SC-1 on device: the exact 24-hour boundary, invalid age, manual force refresh, one in-flight request, failure/no-loop behavior, stale-response rejection and preserved browser/playback state.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-SET-007",
@@ -1128,7 +1128,7 @@
       "title": "Verify SC-1 on device: account/Refresh/status plus density in Settings, validation and save-on-success, failure/cancellation retaining the working account, account isolation and remote/focus return.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-PLAY-007",
@@ -1136,7 +1136,7 @@
       "title": "Verify SC-1 on device: keep-screen-on during foreground playing/buffering and cleanup on pause/end/error/Back/background; separately exceed the actual Firestick saver timeout using a local video fixture.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "TC-APP-065",
@@ -1272,7 +1272,7 @@
       "title": "Review that the agent asked before deployment or any other app start; combined deployment approval explicitly describes install/force-stop/start, followed only by the requested script and result report.",
       "kind": "Manual",
       "group": "manual",
-      "source": "REQUIREMENTS.md"
+      "source": "docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "TC-APP-081",
@@ -1288,7 +1288,7 @@
       "title": "Verify UX-1 on device: verify continuous branded startup with status beneath logo, ready-browser handoff, Settings-only load controls and setup/error/background-refresh paths.",
       "kind": "Manual",
       "group": "manual",
-      "source": "LATEST_APP_REVIEW.md"
+      "source": "docs/design/LATEST_APP_REVIEW.md"
     },
     {
       "id": "MC-UI-011",
@@ -1296,7 +1296,7 @@
       "title": "Verify UX-1 on device: compare larger fitted channel logos across all densities, Favorites and Search using local wide/tall/raster/SVG/fallback fixtures without cropping or label/grid changes.",
       "kind": "Manual",
       "group": "manual",
-      "source": "LATEST_APP_REVIEW.md"
+      "source": "docs/design/LATEST_APP_REVIEW.md"
     },
     {
       "id": "MC-PLAY-008",
@@ -1304,7 +1304,7 @@
       "title": "Verify UX-1 on device: diagnose reported TRT 1 HD silence, establish audio presence/support/selection/output and verify a justified correction against affected and known-good playback.",
       "kind": "Manual",
       "group": "manual",
-      "source": "LATEST_APP_REVIEW.md"
+      "source": "docs/design/LATEST_APP_REVIEW.md"
     },
     {
       "id": "MC-PLAY-009",
@@ -1312,7 +1312,7 @@
       "title": "Verify UX-1 on device: verify amber focus and Menu reveal, visible-controller arrows/OK/Back, hidden shortcuts, dedicated media keys, timeout, unavailable controls and VOD seek guards.",
       "kind": "Manual",
       "group": "manual",
-      "source": "LATEST_APP_REVIEW.md"
+      "source": "docs/design/LATEST_APP_REVIEW.md"
     },
     {
       "id": "TC-APP-082",
@@ -1368,7 +1368,7 @@
       "title": "Pending AU-1: review reproducible official MP2 software decoder build, native ABI packaging/loading, synthetic non-silent PCM decode, fallback selection and separately authorized device audio",
       "kind": "Manual",
       "group": "manual",
-      "source": "LATEST_APP_REVIEW.md"
+      "source": "docs/design/LATEST_APP_REVIEW.md"
     },
     {
       "id": "TC-APP-088",
@@ -1384,7 +1384,7 @@
       "title": "Verify LV-1 on device: verify Live TV default/screen focus, ordered Live TV VOD Favorites Search icons, retained bottom Settings, accessible headings and five-control remote focus",
       "kind": "Manual",
       "group": "manual",
-      "source": "LIVE_VOD_BROWSER_REVIEW.md"
+      "source": "docs/design/LIVE_VOD_BROWSER_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-013",
@@ -1392,7 +1392,7 @@
       "title": "Verify LV-1 on device: verify live/VOD category splitting, mixed counts/order, shared history/favorites/search identities and independent section bookmarks, Back, refresh and playback return",
       "kind": "Manual",
       "group": "manual",
-      "source": "LIVE_VOD_BROWSER_REVIEW.md"
+      "source": "docs/design/LIVE_VOD_BROWSER_REVIEW.md"
     },
     {
       "id": "TC-APP-089",
@@ -1437,16 +1437,134 @@
     {
       "id": "MC-UI-013",
       "key": "manual#UI-013",
-      "title": "Pending CF-1: verify current-view headings at both roots, provider/recent categories, Favorites/Search/Settings, returns, refresh and long/blank names",
+      "title": "Verify CF-1 on TV: current view/category heading readability and return/lifecycle behavior including long and blank names",
       "kind": "Manual",
-      "source": "CATEGORY_FILTER_REVIEW.md; REQUIREMENTS.md"
+      "source": "docs/design/CATEGORY_FILTER_REVIEW.md; docs/requirements/REQUIREMENTS.md"
     },
     {
       "id": "MC-SET-008",
       "key": "manual#SET-008",
-      "title": "Pending CF-1: verify default-active saved adult-category filter, all browsing/playback collections, refresh/account changes, reversible data retention and remote Settings/focus recovery",
+      "title": "Verify CF-1 on TV: saved default-active adult filter and Settings remote focus, all-route visibility, lifecycle/refresh and real playback stepping",
       "kind": "Manual",
-      "source": "CATEGORY_FILTER_REVIEW.md; REQUIREMENTS.md"
+      "source": "docs/design/CATEGORY_FILTER_REVIEW.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-APP-094",
+      "key": "com.example.iptv.data.storage.BrowserPreferencesTest#adultFilterDefaultsAndSurvivesReloadAccountsWithoutChangingFavorites",
+      "title": "Adult filter defaults active and persists across restart/accounts while retaining density and favorites",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/data/storage/BrowserPreferencesTest.kt"
+    },
+    {
+      "id": "TC-APP-095",
+      "key": "com.example.iptv.ui.browser.AdultFilterTest#matchingGroupsAreHiddenAcrossSectionsRecentsFavoritesAndLateSearchWithoutLosingIds",
+      "title": "Case-insensitive category filtering covers both sections recents favorites late search and reversible canonical identities",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/AdultFilterTest.kt"
+    },
+    {
+      "id": "TC-APP-096",
+      "key": "com.example.iptv.ui.browser.AdultFilterTest#hidingThePreviousCategoryRecoversMatchingRootAndRefreshReappliesVisibility",
+      "title": "Hidden prior categories recover matching roots through nested returns and refresh/reset retains filter safety",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/AdultFilterTest.kt"
+    },
+    {
+      "id": "TC-APP-097",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#headingsFollowOpenedCategoriesDestinationsReturnsRefreshAndLongBlankNames",
+      "title": "Actual Compose headings follow categories destinations playback/auxiliary returns refresh and bounded long/blank names",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-098",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#adultSwitchUsesRemoteFocusAndRetainsHiddenCategoryFavoritesSearchAndPlaybackRules",
+      "title": "Settings switch retains remote focus and enforces reversible favorite/search visibility and filtered playback delivery",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-099",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#savedFilterChoiceIsAppliedBeforeFirstBrowserLayoutAndSurvivesAccountReload",
+      "title": "Saved filter applies before first browser layout and remains effective on account reload and refresh",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "MC-VOD-006",
+      "key": "manual#VOD-006",
+      "title": "Pending backlog scope review: VOD-006 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-EPG-001",
+      "key": "manual#EPG-001",
+      "title": "Pending backlog scope review: EPG-001 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-011",
+      "key": "manual#PLAY-011",
+      "title": "Pending backlog scope review: PLAY-011 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-LIB-001",
+      "key": "manual#LIB-001",
+      "title": "Pending backlog scope review: LIB-001 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-INT-001",
+      "key": "manual#INT-001",
+      "title": "Pending backlog scope review: INT-001 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-INPUT-001",
+      "key": "manual#INPUT-001",
+      "title": "Pending backlog scope review: INPUT-001 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAT-001",
+      "key": "manual#PLAT-001",
+      "title": "Pending backlog scope review: PLAT-001 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-BROWSE-014",
+      "key": "manual#BROWSE-014",
+      "title": "Pending backlog scope review: BROWSE-014 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-INPUT-002",
+      "key": "manual#INPUT-002",
+      "title": "Pending backlog scope review: INPUT-002 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-UI-014",
+      "key": "manual#UI-014",
+      "title": "Pending backlog scope review: UI-014 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "kind": "Manual",
+      "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
     }
   ],
   "requirements": [
@@ -1658,7 +1776,7 @@
         "TC-APP-045",
         "MC-UI-004"
       ],
-      "gap": "Manifest/intent and native pixel checks cover the new-ID app/activity icons and banner. Physical tile/update appearance is recorded separately in FIRESTICK_DEPLOYMENT.md; this host suite does not execute a launcher refresh or guarantee other devices.",
+      "gap": "Manifest/intent and native pixel checks cover the new-ID app/activity icons and banner. Physical tile/update appearance is recorded separately in docs/operations/FIRESTICK_DEPLOYMENT.md; this host suite does not execute a launcher refresh or guarantee other devices.",
       "reviewNote": "Approved identity migration implemented. Retained compiled launcher/intent and native artwork checks plus three real deployment fixture cases. Implemented status follows actual signing match, private migration, tile verification, normal 3-to-4 upgrade with unchanged preferences and old-app removal. Device acceptance is separate from the host suite; unrelated BR-1 proposals remain Open."
     },
     {
@@ -2285,7 +2403,7 @@
         "TC-RUNNER-18"
       ],
       "gap": "Catalog validation, row generation and result parsing exercised; human relevance of acceptance mappings still needs review.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "Documentation relocation maintenance: requirement and generated testcase paths moved to docs/requirements in smoke/mapping tools and fixture projects. Existing successful-run assertion now verifies both relocated reports and absence of obsolete root reports. Counting, stale/missing/error behavior and approval discipline are unchanged; future backlog features remain unimplemented."
     },
     {
       "id": "DEV-005",
@@ -2312,7 +2430,7 @@
         "TC-RUNNER-18"
       ],
       "gap": "Counting/parsing/stale/missing/error behavior; complete runner is exercised in the actual run and documented evidence.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "Documentation relocation maintenance: requirement and generated testcase paths moved to docs/requirements in smoke/mapping tools and fixture projects. Existing successful-run assertion now verifies both relocated reports and absence of obsolete root reports. Counting, stale/missing/error behavior and approval discipline are unchanged; future backlog features remain unimplemented."
     },
     {
       "id": "DEV-006",
@@ -2339,7 +2457,7 @@
         "TC-RUNNER-18"
       ],
       "gap": "Definition/status drift enforcement; meaningful test updates and post-implementation discipline still require agent/reviewer compliance.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "Documentation relocation maintenance: requirement and generated testcase paths moved to docs/requirements in smoke/mapping tools and fixture projects. Existing successful-run assertion now verifies both relocated reports and absence of obsolete root reports. Counting, stale/missing/error behavior and approval discipline are unchanged; future backlog features remain unimplemented."
     },
     {
       "id": "OLD-001",
@@ -2403,7 +2521,7 @@
         "TC-PROJECT-06",
         "MC-OPS-006"
       ],
-      "gap": "Compiled identity/intent resolution, classic artwork and synthetic deployment command/error behavior are automated. Private migration/signing, physical tile appearance, ordinary-update persistence and old-app removal passed as separate device checks in FIRESTICK_DEPLOYMENT.md; this host suite does not repeat that migration.",
+      "gap": "Compiled identity/intent resolution, classic artwork and synthetic deployment command/error behavior are automated. Private migration/signing, physical tile appearance, ordinary-update persistence and old-app removal passed as separate device checks in docs/operations/FIRESTICK_DEPLOYMENT.md; this host suite does not repeat that migration.",
       "reviewNote": "Latest user decision cancels DP-1 removal before implementation and retains script force-stop/start. Existing isolated native-call/identity/failure/launch-status assertions stay unchanged and relevant. New permission requirement is documented with an explicit manual conduct-review case; no invented automated approval coverage. No device actions authorized or performed."
     },
     {
@@ -2490,7 +2608,7 @@
     },
     {
       "id": "BROWSE-011",
-      "fingerprint": "44e48cd51bea0a9467ac6d856281bea24381ba0f81413d3c268af855088fd1b5",
+      "fingerprint": "ca085eb71b668c59cfd65168230deb872ed75f418f4b815547c46e5ca84df6c7",
       "coverage": "Partial",
       "cases": [
         "TC-APP-053",
@@ -2501,28 +2619,34 @@
         "MC-BROWSE-011",
         "TC-APP-089",
         "TC-APP-090",
-        "TC-APP-091"
+        "TC-APP-091",
+        "TC-APP-095",
+        "TC-APP-097",
+        "TC-APP-098"
       ],
       "gap": "Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
-      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
     },
     {
       "id": "BROWSE-012",
-      "fingerprint": "ef18956b466ea531509a87fe53cccc86ec8cd6cc819e2f9aa472a426f561d153",
+      "fingerprint": "d0ccb6876fab151400c264e276d3d2a596b03cad7cbf2f6e46dc85a9c43519b5",
       "coverage": "Partial",
       "cases": [
         "TC-APP-056",
         "TC-APP-062",
         "MC-BROWSE-012",
         "TC-APP-089",
-        "TC-APP-090"
+        "TC-APP-090",
+        "TC-APP-095",
+        "TC-APP-096",
+        "TC-APP-098"
       ],
       "gap": "Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
-      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
     },
     {
       "id": "SET-006",
-      "fingerprint": "44481e07b4a2db8270eacfb93e61c79fef22e01ce3640efa8a0f0e5cf169064f",
+      "fingerprint": "ca3965a3aa83d5203e56797ff58130dd57bc8956e543185733f182eafdcf2f4d",
       "coverage": "Partial",
       "cases": [
         "TC-APP-058",
@@ -2530,10 +2654,11 @@
         "TC-APP-060",
         "TC-APP-064",
         "TC-APP-078",
-        "MC-SET-006"
+        "MC-SET-006",
+        "TC-APP-098"
       ],
       "gap": "Retained density persistence/geometry and density/account/previous-category focus paths are automated. Physical remote reflow/readability/return acceptance remains pending.",
-      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
     },
     {
       "id": "DATA-005",
@@ -2702,7 +2827,7 @@
     },
     {
       "id": "BROWSE-013",
-      "fingerprint": "b82dc9a5c3dd12283a353e7bff83b4ae4c8f120a23c7ea5d4a4ac7ec349e9935",
+      "fingerprint": "d07164171012cc6e64af3a6ba797f44e557471bf86df06310d822cb53eeefb83",
       "coverage": "Partial",
       "cases": [
         "TC-APP-089",
@@ -2713,30 +2838,142 @@
         "TC-APP-057",
         "TC-APP-058",
         "TC-APP-029",
-        "MC-BROWSE-013"
+        "MC-BROWSE-013",
+        "TC-APP-095",
+        "TC-APP-096",
+        "TC-APP-098"
       ],
       "gap": "Synthetic parser/catalog/state tests assert exact mixed membership/count/order, canonical identities, global favorites/search, filtered existing recents, independent section/category bookmarks and nested returns, refresh/type change/removal/reset. Compose tests exercise VOD filtered playback delivery, scrolled return and empty VOD Back/focus. Existing account/history/player-session assertions retained. Full Activity recreation, authoritative provider types and actual device playback remain separate.",
-      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
     },
     {
       "id": "UI-013",
-      "fingerprint": "6d1b1037b7a6d5c40913a504bc5c2bb1748e3804f7cf9fc91af9b8b42f143c2a",
-      "coverage": "Manual",
+      "fingerprint": "ad01710ba4358400f97c81b8b17471767637b8cdee15692f2720eba82b451508",
+      "coverage": "Partial",
       "cases": [
-        "MC-UI-013"
+        "MC-UI-013",
+        "TC-APP-097",
+        "TC-APP-098"
       ],
-      "gap": "Proposed current-category title behavior is unimplemented. Existing root-heading checks do not cover category-name titles, Favorites labeling or long/blank names. Add actual Compose navigation/title/geometry assertions after approval; physical TV readability remains manual.",
-      "reviewNote": "CF-1 proposal only: reviewed current heading and preference code; category titles and default-active adult filter are absent. New pending manual cases identify matching/persistence/all-route visibility/focus and title gaps. Real synthetic storage/controller/Compose assertions follow explicit implementation approval."
+      "gap": "Actual Compose assertions cover root/category/recent/Favorites/Search/Settings titles, focus-only stability, playback/auxiliary returns, refresh fallback and long-title ellipsis/bounds plus blank fallback. Physical TV readability and full Activity recreation remain separate.",
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
     },
     {
       "id": "SET-008",
-      "fingerprint": "1aafd7a3dcaba03bbcf94131848f6e32a8d87496c9590c0649cafb1444fab960",
+      "fingerprint": "c8b4a8961789f86cb7db99fa66614bd3a952b8ab0aa2a640e8f74694dc036a7d",
+      "coverage": "Partial",
+      "cases": [
+        "MC-SET-008",
+        "TC-APP-094",
+        "TC-APP-095",
+        "TC-APP-096",
+        "TC-APP-098",
+        "TC-APP-099",
+        "TC-APP-064",
+        "TC-APP-078"
+      ],
+      "gap": "Synthetic storage/catalog/controller and actual Compose checks cover active defaults, saved device-wide state across reload/accounts, substring matching, duplicate stream own-category visibility, counts, shared recents/favorites/search identity retention, late search results, refresh/hidden-category recovery, switch remote navigation and filtered playback delivery. Native settings focus pixels are checked. Physical remote/lifecycle/decoder acceptance remains separate.",
+      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
+    },
+    {
+      "id": "VOD-006",
+      "fingerprint": "7e9c1266ecd638f437d1099e814c0621b2a7c3bd0dc4ee9567d94c1ea2c9567c",
       "coverage": "Manual",
       "cases": [
-        "MC-SET-008"
+        "MC-VOD-006"
       ],
-      "gap": "No adult filter or preference exists. Proposed substring matching, first-presentation default, saved device-wide state, counts, global visibility, identity retention and Settings/return focus require meaningful synthetic storage/controller/Compose assertions after approval; physical remote/playback acceptance remains manual.",
-      "reviewNote": "CF-1 proposal only: reviewed current heading and preference code; category titles and default-active adult filter are absent. New pending manual cases identify matching/persistence/all-route visibility/focus and title gaps. Real synthetic storage/controller/Compose assertions follow explicit implementation approval."
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "EPG-001",
+      "fingerprint": "9cfe63074e45ca4a63669121fe4568b4e8995f780b104077d4d4434a4f8198cd",
+      "coverage": "Manual",
+      "cases": [
+        "MC-EPG-001"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "PLAY-011",
+      "fingerprint": "c037b5837d8059a54fa5c7bf9efc311080e3c586fdc513c3de168c9f807e63d9",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-011"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "LIB-001",
+      "fingerprint": "9b18bf6cdec5662862e4430d89f585fb98c6ce5cce32d86888494f0c237c6609",
+      "coverage": "Manual",
+      "cases": [
+        "MC-LIB-001"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "INT-001",
+      "fingerprint": "7c0014c167950c8f6871ec293f73b768a9635b1a858f7f71b115948fd62766a4",
+      "coverage": "Manual",
+      "cases": [
+        "MC-INT-001"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "INPUT-001",
+      "fingerprint": "5e7f2b453099af56a4665c4f921a6b0fa7e4544b8ccda4b5b86e97a54c2c5ee2",
+      "coverage": "Manual",
+      "cases": [
+        "MC-INPUT-001"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "PLAT-001",
+      "fingerprint": "6cd9a057d614e9b4185f090453059f76c17f50b47b3cc0f0536f196a84202d4f",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAT-001"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "BROWSE-014",
+      "fingerprint": "8f64a5c29464fcde420368e41b35b8d8f770b0f02f5cf600384e4ad5dd2faeca",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-014"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "INPUT-002",
+      "fingerprint": "62bfee74ae63aeb16ad1070c3b168272324cf558e81b9ab670b07a8ef22a143a",
+      "coverage": "Manual",
+      "cases": [
+        "MC-INPUT-002"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "UI-014",
+      "fingerprint": "7eb160340cb155fbe67c9ba51c756bb241fb81f1711f359fd38b21c521a717b5",
+      "coverage": "Manual",
+      "cases": [
+        "MC-UI-014"
+      ],
+      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
+      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
     }
   ]
 }

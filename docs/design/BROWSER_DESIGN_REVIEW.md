@@ -4,6 +4,8 @@ Prepared 22 October 2026. **BR-1 explicitly approved: “approved, implement”,
 
 **Later approved revision:** [LV-1](LIVE_VOD_BROWSER_REVIEW.md), 23 October 2026, extends the sidebar to Live TV, VOD, Favorites, Search and bottom Settings. It separates the former combined category root and changes fresh-session focus to the Live TV screen icon. The historical BR-1 design below remains context; LV-1 takes precedence for these revised behaviors.
 
+[CF-1](CATEGORY_FILTER_REVIEW.md), also approved on 23 October, replaces generic Channels headings with the current category/destination and adds the default-active saved adult-category filter in Settings. It takes precedence over the historical combined-list/Favorites heading and unfiltered visibility descriptions below.
+
 The reference is the user-supplied **Amber-focused IPTV channel grid.png** and accompanying design prompt. The later answers take precedence over the reference and prompt. The image guides real native components; its sample channel artwork and content are not production data.
 
 ## Decisions from the user
@@ -22,7 +24,7 @@ Because playback stops on return to browsing, the browser has no PLAYING badge o
 
 ## Approved requirement revision
 
-These are the approved BR-1 requirements. Current implementation status, generated results and remaining acceptance gaps are recorded in [REQUIREMENTS.md](REQUIREMENTS.md).
+These are the approved BR-1 requirements. Current implementation status, generated results and remaining acceptance gaps are recorded in [REQUIREMENTS.md](../requirements/REQUIREMENTS.md).
 
 | ID | Proposed first-version outcome |
 | --- | --- |

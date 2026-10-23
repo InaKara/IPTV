@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $path = Join-Path $PSScriptRoot 'test-catalog.json'
 $catalog = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
-$definitions = @(Get-RequirementDefinitions ([IO.File]::ReadAllText((Join-Path $root 'REQUIREMENTS.md'))))
+$definitions = @(Get-RequirementDefinitions ([IO.File]::ReadAllText((Join-Path $root 'docs/requirements/REQUIREMENTS.md'))))
 $updates = @()
 foreach ($id in $RequirementId) {
     $definition = @($definitions | Where-Object Id -eq $id)

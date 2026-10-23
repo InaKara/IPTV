@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 
 $projectRoot = $PSScriptRoot
 $catalogPath = Join-Path $projectRoot 'scripts/test-catalog.json'
-$requirementsPath = Join-Path $projectRoot 'REQUIREMENTS.md'
+$requirementsPath = Join-Path $projectRoot 'docs/requirements/REQUIREMENTS.md'
 $previousJava = $env:JAVA_HOME
 $previousAndroid = $env:ANDROID_HOME
 $observed = @(); $issues = @(); $nativeExit = -1
@@ -72,7 +72,7 @@ $success = $issues.Count -eq 0 -and $nativeExit -eq 0 -and $totals.total -gt 0 -
 $outcome = if ($success) { 'Passed' } else { 'Failed / incomplete' }
 try {
     Update-RequirementTestRows $requirementsPath $catalog $results $runLabel $outcome
-    Update-TestCaseCatalog (Join-Path $projectRoot 'TEST_CASES.md') $catalog $results $runLabel
+    Update-TestCaseCatalog (Join-Path $projectRoot 'docs/requirements/TEST_CASES.md') $catalog $results $runLabel
 }
 catch { $issues += 'Could not update requirement test rows.'; $success = $false }
 $stopwatch.Stop()

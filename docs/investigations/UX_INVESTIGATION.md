@@ -6,7 +6,7 @@ Initial read-only investigation on 22 October 2026 against `0bf7d1b`, followed b
 
 The rectangle is the obsolete `res/drawable/ic_launcher.xml`: a blue square containing a solid white rectangle. Its two intended TV-leg paths have no stroke or filled area, so they do not draw; the white body sits above the center. It is an unfinished TV glyph, not a channel logo or an Android loading indicator.
 
-Baseline `ChannelCard` in [HomeScreen.kt](app/src/main/java/com/example/iptv/ui/home/HomeScreen.kt) explicitly passed that drawable as Coil's error painter after an image request or decoding failure. Missing/empty logo URLs took a different path, displaying a blue PlayArrow. Coil's [2.5.0 AsyncImage source](https://github.com/coil-kt/coil/blob/2.5.0/coil-compose-base/src/main/java/coil/compose/AsyncImage.kt) defines this error-painter behavior.
+Baseline `ChannelCard` in [HomeScreen.kt](../../app/src/main/java/com/example/iptv/ui/home/HomeScreen.kt) explicitly passed that drawable as Coil's error painter after an image request or decoding failure. Missing/empty logo URLs took a different path, displaying a blue PlayArrow. Coil's [2.5.0 AsyncImage source](https://github.com/coil-kt/coil/blob/2.5.0/coil-compose-base/src/main/java/coil/compose/AsyncImage.kt) defines this error-painter behavior.
 
 The baseline loader included only `coil-compose:2.5.0`, with no SVG extension. A downloaded playlist sample contained:
 

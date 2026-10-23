@@ -2,7 +2,7 @@
 
 This is the implementation record for the 35 findings in [CODE_REVIEW.md](CODE_REVIEW.md), whose source baseline remains `7fbc654`. The user requested that the existing documentation first be committed/pushed, then that all suggested fixes be implemented in priority order. The documentation was published as `2387393`; the remediation was subsequently committed/pushed as `ec11bdc` at the user's request. The requirement-linked smoke-suite follow-up is a separate change.
 
-The approved scope is recorded as FIX-001–FIX-010 in [REQUIREMENTS.md](REQUIREMENTS.md). Initial work addressed the P1 focus paths, followed by P2 correctness/state/privacy and their tests, then P3 cleanup. Tests and tooling alignment accompanied the fixes. Unrelated historical Back hierarchy, channel direction and Stop decisions remain pending.
+The approved scope is recorded as FIX-001–FIX-010 in [REQUIREMENTS.md](../requirements/REQUIREMENTS.md). Initial work addressed the P1 focus paths, followed by P2 correctness/state/privacy and their tests, then P3 cleanup. Tests and tooling alignment accompanied the fixes. Unrelated historical Back hierarchy, channel direction and Stop decisions remain pending.
 
 ## Finding-by-finding record
 
@@ -60,7 +60,7 @@ The final combined Gradle run included assembleDebug, verifyLocalEnvironment, te
 
 ## Firestick acceptance still required
 
-Use [FIRESTICK_DEPLOYMENT.md](FIRESTICK_DEPLOYMENT.md) after reviewing the changes. Installation was not performed during this remediation.
+Use [FIRESTICK_DEPLOYMENT.md](../operations/FIRESTICK_DEPLOYMENT.md) after reviewing the changes. Installation was not performed during this remediation.
 
 1. Cold start and launcher/banner: consistent classic branding and readable name; generic crash notice has a usable restart action when applicable.
 2. Login: initial Connect focus; navigate all fields; Select opens editing; return/submit/retry/loading remain usable. Check saved account persistence and the explicit HTTP warning.

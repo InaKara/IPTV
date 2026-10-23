@@ -54,4 +54,31 @@ class BrowserPreferencesTest {
             assertEquals(raw, prefs.getString("favorites_v1", ""))
         }
     }
+
+    @Test fun adultFilterDefaultsAndSurvivesReloadAccountsWithoutChangingFavorites() = runBlocking {
+        val credentials = CredentialsManager(app).apply { save("https://provider.example", "one", "synthetic") }
+        var store = BrowserPreferences(app, credentials)
+        assertTrue(store.load().filterAdult)
+        store.toggle("saved-item")
+        store.density(GridDensity.LARGE)
+        val favorites = prefs.getString("favorites_v1", null)
+        assertFalse(store.adultFilter(false).filterAdult)
+        store = BrowserPreferences(app, credentials)
+        assertFalse(store.load().filterAdult)
+        credentials.save("https://provider.example", "two", "synthetic")
+        val other = store.load()
+        assertFalse(other.filterAdult)
+        assertTrue(other.favorites.isEmpty())
+        store.adultFilter(true)
+        credentials.save("https://provider.example", "one", "synthetic")
+        val restored = BrowserPreferences(app, credentials).load()
+        assertTrue(restored.filterAdult)
+        assertEquals(setOf("saved-item"), restored.favorites)
+        assertEquals(GridDensity.LARGE, restored.density)
+        assertEquals(favorites, prefs.getString("favorites_v1", null))
+        // A malformed local value uses the same active default without clearing other settings.
+        prefs.edit().putString("filter_adult", "invalid").commit()
+        assertTrue(BrowserPreferences(app, credentials).load().filterAdult)
+        assertEquals(favorites, prefs.getString("favorites_v1", null))
+    }
 }

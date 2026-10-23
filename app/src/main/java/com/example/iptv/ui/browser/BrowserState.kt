@@ -14,7 +14,7 @@ enum class BrowserDestination {
 
     val isCategorySection: Boolean get() = this == CATEGORIES || this == VOD
 }
-enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT }
+enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT, ADULT_FILTER }
 
 data class BrowserLocation(
     val destination: BrowserDestination = BrowserDestination.CATEGORIES,
@@ -37,6 +37,8 @@ data class BrowserChannel(val id: String, val channel: M3UChannel)
 data class BrowserCategory(val id: String, val name: String, val channels: List<BrowserChannel>)
 data class BrowserTile(val id: String, val category: BrowserCategory? = null, val entry: BrowserChannel? = null)
 
+private fun BrowserChannel.visible(filterAdult: Boolean) = !filterAdult || !channel.groupTitle.contains("adult", ignoreCase = true)
+
 internal fun privateReference(value: String): String {
     val bytes = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
     val hex = "0123456789abcdef"
@@ -51,12 +53,20 @@ class BrowserCatalog private constructor(
     val categories: List<BrowserCategory>,
     private val liveCategories: List<BrowserCategory>,
     private val vodCategories: List<BrowserCategory>,
-    private val byStream: Map<String, BrowserChannel>
+    private val byStream: Map<String, BrowserChannel>,
+    private val duplicateStreams: Map<String, List<BrowserChannel>>
 ) {
-    fun withRecent(recent: List<M3UChannel>, section: BrowserDestination = BrowserDestination.CATEGORIES): List<BrowserCategory> {
+    fun withRecent(recent: List<M3UChannel>, section: BrowserDestination = BrowserDestination.CATEGORIES,
+                   filterAdult: Boolean = true): List<BrowserCategory> {
         val vod = section == BrowserDestination.VOD
-        val resolved = recent.mapNotNull { byStream[it.streamUrl] }.filter { it.channel.isVod == vod }
-        return listOf(BrowserCategory("recent", "Recently viewed", resolved)) + if (vod) vodCategories else liveCategories
+        val resolved = recent.mapNotNull { item ->
+            duplicateStreams[item.streamUrl]?.lastOrNull {
+                it.channel.groupTitle == item.groupTitle && it.channel.userAgent == item.userAgent
+            } ?: byStream[item.streamUrl]
+        }.filter { it.channel.isVod == vod && it.visible(filterAdult) }
+        val groups = if (vod) vodCategories else liveCategories
+        return listOf(BrowserCategory("recent", "Recently viewed", resolved)) +
+            groups.filter { !filterAdult || !it.name.contains("adult", ignoreCase = true) }
     }
 
     fun search(query: String): List<BrowserChannel> = if (query.isBlank()) emptyList()
@@ -83,7 +93,14 @@ class BrowserCatalog private constructor(
                 if (television.isNotEmpty()) live.add(group.copy(channels = television))
                 if (onDemand.isNotEmpty()) vod.add(group.copy(channels = onDemand))
             }
-            return BrowserCatalog(entries, groups, live, vod, entries.associateBy { it.channel.streamUrl })
+            val byStream = mutableMapOf<String, BrowserChannel>()
+            val duplicates = mutableMapOf<String, MutableList<BrowserChannel>>()
+            entries.forEach { entry ->
+                byStream.put(entry.channel.streamUrl, entry)?.let { previous ->
+                    duplicates.getOrPut(entry.channel.streamUrl) { mutableListOf(previous) }.add(entry)
+                }
+            }
+            return BrowserCatalog(entries, groups, live, vod, byStream, duplicates)
         }
     }
 }
@@ -95,7 +112,8 @@ data class BrowserState(
     val bookmarks: Map<String, GridBookmark> = mapOf(BrowserLocation().key to GridBookmark(area = BrowserFocus.SIDEBAR)),
     val query: String = "",
     val density: GridDensity = GridDensity.STANDARD,
-    val favorites: Set<String> = emptySet()
+    val favorites: Set<String> = emptySet(),
+    val filterAdult: Boolean = true
 ) {
     val bookmark: GridBookmark get() = bookmarks[location.key] ?: GridBookmark(area = when (location.destination) {
         BrowserDestination.SEARCH -> BrowserFocus.QUERY
@@ -141,8 +159,8 @@ class BrowserController {
         render()
     }
 
-    fun preferences(density: GridDensity, favorites: Set<String>) {
-        mutableState.value = state.value.copy(density = density, favorites = favorites)
+    fun preferences(density: GridDensity, favorites: Set<String>, filterAdult: Boolean = state.value.filterAdult) {
+        mutableState.value = state.value.copy(density = density, favorites = favorites, filterAdult = filterAdult)
         render()
     }
 
@@ -192,6 +210,7 @@ class BrowserController {
         render()
     }
 
+    // Keep worker results reversible; render applies the latest preference, even to late results.
     fun search(query: String): List<BrowserChannel> = catalog?.search(query).orEmpty()
 
     fun searchResults(query: String, results: List<BrowserChannel>) {
@@ -224,7 +243,7 @@ class BrowserController {
     private fun render() {
         var current = state.value
         val section = if (current.location.destination.isCategorySection) current.location.destination else lastCategories.destination
-        current = current.copy(categories = catalog?.withRecent(recent, section).orEmpty())
+        current = current.copy(categories = catalog?.withRecent(recent, section, current.filterAdult).orEmpty())
         if (current.location.destination.isCategorySection && current.location.categoryId != null &&
             current.categories.none { it.id == current.location.categoryId }) {
             current = current.copy(location = BrowserLocation(current.location.destination))
@@ -234,11 +253,20 @@ class BrowserController {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD -> if (current.location.categoryId == null) {
                 current.categories.map { BrowserTile(it.id, category = it) }
             } else current.categories.find { it.id == current.location.categoryId }?.channels.orEmpty().map { BrowserTile(it.id, entry = it) }
-            BrowserDestination.FAVORITES -> catalog?.channels.orEmpty().filter { it.id in current.favorites }.map { BrowserTile(it.id, entry = it) }
-            BrowserDestination.SEARCH -> searchResults.map { BrowserTile(it.id, entry = it) }
+            BrowserDestination.FAVORITES -> catalog?.channels.orEmpty().filter { it.id in current.favorites && it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
+            BrowserDestination.SEARCH -> searchResults.filter { it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
             BrowserDestination.SETTINGS -> emptyList()
         }
-        mutableState.value = current.copy(items = items)
+        val saved = current.bookmark
+        val reconciled = if (saved.area != BrowserFocus.GRID) saved else if (items.isEmpty()) {
+            saved.copy(area = if (current.location.destination == BrowserDestination.SEARCH) BrowserFocus.QUERY else BrowserFocus.SIDEBAR,
+                sidebarIndex = current.activeSidebar, focusedId = null, focusedIndex = 0, firstVisibleId = null, firstVisibleIndex = 0, scrollOffset = 0)
+        } else {
+            val focus = restoredIndex(items, saved.focusedId, saved.focusedIndex)
+            val first = restoredIndex(items, saved.firstVisibleId, saved.firstVisibleIndex)
+            saved.copy(focusedId = items[focus].id, focusedIndex = focus, firstVisibleId = items[first].id, firstVisibleIndex = first)
+        }
+        mutableState.value = current.copy(items = items, bookmarks = current.bookmarks + (current.location.key to reconciled))
     }
 }
 

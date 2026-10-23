@@ -25,6 +25,9 @@
     <string name="last_download">Last downloaded: %1$s</string>
     <string name="no_saved_list">No saved channel list yet.</string>
     <string name="grid_density">Grid density</string>
+    <string name="filter_adult_content">Filter adult content</string>
+    <string name="filtering_active">Filtering active</string>
+    <string name="filtering_inactive">Filtering inactive</string>
     <string name="density_large">Large</string>
     <string name="density_standard">Standard</string>
     <string name="density_compact">Compact</string>

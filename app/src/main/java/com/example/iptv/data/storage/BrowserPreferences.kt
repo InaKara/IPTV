@@ -15,7 +15,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
-data class BrowserPreferenceState(val density: GridDensity, val favorites: Set<String>, val account: String)
+data class BrowserPreferenceState(val density: GridDensity, val favorites: Set<String>, val account: String,
+                                  val filterAdult: Boolean = true)
 
 @Singleton
 class BrowserPreferences @Inject constructor(
@@ -29,9 +30,11 @@ class BrowserPreferences @Inject constructor(
     private var accounts = emptyMap<String, Set<String>>()
     private var account = ""
     private var density = GridDensity.STANDARD
+    private var filterAdult = true
 
     suspend fun load(): BrowserPreferenceState = withContext(Dispatchers.IO) {
         mutex.withLock {
+            filterAdult = runCatching { prefs.getBoolean("filter_adult", true) }.getOrDefault(true)
             density = runCatching { GridDensity.valueOf(prefs.getString("grid_density", null).orEmpty()) }
                 .getOrDefault(GridDensity.STANDARD)
             if (!loaded) {
@@ -76,5 +79,13 @@ class BrowserPreferences @Inject constructor(
         }
     }
 
-    private fun snapshot() = BrowserPreferenceState(density, accounts[account].orEmpty(), account)
+    suspend fun adultFilter(value: Boolean): BrowserPreferenceState = withContext(Dispatchers.IO) {
+        mutex.withLock {
+            filterAdult = value
+            prefs.edit().putBoolean("filter_adult", value).apply()
+            snapshot()
+        }
+    }
+
+    private fun snapshot() = BrowserPreferenceState(density, accounts[account].orEmpty(), account, filterAdult)
 }

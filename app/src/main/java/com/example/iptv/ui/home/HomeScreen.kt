@@ -36,6 +36,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -95,6 +98,7 @@ fun BrowserScreen(
     val sidebarRequesters = remember { List(BrowserDestination.values().size) { FocusRequester() } }
     val queryRequester = remember { FocusRequester() }
     val accountRequester = remember { FocusRequester() }
+    val filterRequester = remember { FocusRequester() }
     val densityRequesters = remember { GridDensity.values().associateWith { FocusRequester() } }
     val itemRequesters = remember(viewKey) { mutableMapOf<String, FocusRequester>() }
     var command by remember(viewKey) { mutableStateOf<FocusCommand?>(null) }
@@ -111,6 +115,7 @@ fun BrowserScreen(
             target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()]
             target == "query" -> queryRequester
             target == "account" -> accountRequester
+            target == "adult_filter" -> filterRequester
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]
             visible != null && visible.offset.y >= 0 && visible.offset.y + visible.size.height <= gridState.layoutInfo.viewportSize.height -> itemRequesters[target]
             else -> null
@@ -146,7 +151,13 @@ fun BrowserScreen(
                 val index = GridDensity.valueOf(target.substringAfter(':')).ordinal
                 if (horizontal < 0) move("sidebar:${BrowserDestination.SETTINGS.ordinal}")
                 else if (horizontal > 0 && accountSettings != null) move("account")
+                else if (vertical > 0 && index == GridDensity.COMPACT.ordinal) move("adult_filter")
                 else if (vertical != 0) move("density:${GridDensity.values()[(index + vertical).coerceIn(0, 2)].name}")
+            }
+            target == "adult_filter" -> {
+                if (horizontal < 0) move("sidebar:${BrowserDestination.SETTINGS.ordinal}")
+                else if (horizontal > 0 && accountSettings != null) move("account")
+                else if (vertical < 0) move("density:${GridDensity.COMPACT.name}")
             }
             else -> {
                 val index = items.indexOfFirst { it.id == target }
@@ -176,6 +187,7 @@ fun BrowserScreen(
             BrowserFocus.QUERY -> request("query")
             BrowserFocus.DENSITY -> request("density:${saved.focusedId ?: density.name}")
             BrowserFocus.ACCOUNT -> request("account")
+            BrowserFocus.ADULT_FILTER -> request("adult_filter")
             BrowserFocus.GRID -> requestGrid()
         }
     }
@@ -185,6 +197,7 @@ fun BrowserScreen(
             target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()].requestFocus()
             target == "query" -> queryRequester.requestFocus()
             target == "account" -> accountRequester.requestFocus()
+            target == "adult_filter" -> filterRequester.requestFocus()
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]?.requestFocus()
             else -> {
                 val index = items.indexOfFirst { it.id == target }
@@ -213,11 +226,13 @@ fun BrowserScreen(
         val isSearch = state.location.destination == BrowserDestination.SEARCH
         val isSettings = state.location.destination == BrowserDestination.SETTINGS
         val title = when (state.location.destination) {
-            BrowserDestination.CATEGORIES -> if (state.location.categoryId == null) R.string.live_tv else R.string.channels
-            BrowserDestination.VOD -> if (state.location.categoryId == null) R.string.vod else R.string.channels
-            BrowserDestination.FAVORITES -> R.string.channels
-            BrowserDestination.SEARCH -> R.string.search
-            BrowserDestination.SETTINGS -> R.string.settings
+            BrowserDestination.CATEGORIES, BrowserDestination.VOD -> if (state.location.categoryId == null) {
+                stringResource(if (state.location.destination == BrowserDestination.VOD) R.string.vod else R.string.live_tv)
+            } else state.categories.find { it.id == state.location.categoryId }?.name?.takeIf { it.isNotBlank() }
+                ?: stringResource(R.string.channels)
+            BrowserDestination.FAVORITES -> stringResource(R.string.favorites)
+            BrowserDestination.SEARCH -> stringResource(R.string.search)
+            BrowserDestination.SETTINGS -> stringResource(R.string.settings)
         }
         Box(Modifier.size((1672 * scale).dp, (941 * scale).dp).align(Alignment.Center)
             .onGloballyPositioned { viewModel.onBrowseReady(); onBrowseReady() }.testTag("browser")) {
@@ -255,8 +270,9 @@ fun BrowserScreen(
                     }
                 }
             }
-            Text(stringResource(title), color = BrowserColors.text, fontSize = (40 * scale).sp, fontWeight = FontWeight.Bold,
-                modifier = Modifier.offset((152 * scale).dp, (40 * scale).dp).testTag("browser_heading"))
+            Text(title, color = BrowserColors.text, fontSize = (40 * scale).sp, fontWeight = FontWeight.Bold,
+                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.offset((152 * scale).dp, (40 * scale).dp).width((1496 * scale).dp).testTag("browser_heading"))
 
             if (isSettings) {
                 Row(Modifier.offset((152 * scale).dp, (120 * scale).dp).size((1496 * scale).dp, (800 * scale).dp),
@@ -271,6 +287,21 @@ fun BrowserScreen(
                                 onKey = { key -> direction(key, "density:${value.name}") }, onClick = { viewModel.setDensity(value) }
                             ) { tint -> Text("$label  ·  ${value.columns} × ${value.rows}", color = tint, fontSize = (24 * scale).sp,
                                 modifier = Modifier.padding((18 * scale).dp).align(Alignment.CenterStart)) }
+                        }
+                        val filterStatus = stringResource(if (state.filterAdult) R.string.filtering_active else R.string.filtering_inactive)
+                        BrowserControl(Modifier.fillMaxWidth().height((116 * scale).dp)
+                            .focusRequester(filterRequester).testTag("adult_filter")
+                            .semantics {
+                                toggleableState = if (state.filterAdult) ToggleableState.On else ToggleableState.Off
+                                stateDescription = filterStatus
+                            }, scale, role = Role.Switch,
+                            onFocus = { focused("adult_filter"); controller.focusArea(BrowserFocus.ADULT_FILTER) },
+                            onKey = { direction(it, "adult_filter") }, onClick = viewModel::toggleAdultFilter
+                        ) { tint ->
+                            Column(Modifier.padding((18 * scale).dp).align(Alignment.CenterStart)) {
+                                Text(stringResource(R.string.filter_adult_content), color = tint, fontSize = (24 * scale).sp)
+                                Text(filterStatus, color = tint, fontSize = (20 * scale).sp)
+                            }
                         }
                     }
                     accountSettings?.invoke(Modifier.weight(1f).fillMaxHeight().onFocusChanged {
@@ -334,8 +365,13 @@ fun BrowserScreen(
                                 }, onClick = {
                                     if (tile.category != null) controller.openCategory(tile.category.id)
                                     else {
-                                        viewModel.preparePlayback(index)
-                                        onChannelClick(index, items.mapNotNull { it.entry?.channel })
+                                        // Re-read visibility so an obsolete tile cannot launch a filtered entry.
+                                        val visible = controller.state.value.items
+                                        val selected = visible.indexOfFirst { it.id == tile.id && it.entry != null }
+                                        if (selected >= 0) {
+                                            viewModel.preparePlayback(selected)
+                                            onChannelClick(selected, visible.mapNotNull { it.entry?.channel })
+                                        }
                                     }
                                 }
                             ) { tint -> BrowserTileContent(tile, tint, scale) }
@@ -365,6 +401,7 @@ fun BrowserScreen(
 @Composable
 private fun BrowserControl(
     modifier: Modifier, scale: Float, active: Boolean = false, navigation: Boolean = false,
+    role: Role = Role.Button,
     onFocus: () -> Unit = {}, onKey: (KeyEvent) -> Boolean = { false }, onClick: () -> Unit,
     content: @Composable BoxScope.(Color) -> Unit
 ) {
@@ -375,7 +412,7 @@ private fun BrowserControl(
         .onFocusChanged { focused = it.isFocused; if (it.isFocused) onFocus() }
         .onPreviewKeyEvent { if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) onKey(it.nativeKeyEvent) else false }
         .semantics(mergeDescendants = true) { selected = active }
-        .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onClick)
+        .clickable(remember { MutableInteractionSource() }, indication = null, role = role, onClick = onClick)
     ) { content(if (focused) BrowserColors.dark else BrowserColors.text) }
 }
 

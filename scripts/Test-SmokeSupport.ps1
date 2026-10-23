@@ -22,7 +22,8 @@ function Invoke-FixtureSmoke {
     Copy-Item -LiteralPath (Join-Path $repository 'test-smoke.ps1') -Destination $project
     foreach ($name in @('SmokeSupport.ps1','LocalEnvironment.ps1')) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $scripts }
     [IO.File]::WriteAllText((Join-Path $project '.env'),'JAVA_HOME=C:/SyntheticJdk')
-    [IO.File]::WriteAllText((Join-Path $project 'REQUIREMENTS.md'),$text)
+    [IO.Directory]::CreateDirectory((Join-Path $project 'docs/requirements')) | Out-Null
+    [IO.File]::WriteAllText((Join-Path $project 'docs/requirements/REQUIREMENTS.md'),$text)
     $cases = @([pscustomobject]@{id='TC-001';key='sample#case';title='Synthetic app outcome';kind='App';source='fixture'})
     $n = 1
     foreach ($suite in @(
@@ -68,7 +69,13 @@ if ($mode -eq 'test-failure') {
         throw ('Synthetic child did not report: ' + [IO.File]::ReadAllText((Join-Path $project 'child.log')))
     }
     $report = Get-Content -LiteralPath (Join-Path $project 'app/build/reports/smoke/latest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-    [pscustomobject]@{exitCode=$exitCode;report=$report;catalog=[IO.File]::ReadAllText((Join-Path $project 'REQUIREMENTS.md'))}
+    [pscustomobject]@{
+        exitCode=$exitCode; report=$report
+        catalog=[IO.File]::ReadAllText((Join-Path $project 'docs/requirements/REQUIREMENTS.md'))
+        cases=[IO.File]::ReadAllText((Join-Path $project 'docs/requirements/TEST_CASES.md'))
+        rootReportsAbsent=(-not (Test-Path -LiteralPath (Join-Path $project 'REQUIREMENTS.md')) -and
+            -not (Test-Path -LiteralPath (Join-Path $project 'TEST_CASES.md')))
+    }
 }
 $results = @()
 try {
@@ -156,6 +163,7 @@ try {
         $actual=Invoke-FixtureSmoke 'pass'
         Assert-Smoke ($actual.exitCode -eq 0 -and $actual.report.passed -and $actual.report.totals.passed -eq 6)
         Assert-Smoke ($actual.catalog.Contains('TC-001 - Passed'))
+        Assert-Smoke ($actual.cases.Contains('TC-001') -and $actual.cases.Contains('Passed') -and $actual.rootReportsAbsent)
     }
     $results += Invoke-SmokeCheck 'runner#entryPointFailureExitsNonzeroAndUpdatesRows' {
         $actual=Invoke-FixtureSmoke 'test-failure'

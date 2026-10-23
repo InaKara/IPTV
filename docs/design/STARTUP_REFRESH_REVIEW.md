@@ -1,6 +1,6 @@
 # Automatic startup, playlist refresh and playback display
 
-Revision SC-1, 22 October 2026 — **explicitly approved: “Approved, implement.”** The preceding baseline was pushed as `96f7b4e`. Implementation/verification status is tracked in REQUIREMENTS.md; this document preserves the approved behavior and validation scope.
+Revision SC-1, 22 October 2026 — **explicitly approved: “Approved, implement.”** The preceding baseline was pushed as `96f7b4e`. Implementation/verification status is tracked in docs/requirements/REQUIREMENTS.md; this document preserves the approved behavior and validation scope.
 
 ## Requested outcome
 

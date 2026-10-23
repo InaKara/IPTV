@@ -35,6 +35,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 @OptIn(ExperimentalTestApi::class, ExperimentalTvMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -47,6 +48,7 @@ class BrowserNavigationTest {
     private var browsing by mutableStateOf(true)
     private var selected = -1
     private var delivered = emptyList<M3UChannel>()
+    private var firstBrowseFilter: Boolean? = null
     private val channels = (0..31).map {
         M3UChannel(if (it == 0) "Local News" else "Channel $it", "Live", null,
             "https://provider.example/$it", null, null, null, false, if (it == 0) "101" else null)
@@ -66,7 +68,8 @@ class BrowserNavigationTest {
         compose.setContent {
             back = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
             IPTVTheme {
-                if (browsing) BrowserScreen(source, { index, entries -> selected = index; delivered = entries; browsing = false }, vm)
+                if (browsing) BrowserScreen(source, { index, entries -> selected = index; delivered = entries; browsing = false }, vm,
+                    onBrowseReady = { if (firstBrowseFilter == null) firstBrowseFilter = vm.browser.state.value.filterAdult })
                 else Text("Playback destination")
             }
         }
@@ -78,6 +81,132 @@ class BrowserNavigationTest {
         compose.onNodeWithText("Live").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
             .performKeyInput { pressKey(Key.DirectionCenter) }
         compose.onNodeWithTag("tile_0").assertIsFocused()
+    }
+
+    @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun headingsFollowOpenedCategoriesDestinationsReturnsRefreshAndLongBlankNames() {
+        val longName = "International films and documentaries ".repeat(12)
+        val source = listOf(channels[0], channels[1].copy(groupTitle = longName, isVod = true),
+            channels[2].copy(groupTitle = "   "))
+        render(source)
+        openChannels()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live")
+        focusTag("sidebar_FAVORITES")
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live")
+        compose.onNodeWithTag("sidebar_FAVORITES").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
+        focusTag("sidebar_SEARCH").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Search")
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Settings")
+        repeat(3) { compose.runOnIdle { back.onBackPressed() } }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live")
+        focusTag("tile_0").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.runOnIdle { vm.returnFromPlayback(0); browsing = true }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live")
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live TV")
+        compose.onNodeWithText("Recently viewed").performClick()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Recently viewed")
+        focusTag("sidebar_VOD").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        compose.onNodeWithText(longName).performClick()
+        val heading = compose.onNodeWithTag("browser_heading").assertTextEquals(longName)
+        val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        heading.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        assertEquals(1, layouts.single().lineCount)
+        assertTrue(layouts.single().isLineEllipsized(0))
+        val bounds = heading.fetchSemanticsNode().boundsInRoot
+        val grid = compose.onNodeWithTag("browser_grid").fetchSemanticsNode().boundsInRoot
+        assertTrue(bounds.bottom <= grid.top)
+        assertTrue(bounds.left >= grid.left && bounds.right <= grid.right + 1)
+        compose.runOnIdle { vm.loadChannels(listOf(source[0], source[2])) }
+        compose.waitUntil(5000) { vm.browser.state.value.location.categoryId == null }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        focusTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithText("   ").performClick()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Channels")
+    }
+
+    @Test fun adultSwitchUsesRemoteFocusAndRetainsHiddenCategoryFavoritesSearchAndPlaybackRules() {
+        val safe = channels[0]
+        val hidden = channels[1].copy(groupTitle = "Adult films", isVod = true)
+        render(listOf(safe, hidden))
+        assertTrue(vm.browser.state.value.filterAdult)
+        assertEquals(true, firstBrowseFilter)
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("density_STANDARD").performKeyInput { pressKey(Key.DirectionDown); pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("adult_filter").assertIsFocused().assertIsOn().assertIsDisplayed()
+        assertTrue(vm.browser.state.value.filterAdult)
+        compose.onNodeWithTag("adult_filter").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.waitUntil(5000) { !vm.browser.state.value.filterAdult }
+        compose.onNodeWithTag("adult_filter").assertIsFocused().assertIsOff()
+        compose.onNodeWithText("Filtering inactive", substring = true).assertIsDisplayed()
+        focusTag("sidebar_VOD").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithText("Adult films").performClick()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Adult films")
+        compose.onNodeWithTag("tile_0").performKeyInput { pressKey(Key.Menu) }
+        compose.onNodeWithTag("favorite_action").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.waitUntil(5000) { vm.browser.state.value.favorites.size == 1 }
+        val favorites = vm.browser.state.value.favorites
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionCenter) }
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("density_STANDARD").performKeyInput { pressKey(Key.DirectionDown); pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("adult_filter").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.waitUntil(5000) { vm.browser.state.value.filterAdult }
+        compose.onNodeWithTag("adult_filter").assertIsFocused().assertIsOn()
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        compose.onNodeWithTag("tile_0").assertIsFocused()
+        compose.onNodeWithText("Adult films").assertDoesNotExist()
+        focusTag("sidebar_FAVORITES").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithText("No favorite channels available. Press Menu on a channel to add it.").assertIsDisplayed()
+        assertEquals(favorites, vm.browser.state.value.favorites)
+        focusTag("sidebar_SEARCH").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.runOnIdle { vm.search("Channel") }
+        compose.waitUntil(5000) { vm.browser.state.value.query == "Channel" }
+        compose.onNodeWithText("No matching channels.").assertIsDisplayed()
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionCenter) }
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("density_STANDARD").performKeyInput { pressKey(Key.DirectionDown); pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("adult_filter").assertIsFocused().performKeyInput { pressKey(Key.DirectionUp) }
+        compose.onNodeWithTag("density_COMPACT").assertIsFocused().performKeyInput { pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("adult_filter").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.waitUntil(5000) { !vm.browser.state.value.filterAdult }
+        compose.runOnIdle { back.onBackPressed() }
+        compose.waitUntil(5000) { vm.browser.state.value.items.size == 1 }
+        focusTag("tile_0").performKeyInput { pressKey(Key.DirectionCenter) }
+        assertEquals(listOf(hidden), delivered)
+        compose.runOnIdle { vm.returnFromPlayback(0); browsing = true; vm.toggleAdultFilter() }
+        compose.waitUntil(5000) { vm.browser.state.value.filterAdult && vm.browser.state.value.items.isEmpty() }
+        focusTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionCenter) }
+        openChannels()
+        compose.onNodeWithTag("tile_0").performKeyInput { pressKey(Key.DirectionCenter) }
+        assertEquals(listOf(safe), delivered)
+    }
+
+    @Test fun savedFilterChoiceIsAppliedBeforeFirstBrowserLayoutAndSurvivesAccountReload() {
+        RuntimeEnvironment.getApplication().getSharedPreferences("aypi_tivi_prefs", Context.MODE_PRIVATE)
+            .edit().putBoolean("filter_adult", false).commit()
+        val source = listOf(channels[0], channels[1].copy(groupTitle = "ADULT"))
+        render(source)
+        assertFalse(vm.browser.state.value.filterAdult)
+        assertEquals(false, firstBrowseFilter)
+        compose.onNodeWithText("ADULT").assertIsDisplayed()
+        val credentials = CredentialsManager(RuntimeEnvironment.getApplication())
+        compose.runOnIdle {
+            credentials.save("https://provider.example", "other", "synthetic")
+            vm.loadChannels(source + channels[2])
+        }
+        compose.waitUntil(5000) { vm.browser.state.value.categories.find { it.name == "Live" }?.channels?.size == 2 }
+        assertFalse(vm.browser.state.value.filterAdult)
+        compose.onNodeWithText("ADULT").assertIsDisplayed()
+        compose.runOnIdle { vm.toggleAdultFilter() }
+        compose.waitUntil(5000) { vm.browser.state.value.filterAdult }
+        compose.onNodeWithText("ADULT").assertDoesNotExist()
+        compose.runOnIdle { vm.loadChannels(source.toList()) }
+        compose.waitUntil(5000) { vm.browser.state.value.items.size == 2 }
+        compose.onNodeWithText("ADULT").assertDoesNotExist()
     }
 
     @Test fun liveVodSidebarOrderDefaultAndFilteredPlaybackReturnUseCorrectSection() {
