@@ -16,10 +16,10 @@ The user authorized all 35 review suggestions for implementation. [CODE_REVIEW_F
 
 1. A two-second splash screen shows the classic logo and Aypi Tivi name.
 2. Startup automatically loads the current account's saved channel list, keeping the classic logo/name visible with status underneath through connection and list preparation. A fresh list needs no download; one more than 24 hours old appears before a background refresh starts. With no usable snapshot, complete account settings trigger an automatic download. Missing settings open Settings setup; initial errors offer Open Settings for retry/edit. Load/refresh controls stay in Settings.
-3. Categories and Channels share a dark tile browser with a persistent four-icon sidebar: Categories, Favorites, Search and Settings. Recently viewed appears first (up to 20 entries), followed by TR categories and other categories alphabetically. Select a category to see its channels; Back restores the category grid. Empty recents remain available without filler channels.
+3. The persistent sidebar shows Live TV (screen/default), VOD (film), Favorites and Search, with Settings at the bottom. Fresh browsing focuses the screen icon. Live TV and VOD each show provider-named categories with matching entries/counts. Recently viewed appears first in each section, filtered from the same shared 20-entry history; remaining categories retain TR-first/alphabetical order. Select a category to see its entries; Back restores that section's category grid. Empty recents remain available without filler channels.
 4. The default grid fits five columns and four rows. Settings offers saved Large (4 x 3), Standard (5 x 4) and Compact (6 x 4) density, account fields, Save and load, Refresh channel list and the last successful download time. Account edits are saved only after their list loads successfully. Amber fill marks focus without enlarging controls; the active sidebar destination has its own quieter indicator.
-5. Menu on a focused channel opens Add/Remove Favorite; keyboard Context Menu or Shift+F10 opens the same action. Favorites persist per account and appear in playlist order. Back from Favorites restores the preceding Categories/category-channel view. Search matches channel names from the loaded playlist and returns to the previous view when closed.
-6. Selecting a channel opens ExoPlayer. Leaving the player stops/releases playback and restores the originating view, focus and scroll; no stream runs beneath browsing. Back at Categories root offers the existing exit confirmation. Channel cards display an optional provider `tvg-chno` number without invented numbering.
+5. Menu on a focused channel opens Add/Remove Favorite; keyboard Context Menu or Shift+F10 opens the same action. Favorites persist per account and appear in playlist order across both types. Back from Favorites restores the preceding Live TV/VOD root or category view. Search matches names across the loaded live/VOD playlist and returns to the previous view when closed. Live TV and VOD keep separate root/category focus and scroll positions.
+6. Selecting a channel/item opens ExoPlayer, with stepping confined to the selected collection. Leaving the player stops/releases playback and restores the originating section/view, focus and scroll; no stream runs beneath browsing. Back at either category root offers the existing exit confirmation. Channel cards display an optional provider `tvg-chno` number without invented numbering.
 
 The server field is a base address such as `https://provider.example:8080`, without a trailing slash or `/get.php` query. A missing scheme now defaults to HTTPS. Explicit HTTP is retained with an on-screen encryption warning. Requests never silently downgrade HTTPS. The repository encodes each query parameter:
 
@@ -42,13 +42,13 @@ Default login fields come from a private local `.env` at build time. Optional re
 | Context / button | Action |
 | --- | --- |
 | Settings account / D-pad and Select | Move between fields and actions; select a field to edit |
-| Categories / Select | Activate category |
-| Sidebar / Up or Down | Move among its four icons without activating them |
+| Live TV or VOD categories / Select | Activate category |
+| Sidebar / Up or Down | Move among its five icons without activating them |
 | Sidebar / Right | Restore the last focused grid item; empty grids keep usable sidebar focus |
 | Grid / Arrows | Move by column/row, without wrapping; scroll further rows into view |
 | Grid / Left from leftmost column | Focus the active sidebar destination |
 | Channel / Menu or Context Menu / Shift+F10 | Open Add/Remove Favorite |
-| Channel grid / Back | Restore Categories with its focus/scroll |
+| Channel grid / Back | Restore the matching Live TV/VOD category root with its focus/scroll |
 | Player / Menu | Reveal controls and focus Play/Pause |
 | Visible player controls / Arrows and OK | Move focus and activate the focused control |
 | Hidden player controls / Up or Down | Next or previous channel in the current category |
@@ -60,6 +60,8 @@ Default login fields come from a private local `.env` at build time. Optional re
 | Player / Back | Hide visible controls first; when hidden, return to browsing |
 
 These are code mappings, not a completed device acceptance test. All seeking, including native controller seeking, requires detected VOD, stream seekability and a known positive duration; positions clamp to its bounds. Backgrounding releases the player. Returning restores VOD position and previous play/pause intent, while live playback returns to its current stream. VOD detection uses category keywords, URL paths and file extensions. Playback quality, including 4K, depends on the stream, codec, device and connection.
+
+The Live TV/VOD category split uses that existing per-entry detection; it does not obtain an authoritative content type from a structured provider API. A mixed provider category appears in both sections with only matching entries. Favorites/history identities, saved snapshots and account settings are retained. See [LIVE_VOD_BROWSER_REVIEW.md](LIVE_VOD_BROWSER_REVIEW.md) for LV-1's accepted behavior and validation gaps.
 
 ## Build setup
 

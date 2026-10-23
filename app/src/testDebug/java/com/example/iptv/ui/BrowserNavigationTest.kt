@@ -46,6 +46,7 @@ class BrowserNavigationTest {
     private lateinit var vm: HomeViewModel
     private var browsing by mutableStateOf(true)
     private var selected = -1
+    private var delivered = emptyList<M3UChannel>()
     private val channels = (0..31).map {
         M3UChannel(if (it == 0) "Local News" else "Channel $it", "Live", null,
             "https://provider.example/$it", null, null, null, false, if (it == 0) "101" else null)
@@ -57,7 +58,7 @@ class BrowserNavigationTest {
     }
     @After fun close() { compose.runOnIdle { store.clear() }; Dispatchers.resetMain() }
 
-    private fun render() {
+    private fun render(source: List<M3UChannel> = channels) {
         val app = RuntimeEnvironment.getApplication()
         val credentials = CredentialsManager(app).apply { save("https://provider.example", "demo", "synthetic") }
         vm = HomeViewModel(RecentlyWatchedManager(app), preferences = BrowserPreferences(app, credentials))
@@ -65,11 +66,11 @@ class BrowserNavigationTest {
         compose.setContent {
             back = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
             IPTVTheme {
-                if (browsing) BrowserScreen(channels, { index, _ -> selected = index; browsing = false }, vm)
+                if (browsing) BrowserScreen(source, { index, entries -> selected = index; delivered = entries; browsing = false }, vm)
                 else Text("Playback destination")
             }
         }
-        compose.waitUntil(5000) { compose.onAllNodesWithText("Live").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(5000) { compose.onAllNodesWithTag("browser").fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun focusTag(tag: String) = compose.onNodeWithTag(tag).performSemanticsAction(SemanticsActions.RequestFocus) { it() }
@@ -77,6 +78,63 @@ class BrowserNavigationTest {
         compose.onNodeWithText("Live").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
             .performKeyInput { pressKey(Key.DirectionCenter) }
         compose.onNodeWithTag("tile_0").assertIsFocused()
+    }
+
+    @Test fun liveVodSidebarOrderDefaultAndFilteredPlaybackReturnUseCorrectSection() {
+        val mixed = (0..47).map { M3UChannel("Item $it", "Mixed", null,
+            "https://provider.example/item/$it", null, null, null, it % 2 == 1) }
+        render(mixed)
+        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused().assertIsSelected()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live TV")
+        val names = listOf("CATEGORIES", "VOD", "FAVORITES", "SEARCH", "SETTINGS")
+        val positions = names.map { compose.onNodeWithTag("sidebar_$it").assertIsDisplayed().fetchSemanticsNode().boundsInRoot.top }
+        assertEquals(positions.sorted(), positions)
+        compose.onNodeWithContentDescription("Live TV").assertExists()
+        compose.onNodeWithContentDescription("VOD").assertExists()
+        names.forEachIndexed { index, name ->
+            compose.onNodeWithTag("sidebar_$name").assertIsFocused()
+            if (index < names.lastIndex) compose.onNodeWithTag("sidebar_$name").performKeyInput { pressKey(Key.DirectionDown) }
+        }
+        compose.onNodeWithTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("sidebar_SETTINGS").assertIsFocused()
+        assertEquals(BrowserDestination.CATEGORIES, vm.browser.state.value.location.destination)
+        assertEquals(-1, selected)
+        focusTag("sidebar_VOD").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        compose.onNodeWithText("24 channels").assertIsDisplayed()
+        compose.onNodeWithText("Mixed").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            .performKeyInput { pressKey(Key.DirectionCenter) }
+        assertTrue(vm.browser.state.value.items.all { it.entry!!.channel.isVod })
+        compose.onNodeWithTag("browser_grid").performScrollToIndex(22)
+        focusTag("tile_22").performKeyInput { pressKey(Key.DirectionCenter) }
+        assertEquals(mixed.filter { it.isVod }, delivered)
+        assertEquals(22, selected)
+        compose.runOnIdle { vm.returnFromPlayback(23); browsing = true }
+        compose.onNodeWithTag("tile_23").assertIsFocused().assertIsDisplayed()
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        compose.onNodeWithText("Mixed").assertIsFocused()
+        focusTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live TV")
+        compose.onNodeWithText("Mixed").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            .performKeyInput { pressKey(Key.DirectionCenter) }
+        assertTrue(vm.browser.state.value.items.all { it.entry!!.channel.isVod.not() })
+    }
+
+    @Test fun emptyVodRecentKeepsSidebarUsableAndReturnsToVodRoot() {
+        render()
+        compose.onNodeWithTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionUp) }
+        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused()
+        focusTag("sidebar_VOD").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithText("Live").assertDoesNotExist()
+        compose.onNodeWithTag("tile_0").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.onNodeWithTag("sidebar_VOD").assertIsFocused().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("sidebar_VOD").assertIsFocused()
+        compose.onNodeWithText("No channels in this category.").assertIsDisplayed()
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
+        compose.onNodeWithTag("tile_0").assertIsFocused()
+        compose.onAllNodes(isFocused()).assertCountEquals(1)
     }
 
     @Test fun gridEdgesAndAllSidebarButtonsMoveFocusWithoutActivating() {

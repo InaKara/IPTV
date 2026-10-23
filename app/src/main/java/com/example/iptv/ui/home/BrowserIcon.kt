@@ -53,6 +53,15 @@ internal fun BrowserIcon(kind: Int, color: Color, modifier: Modifier = Modifier)
                 drawPath(path, color, style = stroke)
                 drawCircle(color, 6f * unit, point(18f, 18f), style = stroke)
             }
+            5 -> {
+                drawRoundRect(color, point(3f, 4f), Size(30f * unit, 28f * unit), CornerRadius(2f * unit), style = stroke)
+                drawLine(color, point(10f, 4f), point(10f, 32f), stroke.width)
+                drawLine(color, point(26f, 4f), point(26f, 32f), stroke.width)
+                for (y in listOf(11f, 18f, 25f)) {
+                    drawLine(color, point(3f, y), point(10f, y), stroke.width)
+                    drawLine(color, point(26f, y), point(33f, y), stroke.width)
+                }
+            }
             else -> {
                 val path = Path().apply {
                     moveTo(3f * unit, 9f * unit); lineTo(14f * unit, 9f * unit)

@@ -1377,6 +1377,76 @@
       "kind": "App",
       "group": "player",
       "source": "app/src/testDebug/java/com/example/iptv/ui/TvPlayerControlsTest.kt"
+    },
+    {
+      "id": "MC-UI-012",
+      "key": "manual#UI-012",
+      "title": "Verify LV-1 on device: verify Live TV default/screen focus, ordered Live TV VOD Favorites Search icons, retained bottom Settings, accessible headings and five-control remote focus",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LIVE_VOD_BROWSER_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-013",
+      "key": "manual#BROWSE-013",
+      "title": "Verify LV-1 on device: verify live/VOD category splitting, mixed counts/order, shared history/favorites/search identities and independent section bookmarks, Back, refresh and playback return",
+      "kind": "Manual",
+      "group": "manual",
+      "source": "LIVE_VOD_BROWSER_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-089",
+      "key": "com.example.iptv.ui.browser.LiveVodBrowserTest#parsedMixedGroupsKeepTypeCountsOrderAndSharedFavoriteSearchIdentities",
+      "title": "Parsed mixed categories split by type with counts order recents and shared favorites/search identities",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/LiveVodBrowserTest.kt"
+    },
+    {
+      "id": "TC-APP-090",
+      "key": "com.example.iptv.ui.browser.LiveVodBrowserTest#matchingSectionRootsAndNestedReturnsRetainIndependentBookmarks",
+      "title": "Live and VOD roots/categories retain separate bookmarks and nested return targets",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/LiveVodBrowserTest.kt"
+    },
+    {
+      "id": "TC-APP-091",
+      "key": "com.example.iptv.ui.browser.LiveVodBrowserTest#refreshReclassifiesWithoutLosingFavoriteIdsAndEmptySectionResetIsSafe",
+      "title": "Refresh retains identity and resolves type changes empty VOD sections and account reset safely",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/LiveVodBrowserTest.kt"
+    },
+    {
+      "id": "TC-APP-092",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#liveVodSidebarOrderDefaultAndFilteredPlaybackReturnUseCorrectSection",
+      "title": "Five-control order/default and mixed VOD playback collection/scroll return work through actual Compose remote input",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-093",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#emptyVodRecentKeepsSidebarUsableAndReturnsToVodRoot",
+      "title": "Empty VOD recents retain usable sidebar focus and Back returns to VOD root",
+      "kind": "App",
+      "group": "browser",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "MC-UI-013",
+      "key": "manual#UI-013",
+      "title": "Pending CF-1: verify current-view headings at both roots, provider/recent categories, Favorites/Search/Settings, returns, refresh and long/blank names",
+      "kind": "Manual",
+      "source": "CATEGORY_FILTER_REVIEW.md; REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-SET-008",
+      "key": "manual#SET-008",
+      "title": "Pending CF-1: verify default-active saved adult-category filter, all browsing/playback collections, refresh/account changes, reversible data retention and remote Settings/focus recovery",
+      "kind": "Manual",
+      "source": "CATEGORY_FILTER_REVIEW.md; REQUIREMENTS.md"
     }
   ],
   "requirements": [
@@ -1915,10 +1985,11 @@
       "coverage": "Partial",
       "cases": [
         "TC-APP-004",
-        "TC-APP-005"
+        "TC-APP-005",
+        "TC-APP-089"
       ],
       "gap": "URL heuristic regressions; category/path keyword variants are not exhaustively covered.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "VOD-002",
@@ -2337,15 +2408,16 @@
     },
     {
       "id": "UI-007",
-      "fingerprint": "72c23f855acec4c6926d5b05fee84f89db9cbb92fa4531fe18b89c1b32314bef",
+      "fingerprint": "dc561fbd54312c2320c23fc48e3aa20aa9feb5bba400b80bbb88618da8b693f2",
       "coverage": "Partial",
       "cases": [
         "TC-APP-060",
         "TC-APP-064",
-        "MC-UI-007"
+        "MC-UI-007",
+        "TC-APP-092"
       ],
       "gap": "Native host rendering and Compose destination/focus behavior are automated; actual TV proportions, accessible naming with assistive technology and subjective visual acceptance remain device checks.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "UI-008",
@@ -2377,7 +2449,7 @@
     },
     {
       "id": "BROWSE-009",
-      "fingerprint": "4b798d10860722a9416866ba10583d818a17f02056da586b42a3a78b2e36bbfe",
+      "fingerprint": "00364569c21541be7a5d62437e0462359df197508acdd98d82c11aa498206a04",
       "coverage": "Partial",
       "cases": [
         "TC-APP-022",
@@ -2388,14 +2460,17 @@
         "TC-APP-053",
         "TC-APP-061",
         "TC-APP-063",
-        "MC-BROWSE-009"
+        "MC-BROWSE-009",
+        "TC-APP-090",
+        "TC-APP-092",
+        "TC-APP-093"
       ],
       "gap": "Hierarchy, ordering, Back handlers and retained return state are automated with synthetic data. Real decoder/player release and root exit dialog integration remain separate device checks.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "BROWSE-010",
-      "fingerprint": "96640172f52e7ed63c9feaa25e0a33c06a632710890e9e7442fb0ca9a931fd89",
+      "fingerprint": "cdc2ff0f0dc2a1bf456e048573f44364800641affe3990e2d943e48a41c122c7",
       "coverage": "Partial",
       "cases": [
         "TC-APP-040",
@@ -2405,14 +2480,17 @@
         "TC-APP-055",
         "TC-APP-060",
         "TC-APP-063",
-        "MC-BROWSE-010"
+        "MC-BROWSE-010",
+        "TC-APP-090",
+        "TC-APP-092",
+        "TC-APP-093"
       ],
       "gap": "Pure boundary/identity/bookmark policies and Compose empty/scrolled/sidebar/density/re-entry focus paths are covered. Full activity recreation and physical remote repeat timing remain manual acceptance.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "BROWSE-011",
-      "fingerprint": "86e955e5a83b2c1ce3e4133fa51a6838b4b7ab9652856a0b38ba0a5bd289530d",
+      "fingerprint": "44e48cd51bea0a9467ac6d856281bea24381ba0f81413d3c268af855088fd1b5",
       "coverage": "Partial",
       "cases": [
         "TC-APP-053",
@@ -2420,22 +2498,27 @@
         "TC-APP-058",
         "TC-APP-059",
         "TC-APP-061",
-        "MC-BROWSE-011"
+        "MC-BROWSE-011",
+        "TC-APP-089",
+        "TC-APP-090",
+        "TC-APP-091"
       ],
       "gap": "Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "BROWSE-012",
-      "fingerprint": "463787fc4ebb4d005fcbad5fd9aee68753427611813324c94bda3e60dd9125b9",
+      "fingerprint": "ef18956b466ea531509a87fe53cccc86ec8cd6cc819e2f9aa472a426f561d153",
       "coverage": "Partial",
       "cases": [
         "TC-APP-056",
         "TC-APP-062",
-        "MC-BROWSE-012"
+        "MC-BROWSE-012",
+        "TC-APP-089",
+        "TC-APP-090"
       ],
       "gap": "Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
-      "reviewNote": "BR-1 local implementation complete. Cases 052-064 assert provider numbers; duplicate-safe stable IDs; boundary/scroll/Back policies; account/restart/future-schema preferences; real Compose remote/menu/search/re-entry behavior; and native 20-tile/all-density geometry plus whole-control amber pixels without scaling. TV keyboard-mode initialization also handles non-remote launch. Existing 023/038/040/041 assertions follow the approved hierarchy. Manual gaps remain physical TV, complete activity lifecycle and actual decoder/resource-release acceptance. Rerun fresh smoke/lint for these Implemented statuses."
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
     },
     {
       "id": "SET-006",
@@ -2602,6 +2685,58 @@
       ],
       "gap": "New native decoder/build proposal, not implemented. No software decoder, synthetic decode test or package verification exists yet; actual device decoding/output is also unverified.",
       "reviewNote": "AU-1 proposed after PC probe identified MP2. This new native dependency/build scope is explicitly awaiting approval; no existing test validates software decoding or packaged native loading. Pending manual disposition is honest, and real assertions must follow approval."
+    },
+    {
+      "id": "UI-012",
+      "fingerprint": "7e646e0d28088af6d55367bac37a35b019c0d9756c754406ec6ec9d5434b18c0",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-092",
+        "TC-APP-093",
+        "TC-APP-060",
+        "TC-APP-064",
+        "MC-UI-012"
+      ],
+      "gap": "Actual Compose tests assert initial screen focus, ordered five-control positions/labels and traversal without activation, empty VOD focus and matching root. Native rendering covers amber whole-control pixels without scaling for all five controls and unchanged densities. Physical TV icon readability/remote acceptance remains pending.",
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+    },
+    {
+      "id": "BROWSE-013",
+      "fingerprint": "b82dc9a5c3dd12283a353e7bff83b4ae4c8f120a23c7ea5d4a4ac7ec349e9935",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-089",
+        "TC-APP-090",
+        "TC-APP-091",
+        "TC-APP-092",
+        "TC-APP-093",
+        "TC-APP-057",
+        "TC-APP-058",
+        "TC-APP-029",
+        "MC-BROWSE-013"
+      ],
+      "gap": "Synthetic parser/catalog/state tests assert exact mixed membership/count/order, canonical identities, global favorites/search, filtered existing recents, independent section/category bookmarks and nested returns, refresh/type change/removal/reset. Compose tests exercise VOD filtered playback delivery, scrolled return and empty VOD Back/focus. Existing account/history/player-session assertions retained. Full Activity recreation, authoritative provider types and actual device playback remain separate.",
+      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+    },
+    {
+      "id": "UI-013",
+      "fingerprint": "6d1b1037b7a6d5c40913a504bc5c2bb1748e3804f7cf9fc91af9b8b42f143c2a",
+      "coverage": "Manual",
+      "cases": [
+        "MC-UI-013"
+      ],
+      "gap": "Proposed current-category title behavior is unimplemented. Existing root-heading checks do not cover category-name titles, Favorites labeling or long/blank names. Add actual Compose navigation/title/geometry assertions after approval; physical TV readability remains manual.",
+      "reviewNote": "CF-1 proposal only: reviewed current heading and preference code; category titles and default-active adult filter are absent. New pending manual cases identify matching/persistence/all-route visibility/focus and title gaps. Real synthetic storage/controller/Compose assertions follow explicit implementation approval."
+    },
+    {
+      "id": "SET-008",
+      "fingerprint": "1aafd7a3dcaba03bbcf94131848f6e32a8d87496c9590c0649cafb1444fab960",
+      "coverage": "Manual",
+      "cases": [
+        "MC-SET-008"
+      ],
+      "gap": "No adult filter or preference exists. Proposed substring matching, first-presentation default, saved device-wide state, counts, global visibility, identity retention and Settings/return focus require meaningful synthetic storage/controller/Compose assertions after approval; physical remote/playback acceptance remains manual.",
+      "reviewNote": "CF-1 proposal only: reviewed current heading and preference code; category titles and default-active adult filter are absent. New pending manual cases identify matching/persistence/all-route visibility/focus and title gaps. Real synthetic storage/controller/Compose assertions follow explicit implementation approval."
     }
   ]
 }

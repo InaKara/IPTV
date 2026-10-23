@@ -13,6 +13,8 @@
     <string name="reading_saved_channels">Reading saved channels…</string>
     <string name="open_settings">Open Settings</string>
     <string name="categories">Categories</string>
+    <string name="live_tv">Live TV</string>
+    <string name="vod">VOD</string>
     <string name="channels">Channels</string>
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>

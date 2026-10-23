@@ -193,6 +193,12 @@ UI-010/011 and PLAY-009 implement branded startup status, larger fitted tile art
 
 PLAY-008 remains Partial. A bounded PC metadata probe found H.264 video plus MP2 stereo audio at 48 kHz on the reported channel. The user explicitly approved read-only codec inspection; six system/vendor codec files declare an MP3 decoder for audio/mpeg but no MP2 declaration. The debugging transport was connected solely to read these files. No install, app stop/start, navigation, input, power or setting changes were performed. This supports a codec-compatibility explanation but does not prove runtime decoder selection or audible output. AU-1 / PLAY-010 proposes a software decoder and awaits separate approval. See LATEST_APP_REVIEW.md; private probe/device data stays ignored.
 
+## LV-1 local validation — 23 October 2026; not deployed
+
+UI-012/BROWSE-013 implement the ordered Live TV, VOD, Favorites and Search sidebar with bottom Settings and initial screen-icon focus. Existing per-entry classification partitions provider categories while preserving canonical identities, shared Favorites/Search/history and independent section/category bookmarks and returns. Fresh `.\test-smoke.ps1 -Lint` passed 133/133 in 35.32 seconds with zero failures/skips/errors. Debug assembly, optimized unsigned-release assembly and release lint passed; debug/release lint reported zero errors and 30/34 warnings. The release build was an extra local packaging check; the personal Firestick workflow continues to use the debug APK and relevant local checks.
+
+No device connection, install, app stop/start or provider request was performed for LV-1. After separately approved deployment, physical acceptance must cover five-control remote focus/readability, both section roots and mixed categories, empty sections, offscreen playback return, global Favorites/Search and matching Back targets. Local Compose/controller tests do not establish device playback or full Activity recreation acceptance. No audio decoder or provider API change was added. See [LIVE_VOD_BROWSER_REVIEW.md](LIVE_VOD_BROWSER_REVIEW.md).
+
 ## References
 
 - [Amazon: connect to Fire TV through ADB](https://developer.amazon.com/docs/fire-tv/connecting-adb-to-device.html)

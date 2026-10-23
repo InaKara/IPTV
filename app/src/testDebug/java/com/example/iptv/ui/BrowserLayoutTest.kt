@@ -161,6 +161,16 @@ class BrowserLayoutTest {
             assertEquals(0xffffd15c.toInt(), sidebarImage.getPixel((sidebar.left + 8).roundToInt(), (sidebar.top + 8).roundToInt()))
             assertEquals(0xff191d1e.toInt(), sidebarImage.getPixel((before.left + 8).roundToInt(), (before.top + 8).roundToInt()))
             compose.onNodeWithTag("sidebar_CATEGORIES").assertIsSelected()
+            for (name in listOf("VOD", "FAVORITES", "SEARCH", "SETTINGS")) {
+                val control = compose.onNodeWithTag("sidebar_$name")
+                val bounds = control.fetchSemanticsNode().boundsInRoot
+                control.performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+                control.assertIsFocused()
+                val image = screenshot("browser-sidebar-${name.lowercase()}-focus")
+                assertEquals(bounds, control.fetchSemanticsNode().boundsInRoot)
+                assertEquals(0xffffd15c.toInt(), image.getPixel((bounds.left + 8).roundToInt(), (bounds.top + 8).roundToInt()))
+                compose.onNodeWithTag("sidebar_CATEGORIES").assertIsSelected()
+            }
             for (density in listOf(GridDensity.STANDARD, GridDensity.LARGE, GridDensity.COMPACT)) {
                 compose.runOnIdle { vm.setDensity(density) }
                 compose.waitUntil(5000) { vm.browser.state.value.density == density }

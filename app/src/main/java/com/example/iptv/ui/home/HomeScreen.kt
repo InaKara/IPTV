@@ -92,7 +92,7 @@ fun BrowserScreen(
     val gridState = remember(viewKey, density, state.query, items) {
         LazyGridState(restoredIndex(items, bookmark.firstVisibleId, bookmark.firstVisibleIndex), bookmark.scrollOffset)
     }
-    val sidebarRequesters = remember { List(4) { FocusRequester() } }
+    val sidebarRequesters = remember { List(BrowserDestination.values().size) { FocusRequester() } }
     val queryRequester = remember { FocusRequester() }
     val accountRequester = remember { FocusRequester() }
     val densityRequesters = remember { GridDensity.values().associateWith { FocusRequester() } }
@@ -131,7 +131,7 @@ fun BrowserScreen(
         when {
             target.startsWith("sidebar:") -> {
                 val index = target.substringAfter(':').toInt()
-                if (vertical != 0) move("sidebar:${(index + vertical).coerceIn(0, 3)}")
+                if (vertical != 0) move("sidebar:${(index + vertical).coerceIn(0, sidebarRequesters.lastIndex)}")
                 else if (horizontal > 0) when (state.location.destination) {
                     BrowserDestination.SETTINGS -> move("density:${density.name}")
                     BrowserDestination.SEARCH -> if (state.bookmark.focusedId == null || items.isEmpty()) move("query") else requestGrid()
@@ -139,12 +139,12 @@ fun BrowserScreen(
                 }
             }
             target == "query" -> {
-                if (horizontal < 0) move("sidebar:2")
+                if (horizontal < 0) move("sidebar:${BrowserDestination.SEARCH.ordinal}")
                 else if (vertical > 0 && items.isNotEmpty()) requestGrid()
             }
             target.startsWith("density:") -> {
                 val index = GridDensity.valueOf(target.substringAfter(':')).ordinal
-                if (horizontal < 0) move("sidebar:3")
+                if (horizontal < 0) move("sidebar:${BrowserDestination.SETTINGS.ordinal}")
                 else if (horizontal > 0 && accountSettings != null) move("account")
                 else if (vertical != 0) move("density:${GridDensity.values()[(index + vertical).coerceIn(0, 2)].name}")
             }
@@ -213,7 +213,8 @@ fun BrowserScreen(
         val isSearch = state.location.destination == BrowserDestination.SEARCH
         val isSettings = state.location.destination == BrowserDestination.SETTINGS
         val title = when (state.location.destination) {
-            BrowserDestination.CATEGORIES -> if (state.location.categoryId == null) R.string.categories else R.string.channels
+            BrowserDestination.CATEGORIES -> if (state.location.categoryId == null) R.string.live_tv else R.string.channels
+            BrowserDestination.VOD -> if (state.location.categoryId == null) R.string.vod else R.string.channels
             BrowserDestination.FAVORITES -> R.string.channels
             BrowserDestination.SEARCH -> R.string.search
             BrowserDestination.SETTINGS -> R.string.settings
@@ -224,12 +225,13 @@ fun BrowserScreen(
                 Box(Modifier.width(1.dp).fillMaxHeight().align(Alignment.CenterEnd).background(BrowserColors.border))
                 BrowserDestination.values().forEachIndexed { index, destination ->
                     val label = stringResource(when (destination) {
-                        BrowserDestination.CATEGORIES -> R.string.categories
+                        BrowserDestination.CATEGORIES -> R.string.live_tv
+                        BrowserDestination.VOD -> R.string.vod
                         BrowserDestination.FAVORITES -> R.string.favorites
                         BrowserDestination.SEARCH -> R.string.search
                         BrowserDestination.SETTINGS -> R.string.settings
                     })
-                    val y = if (index == 3) 820 else 102 + index * 96
+                    val y = if (destination == BrowserDestination.SETTINGS) 820 else 102 + index * 96
                     BrowserControl(
                         Modifier.offset((18 * scale).dp, (y * scale).dp).size((84 * scale).dp)
                             .focusRequester(sidebarRequesters[index]).testTag("sidebar_${destination.name}")
@@ -242,7 +244,14 @@ fun BrowserScreen(
                         if (state.activeSidebar == index && tint != BrowserColors.dark) {
                             Box(Modifier.width((4 * scale).dp).height((64 * scale).dp).align(Alignment.CenterStart).background(BrowserColors.text))
                         }
-                        BrowserIcon(index, tint, Modifier.size((36 * scale).dp).align(Alignment.Center))
+                        val icon = when (destination) {
+                            BrowserDestination.CATEGORIES -> 0
+                            BrowserDestination.VOD -> 5
+                            BrowserDestination.FAVORITES -> 1
+                            BrowserDestination.SEARCH -> 2
+                            BrowserDestination.SETTINGS -> 3
+                        }
+                        BrowserIcon(icon, tint, Modifier.size((36 * scale).dp).align(Alignment.Center))
                     }
                 }
             }

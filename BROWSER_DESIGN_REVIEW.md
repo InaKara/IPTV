@@ -2,6 +2,8 @@
 
 Prepared 22 October 2026. **BR-1 explicitly approved: “approved, implement”, 22 October 2026. Local implementation completed; physical Fire TV acceptance pending.** The user's answers below settle the identified product questions. Approval covers the complete revision and selected local implementation/test/documentation scope; publication and deployment remain separate.
 
+**Later approved revision:** [LV-1](LIVE_VOD_BROWSER_REVIEW.md), 23 October 2026, extends the sidebar to Live TV, VOD, Favorites, Search and bottom Settings. It separates the former combined category root and changes fresh-session focus to the Live TV screen icon. The historical BR-1 design below remains context; LV-1 takes precedence for these revised behaviors.
+
 The reference is the user-supplied **Amber-focused IPTV channel grid.png** and accompanying design prompt. The later answers take precedence over the reference and prompt. The image guides real native components; its sample channel artwork and content are not production data.
 
 ## Decisions from the user
