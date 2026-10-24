@@ -1499,7 +1499,7 @@
     {
       "id": "MC-VOD-006",
       "key": "manual#VOD-006",
-      "title": "Pending backlog scope review: VOD-006 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
+      "title": "Review MD-1 persistent progress defaults, then verify account/identity/save/resume/watched/reset/Continue watching and physical VOD behavior",
       "kind": "Manual",
       "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
     },
@@ -1698,6 +1698,34 @@
       "kind": "App",
       "group": "playback",
       "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
+    },
+    {
+      "id": "MC-DATA-008",
+      "key": "manual#DATA-008",
+      "title": "Review MD-1 DATA-008 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "kind": "Manual",
+      "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
+    },
+    {
+      "id": "MC-LIB-002",
+      "key": "manual#LIB-002",
+      "title": "Review MD-1 LIB-002 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "kind": "Manual",
+      "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-015",
+      "key": "manual#BROWSE-015",
+      "title": "Review MD-1 BROWSE-015 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "kind": "Manual",
+      "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
+    },
+    {
+      "id": "MC-PLAY-014",
+      "key": "manual#PLAY-014",
+      "title": "Review MD-1 PLAY-014 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "kind": "Manual",
+      "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
     }
   ],
   "requirements": [
@@ -2378,8 +2406,8 @@
         "TC-APP-011",
         "TC-APP-022"
       ],
-      "gap": "Async download/group outcomes only; UI-thread performance/lazy behavior need profiling/device evidence. Actual Android parsing memory exhaustion is confirmed historically; default local tests do not establish large-list Android heap safety.",
-      "reviewNote": "SF-1 investigation only: retain existing schema/account/durability/startup assertions but mark the explicit uncovered blank-category defect and actual provider startup failure. Acceptance/status proposals await review before adding synthetic blank-category implementation tests. Historical Android OOM/consumed notice evidence is separate from host results; memory safety remains unverified. No app code or implementation tests changed."
+      "gap": "Approved Android session completed two full cached starts and an actual refresh with no recorded fatal/OOM and a 146.29 MiB highest sampled Java allocation. Instrumented timings are not an unprofiled speed target; larger lists, missed peaks, repeated overlap and pressure remain unverified.",
+      "reviewNote": "24 October approved device investigation and user deployment/smoke confirmation add evidence only; criteria/statuses and implementation tests are unchanged. Preserve automated/native evidence separately from user-confirmed TRT sound, controls and picture visibility. Add measured two cached starts/one actual refresh with sampled Android Java allocation maxima and no fresh fatal/OOM. Keep exact manual gaps for known-good audio/sync/renderer-memory identity, live expiry/fallback/physical variants and missed peaks/stress; do not infer full acceptance or a historical crash fix."
     },
     {
       "id": "REL-002",
@@ -2389,8 +2417,8 @@
         "TC-APP-024",
         "TC-APP-021"
       ],
-      "gap": "Safe errors/retry and generic crash marker/delegation; crash notice/playback UI on device unverified. Separate device evidence on 23 October confirms a consumed prior-crash marker and no new fatal error in the controlled restart; exact old heap retention cause is unresolved.",
-      "reviewNote": "SF-1 investigation only: retain existing schema/account/durability/startup assertions but mark the explicit uncovered blank-category defect and actual provider startup failure. Acceptance/status proposals await review before adding synthetic blank-category implementation tests. Historical Android OOM/consumed notice evidence is separate from host results; memory safety remains unverified. No app code or implementation tests changed."
+      "gap": "Historical marker/recovery behavior is separately checked. No fresh fatal/OOM was recorded in the 24 October approved two-start/refresh session; historical memory-crash resolution remains unproven.",
+      "reviewNote": "24 October approved device investigation and user deployment/smoke confirmation add evidence only; criteria/statuses and implementation tests are unchanged. Preserve automated/native evidence separately from user-confirmed TRT sound, controls and picture visibility. Add measured two cached starts/one actual refresh with sampled Android Java allocation maxima and no fresh fatal/OOM. Keep exact manual gaps for known-good audio/sync/renderer-memory identity, live expiry/fallback/physical variants and missed peaks/stress; do not infer full acceptance or a historical crash fix."
     },
     {
       "id": "REL-003",
@@ -2924,8 +2952,8 @@
         "TC-APP-086",
         "MC-PLAY-008"
       ],
-      "gap": "Provider MP2 and read-only device declarations support the missing-codec diagnosis. Bounded private-data-safe diagnostics are locally checked. AU-1 is now explicitly approved and implemented locally; Android selected decoder/output and audible affected/known-good streams remain physical acceptance.",
-      "reviewNote": "Approved AU-1 integrated with official sources, pinned narrow ARM build, actual production renderer-order assertion and separate native Bionic non-silent MP2/ABI/JNI/configuration evidence. Status Partial preserves Android load, selected renderer, known-good/audio and synchronization acceptance gaps."
+      "gap": "User confirms TRT 1 HD sound on the deployed matching APK; fixed device diagnostics show selected/supported MP2 and decoder initialization. Known-good audible comparison, explicit synchronization and broader format/stream acceptance remain incomplete; fixed logs do not identify the renderer.",
+      "reviewNote": "24 October approved device investigation and user deployment/smoke confirmation add evidence only; criteria/statuses and implementation tests are unchanged. Preserve automated/native evidence separately from user-confirmed TRT sound, controls and picture visibility. Add measured two cached starts/one actual refresh with sampled Android Java allocation maxima and no fresh fatal/OOM. Keep exact manual gaps for known-good audio/sync/renderer-memory identity, live expiry/fallback/physical variants and missed peaks/stress; do not infer full acceptance or a historical crash fix."
     },
     {
       "id": "PLAY-009",
@@ -2939,8 +2967,8 @@
         "TC-APP-028",
         "MC-PLAY-009"
       ],
-      "gap": "Native local controls cover Menu/initial focus/amber pixels, OK activation, visible versus hidden key ownership, repeats and timeout. Inflated native settings/submenu rows retain required IDs and exercise focus order plus background/text contrast; existing VOD seek guards remain. Complete Compose-to-native/pop-up routing and physical remote acceptance remain separate.",
-      "reviewNote": "UX-1 native focus/routing/timeout and VOD guards retained. Added an actual inflated settings/submenu row check for remote focus order, required Media3 IDs and rendered amber/readable text contrast after release resource linking exposed missing declarations. Full popup routing/physical remote acceptance remains manual."
+      "gap": "Local native checks and user-confirmed deployed controls are supplemented by direct Firestick Menu/amber focus, remote Live navigation, settings popup/Back dismissal, timeout and final player-release observations. A stale accessibility browsing snapshot was disproved by actual hierarchy/direct screenshots; no app exit defect established. Exhaustive physical key/lifecycle/VOD variants remain separate.",
+      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
     },
     {
       "id": "PLAY-010",
@@ -2950,8 +2978,8 @@
         "TC-APP-100",
         "MC-PLAY-010"
       ],
-      "gap": "Actual production renderer factory is checked locally for platform-first audio, one official software extension and retained video. Native source-build/PCM/ELF/APK checks are separate slower evidence. Android dynamic loading, track selection, supported-format regression, audible MP2 and synchronization remain separately authorized physical checks.",
-      "reviewNote": "Approved AU-1 integrated with official sources, pinned narrow ARM build, actual production renderer-order assertion and separate native Bionic non-silent MP2/ABI/JNI/configuration evidence. Status Partial preserves Android load, selected renderer, known-good/audio and synchronization acceptance gaps."
+      "gap": "Production factory/native source/ABI/PCM/APK checks remain valid. User confirms TRT 1 HD sound and actual device logs show supported/selected MP2 plus decoder initialization. Audible known-good comparison, synchronization, exact runtime decoder identity and isolated codec-memory delta remain incomplete.",
+      "reviewNote": "24 October approved device investigation and user deployment/smoke confirmation add evidence only; criteria/statuses and implementation tests are unchanged. Preserve automated/native evidence separately from user-confirmed TRT sound, controls and picture visibility. Add measured two cached starts/one actual refresh with sampled Android Java allocation maxima and no fresh fatal/OOM. Keep exact manual gaps for known-good audio/sync/renderer-memory identity, live expiry/fallback/physical variants and missed peaks/stress; do not infer full acceptance or a historical crash fix."
     },
     {
       "id": "UI-012",
@@ -3019,13 +3047,13 @@
     },
     {
       "id": "VOD-006",
-      "fingerprint": "7e9c1266ecd638f437d1099e814c0621b2a7c3bd0dc4ee9567d94c1ea2c9567c",
+      "fingerprint": "2b785b6e13fa436386cb36cece65dfdc5faad180264b2a39bc38595797da07a6",
       "coverage": "Manual",
       "cases": [
         "MC-VOD-006"
       ],
-      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
-      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+      "gap": "MD-1 watching defaults are proposed, not approved: per-account typed identity, 10-second/event saves, 30-second Continue watching threshold, 95%/ended watched state, reset/resume capability and eviction/account isolation need meaningful assertions after approval. Session-only baseline resume does not establish persistent progress.",
+      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
     },
     {
       "id": "EPG-001",
@@ -3130,8 +3158,8 @@
         "TC-APP-106",
         "MC-PLAY-012"
       ],
-      "gap": "Local source-boundary, actual HLS source/timeline, live/VOD guarded commands, bounded recovery/fallback and native focus/time/key checks cover approved LP-1. Physical provider seeking, long-pause recovery, audiovisual continuity and remote acceptance remain separate.",
-      "reviewNote": "LP-1 local implementation complete: actual synthetic HLS rolling-window/invalid-manifest checks, canonical provider/account source rules, live/VOD bounded commands, repeat-safe expiry and original-source fallback, native lag/Live amber focus/usable fallback, remote increments/timing/timeout and listener cleanup. Physical provider/audiovisual/remote acceptance remains separate."
+      "gap": "Local live tests plus direct Firestick accepted -10/+10 commands, remote Live return from -00:22 to live, and 91.3-second pause followed by resumed moving video through about 79 seconds. No playback/fatal/codec/sink failure recorded, but no behind-live-window exception captured, so that exact recovery branch and original-source fallback were not provoked physically. Exhaustive window bounds, VOD, audible post-pause continuity and synchronization remain incomplete.",
+      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
     },
     {
       "id": "REL-004",
@@ -3155,8 +3183,8 @@
         "TC-APP-081",
         "MC-REL-004"
       ],
-      "gap": "Exact metadata/identity/schema sharing, bounds, per-load/account isolation, interrupted input and retained cache/refresh/cancel regressions pass locally. Representative offline host retained savings are about 18 MiB on loading and 37 MiB during refresh overlap, with about 5.35 MiB additional cumulative snapshot-read allocation. Actual Android peaks/decoder memory and physical playback continuity remain pending; historical OOM resolution is unproven.",
-      "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
+      "gap": "Exact local sharing tests and host comparison pass. Android two cached starts/actual refresh maxima 81.32/85.64 and 146.29 MiB Java against 192 MiB, no fresh fatal/OOM; sampled live AAC pause/resume highest Java 74.12 MiB. Brief peaks can be missed; no matched pre-change Android build, isolated MP2 delta, playback-refresh overlap/repeated-refresh or pressure stress acceptance. Historical OOM resolution remains unproven.",
+      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
     },
     {
       "id": "PLAY-013",
@@ -3173,8 +3201,48 @@
         "TC-APP-106",
         "MC-PLAY-013"
       ],
-      "gap": "Local native pixel comparisons preserve bright/dark frames above the bottom quarter at both TV resolutions/densities. Actual widget bounds, surface/shutter/scale/play intent, repeated live/VOD playing/paused seeks, popup dismissal and remote timeout checks plus actual Compose notice movement/event-timeout checks pass. Physical moving-video/paused-frame visibility, real repeated seeking and TV readability remain separate Firestick acceptance.",
-      "reviewNote": "PV-1 implemented after explicit approval. TC-APP-111 compares unchanged bright/dark pixels and actual lower-quarter widget bounds at mdpi/xhdpi TV sizes. TC-APP-112 retains rendered-surface/shutter/scale and play intent through repeated live/VOD playing/paused seeks, actual settings popup dismissal, Back and timeout. TC-APP-113 verifies actual Compose notice clearance after completed recomposition and unchanged event timeout. Existing native key/focus/Live tests retained; hardware moving-video/paused-frame acceptance remains manual."
+      "gap": "Local pixel/bounds/state/notice tests plus user confirmation and direct Firestick visible video under controls, retained paused frame across 91.3 seconds, seeks/Live, native settings dismissal and Back/player release. Accessibility XML was stale; actual hierarchy/screenshots disproved an apparent player exit. Exhaustive VOD/resolution/input/readability variants remain separate.",
+      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
+    },
+    {
+      "id": "DATA-008",
+      "fingerprint": "6566b8234fc41d5cc409f16dc87cac96f0ee1444fd519ae8e0b96c770b5e60de",
+      "coverage": "Manual",
+      "cases": [
+        "MC-DATA-008"
+      ],
+      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
+      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+    },
+    {
+      "id": "LIB-002",
+      "fingerprint": "5f161680eff960385ea3ad8a1af85a042f4b6680705f78bf75b472a30341b332",
+      "coverage": "Manual",
+      "cases": [
+        "MC-LIB-002"
+      ],
+      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
+      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+    },
+    {
+      "id": "BROWSE-015",
+      "fingerprint": "ee6d5a219144f7cb226302a09733780edf366bd852a657a4754fe8a9dbbbe947",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-015"
+      ],
+      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
+      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+    },
+    {
+      "id": "PLAY-014",
+      "fingerprint": "d61b0c21ff0a73079dd6682dc394f8b450f1f7b9f8716f90ebfcc45d660c62dc",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-014"
+      ],
+      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
+      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
     }
   ]
 }
