@@ -19,13 +19,15 @@ internal fun wrappedChannelIndex(index: Int, delta: Int, size: Int): Int? {
 data class SessionState(
     val channels: List<M3UChannel> = emptyList(),
     val category: List<M3UChannel> = emptyList(),
-    val selectedIndex: Int? = null
+    val selectedIndex: Int? = null,
+    val identities: List<String> = emptyList()
 ) {
     val selected: M3UChannel? get() = selectedIndex?.let { category.getOrNull(it) }
 }
 
 @HiltViewModel
-class SessionViewModel @Inject constructor(private val recents: RecentlyWatchedManager) : ViewModel() {
+class SessionViewModel @Inject constructor(private val recents: RecentlyWatchedManager,
+    private val library: com.example.iptv.data.library.LibraryRepository? = null) : ViewModel() {
     private val _state = MutableStateFlow(SessionState())
     val state = _state.asStateFlow()
     private var historyWrite: Job? = null
@@ -42,17 +44,22 @@ class SessionViewModel @Inject constructor(private val recents: RecentlyWatchedM
         }
     }
 
-    fun select(index: Int, category: List<M3UChannel>) {
+    fun select(index: Int, category: List<M3UChannel>, identities: List<String> = emptyList()) {
         val channel = category.getOrNull(index) ?: return
-        _state.value = _state.value.copy(category = category, selectedIndex = index)
+        _state.value = _state.value.copy(category = category, selectedIndex = index, identities = identities)
         val preceding = historyWrite
-        historyWrite = viewModelScope.launch { preceding?.join(); recents.addChannel(channel) }
+        val account = library?.let { runCatching { it.account() }.getOrNull() }
+        historyWrite = viewModelScope.launch {
+            preceding?.join()
+            val reference = if (channel.isVod && account != null) library?.local { library.key(account, channel, identities.getOrNull(index)) } else null
+            recents.addChannel(channel, reference, account?.owner)
+        }
     }
 
     fun step(delta: Int) {
         val state = _state.value
         val next = wrappedChannelIndex(state.selectedIndex ?: return, delta, state.category.size) ?: return
-        select(next, state.category)
+        select(next, state.category, state.identities)
     }
 
     fun browse() { _state.value = _state.value.copy(selectedIndex = null) }

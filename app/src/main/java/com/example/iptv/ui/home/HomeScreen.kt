@@ -54,6 +54,7 @@ import com.example.iptv.R
 import com.example.iptv.ui.login.StartupBranding
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.ui.browser.*
+import com.example.iptv.ui.library.*
 import kotlinx.coroutines.flow.first
 import kotlin.math.min
 
@@ -77,15 +78,24 @@ fun BrowserScreen(
     onChannelClick: (Int, List<M3UChannel>) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
     onBrowseReady: () -> Unit = {},
-    accountSettings: (@Composable (Modifier, FocusRequester, () -> Unit) -> Unit)? = null
+    accountSettings: (@Composable (Modifier, FocusRequester, () -> Unit) -> Unit)? = null,
+    library: LibraryViewModel? = null
 ) {
     LaunchedEffect(channels) { viewModel.loadChannels(channels) }
     val loading by viewModel.uiState.collectAsStateWithLifecycle()
     val state by viewModel.browser.state.collectAsStateWithLifecycle()
     val controller = viewModel.browser
+    val libraryPage = library?.state?.collectAsStateWithLifecycle()?.value
+    val useLibrary = library != null && state.location.destination == BrowserDestination.VOD && libraryPage?.location?.route != LibraryRoute.PLAYLIST
+    val libraryRequester = remember { FocusRequester() }
     if (loading !is HomeUiState.Success) {
         StartupBranding(R.string.loading_channels)
         return
+    }
+    LaunchedEffect(state.location, state.filterAdult) {
+        viewModel.awaitBrowseReady()
+        if (state.location.destination == BrowserDestination.VOD) library?.activate(state.filterAdult)
+        else viewModel.syncLibrary()
     }
 
     val viewKey = state.location.key
@@ -140,7 +150,7 @@ fun BrowserScreen(
                 else if (horizontal > 0) when (state.location.destination) {
                     BrowserDestination.SETTINGS -> move("density:${density.name}")
                     BrowserDestination.SEARCH -> if (state.bookmark.focusedId == null || items.isEmpty()) move("query") else requestGrid()
-                    else -> requestGrid()
+                    else -> if (useLibrary) libraryRequester.requestFocus() else requestGrid()
                 }
             }
             target == "query" -> {
@@ -177,9 +187,11 @@ fun BrowserScreen(
     // TV focus must also work after a non-remote launch (for example, an activity start).
     LaunchedEffect(viewKey) { inputMode.requestInputMode(InputMode.Keyboard) }
     BackHandler(enabled = state.canGoBack) { controller.back() }
+    BackHandler(enabled = library != null && state.location.destination == BrowserDestination.VOD && !useLibrary && state.location.categoryId == null) { library?.back() }
     BackHandler(enabled = editing) { editing = false; keyboard?.hide(); request("query") }
 
     LaunchedEffect(viewKey, density, items) {
+        if (useLibrary) return@LaunchedEffect
         if (editing || menuTile != null) return@LaunchedEffect
         val saved = controller.state.value.bookmark
         when (saved.area) {
@@ -225,7 +237,7 @@ fun BrowserScreen(
         val scale = min(maxWidth.value / 1672f, maxHeight.value / 941f)
         val isSearch = state.location.destination == BrowserDestination.SEARCH
         val isSettings = state.location.destination == BrowserDestination.SETTINGS
-        val title = when (state.location.destination) {
+        val title = if (useLibrary) libraryHeading(libraryPage!!) else when (state.location.destination) {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD -> if (state.location.categoryId == null) {
                 stringResource(if (state.location.destination == BrowserDestination.VOD) R.string.vod else R.string.live_tv)
             } else state.categories.find { it.id == state.location.categoryId }?.name?.takeIf { it.isNotBlank() }
@@ -254,7 +266,11 @@ fun BrowserScreen(
                         scale, active = state.activeSidebar == index, navigation = true,
                         onFocus = { focused("sidebar:$index"); controller.focusArea(BrowserFocus.SIDEBAR, index) },
                         onKey = { key -> direction(key, "sidebar:$index") },
-                        onClick = { editing = false; keyboard?.hide(); controller.open(destination) }
+                        onClick = {
+                            editing = false; keyboard?.hide()
+                            if (destination == BrowserDestination.VOD) library?.root()
+                            controller.open(destination)
+                        }
                     ) { tint ->
                         if (state.activeSidebar == index && tint != BrowserColors.dark) {
                             Box(Modifier.width((4 * scale).dp).height((64 * scale).dp).align(Alignment.CenterStart).background(BrowserColors.text))
@@ -274,7 +290,13 @@ fun BrowserScreen(
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.offset((152 * scale).dp, (40 * scale).dp).width((1496 * scale).dp).testTag("browser_heading"))
 
-            if (isSettings) {
+            if (useLibrary) {
+                LibraryPane(library!!, scale, density,
+                    Modifier.offset((152 * scale).dp, (104 * scale).dp).size((1496 * scale).dp, (816 * scale).dp),
+                    libraryRequester, { move("sidebar:${BrowserDestination.VOD.ordinal}") },
+                    onPlay = { index, entries -> viewModel.prepareLibraryPlayback(entries, library.playbackKey()); onChannelClick(index, entries) },
+                    externalBack = { controller.closeLibraryDetails() })
+            } else if (isSettings) {
                 Row(Modifier.offset((152 * scale).dp, (120 * scale).dp).size((1496 * scale).dp, (800 * scale).dp),
                     horizontalArrangement = Arrangement.spacedBy((32 * scale).dp)) {
                     Column(Modifier.width(((if (accountSettings == null) 650 else 420) * scale).dp), verticalArrangement = Arrangement.spacedBy((16 * scale).dp)) {
@@ -355,7 +377,7 @@ fun BrowserScreen(
                             BrowserControl(Modifier.fillMaxWidth().height(tileHeight).focusRequester(requester).testTag("tile_$index"), scale,
                                 onFocus = { focused(tile.id); controller.focusGrid(tile.id) },
                                 onKey = { key ->
-                                    if (tile.entry != null && (key.keyCode == KeyEvent.KEYCODE_MENU ||
+                                    if (tile.entry != null && tile.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES && (key.keyCode == KeyEvent.KEYCODE_MENU ||
                                             (key.keyCode == KeyEvent.KEYCODE_F10 && key.isShiftPressed))) {
                                         if (key.repeatCount == 0) menuTile = tile
                                         true
@@ -365,12 +387,20 @@ fun BrowserScreen(
                                 }, onClick = {
                                     if (tile.category != null) controller.openCategory(tile.category.id)
                                     else {
+                                        if (controller.state.value.items.none { it.id == tile.id }) return@BrowserControl
+                                        val metadata = tile.entry?.library
+                                        if (metadata != null && library != null) {
+                                            controller.openLibraryDetails()
+                                            library.external(metadata, state.filterAdult)
+                                            return@BrowserControl
+                                        }
                                         // Re-read visibility so an obsolete tile cannot launch a filtered entry.
                                         val visible = controller.state.value.items
-                                        val selected = visible.indexOfFirst { it.id == tile.id && it.entry != null }
+                                        val playable = visible.filter { it.entry != null && it.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES }
+                                        val selected = playable.indexOfFirst { it.id == tile.id }
                                         if (selected >= 0) {
-                                            viewModel.preparePlayback(selected)
-                                            onChannelClick(selected, visible.mapNotNull { it.entry?.channel })
+                                            val collection = viewModel.preparePlayback(selected, playable)
+                                            onChannelClick(selected, collection)
                                         }
                                     }
                                 }
@@ -383,6 +413,8 @@ fun BrowserScreen(
                 fun closeMenu() { menuTile = null; requestGrid() }
                 Dialog(onDismissRequest = { closeMenu() }) {
                     val actionRequester = remember(tile.id) { FocusRequester() }
+                    var watched by remember(tile.id) { mutableStateOf<Boolean?>(null) }
+                    LaunchedEffect(tile.id) { tile.entry?.takeIf { it.channel.isVod }?.let { watched = viewModel.watched(it) } }
                     LaunchedEffect(tile.id) { withFrameNanos { }; actionRequester.requestFocus() }
                     Column(Modifier.width((600 * scale).dp).background(BrowserColors.tile, RoundedCornerShape(8.dp)).padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -391,6 +423,11 @@ fun BrowserScreen(
                             onClick = { viewModel.toggleFavorite(tile.id); closeMenu() }
                         ) { tint -> Text(stringResource(if (tile.id in state.favorites) R.string.remove_favorite else R.string.add_favorite),
                             color = tint, modifier = Modifier.align(Alignment.Center)) }
+                        if (library != null && watched != null && tile.entry?.channel?.isVod == true && tile.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES) {
+                            BrowserControl(Modifier.fillMaxWidth().height(56.dp), 1f,
+                                onClick = { viewModel.markWatched(tile.entry, watched != true, ::closeMenu) }
+                            ) { tint -> Text(stringResource(if (watched == true) R.string.library_reset else R.string.library_mark), color = tint, modifier = Modifier.align(Alignment.Center)) }
+                        }
                     }
                 }
             }
@@ -399,7 +436,7 @@ fun BrowserScreen(
 }
 
 @Composable
-private fun BrowserControl(
+internal fun BrowserControl(
     modifier: Modifier, scale: Float, active: Boolean = false, navigation: Boolean = false,
     role: Role = Role.Button,
     onFocus: () -> Unit = {}, onKey: (KeyEvent) -> Boolean = { false }, onClick: () -> Unit,

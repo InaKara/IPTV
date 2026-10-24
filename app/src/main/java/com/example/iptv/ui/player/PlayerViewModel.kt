@@ -2,6 +2,7 @@ package com.example.iptv.ui.player
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
@@ -23,6 +24,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import com.example.iptv.data.library.LibraryRepository
+import com.example.iptv.data.library.LibraryAccount
+import com.example.iptv.data.library.WatchProgress
 
 internal fun seekTarget(current: Long, offset: Long, duration: Long, allowed: Boolean): Long? {
     if (!allowed || duration <= 0) return null
@@ -35,7 +42,7 @@ internal fun seekTarget(current: Long, offset: Long, duration: Long, allowed: Bo
 @androidx.annotation.OptIn(UnstableApi::class)
 @HiltViewModel
 class PlayerViewModel @Inject constructor(private val application: Application,
-    private val credentials: CredentialsManager) : AndroidViewModel(application) {
+    private val credentials: CredentialsManager, private val library: LibraryRepository? = null) : AndroidViewModel(application) {
     private var engine: ExoPlayer? = null
     private val _player = MutableStateFlow<Player?>(null)
     val player = _player.asStateFlow()
@@ -46,16 +53,39 @@ class PlayerViewModel @Inject constructor(private val application: Application,
     private var current: M3UChannel? = null
     private var resumePosition = 0L
     private var resumePlaying = true
+    private var progressAccount: LibraryAccount? = null
+    private var loadingProgress: Job? = null
+    private var progressBinding: VodProgressBinding? = null
+    private var pendingProgress: WatchProgress? = null
+    private var currentProgressKey: String? = null
 
-    fun start(channel: M3UChannel) {
-        if (engine != null && current == channel) return
+    fun start(channel: M3UChannel, progressKey: String? = null) {
+        if (engine != null && current == channel && currentProgressKey == progressKey) return
+        loadingProgress?.cancel()
+        releasePlayer()
         if (current?.streamUrl != channel.streamUrl || current?.userAgent != channel.userAgent) {
             resumePosition = 0
             resumePlaying = true
         }
-        releasePlayer()
         _liveRecoveryNotice.value = 0
         current = channel
+        currentProgressKey = progressKey
+        progressAccount = library?.let { runCatching { it.account() }.getOrNull() }
+        val account = progressAccount
+        if (channel.isVod && library != null && account != null) {
+            loadingProgress = viewModelScope.launch {
+                try {
+                    library.flush()
+                    pendingProgress = library.progress(account, channel, progressKey)
+                } catch (cancelled: CancellationException) { throw cancelled }
+                catch (_: Exception) { pendingProgress = null }
+                resumePosition = 0
+                if (library.valid(account) && current == channel) begin(channel)
+            }
+        } else begin(channel)
+    }
+
+    private fun begin(channel: M3UChannel) {
         if (!channel.streamUrl.startsWith("https://", true) && !channel.streamUrl.startsWith("http://", true)) {
             _uiState.value = PlayerUiState.Unsupported
             return
@@ -125,6 +155,11 @@ class PlayerViewModel @Inject constructor(private val application: Application,
             exo.setMediaSource(hls.createMediaSource(route.initialItem))
         } else if (channel.isVod) exo.setMediaItem(route.initialItem, resumePosition)
         else exo.setMediaItem(route.initialItem) // HLS starts at its safe default live position.
+        val account = progressAccount
+        if (channel.isVod && library != null && account != null) progressBinding = VodProgressBinding(exo, true, pendingProgress) { position, duration, seekable, ended ->
+            library.enqueue(account, channel, position, duration, seekable, ended, currentProgressKey)
+        }
+        pendingProgress = null
         exo.prepare()
         exo.playWhenReady = resumePlaying
     }
@@ -135,6 +170,7 @@ class PlayerViewModel @Inject constructor(private val application: Application,
     }
 
     fun suspendPlayback() {
+        loadingProgress?.cancel()
         engine?.let {
             resumePosition = if (current?.isVod == true) it.currentPosition.coerceAtLeast(0) else 0
             resumePlaying = it.playWhenReady
@@ -143,11 +179,14 @@ class PlayerViewModel @Inject constructor(private val application: Application,
     }
 
     fun releasePlayer() {
+        progressBinding?.close()
+        progressBinding = null
         _player.value = null
         engine?.release()
         engine = null
         _uiState.value = PlayerUiState.Idle
     }
+
 
     override fun onCleared() { releasePlayer() }
 

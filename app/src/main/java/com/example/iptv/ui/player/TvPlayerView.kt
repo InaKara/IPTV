@@ -14,6 +14,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.PopupWindow
+import com.example.iptv.data.model.M3UChannel
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.Player
 import androidx.media3.ui.DefaultTimeBar
@@ -28,9 +30,26 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     var previousChannel: () -> Unit = {}
     var seek: (Long) -> Unit = {}
     var onControlsVisibilityChanged: (Boolean) -> Unit = {}
+    var channel: M3UChannel? = null
+        set(value) { field = value; updateInfo() }
+    private var infoPopup: PopupWindow? = null
+    private var infoText: TextView? = null
+    private var restoreInfoFocus = true
+    private val infoTimeout = Runnable {
+        dismissInfo(false)
+        hideController()
+        requestFocus()
+    }
+    private val infoButton = Button(context).apply {
+        id = R.id.playback_info
+        text = context.getString(R.string.playback_info)
+        isAllCaps = false; textSize = 14f; minWidth = dp(64); minimumHeight = dp(48)
+        backgroundTintList = null; stateListAnimator = null
+        setOnClickListener { openInfo() }
+    }
     private val controls get() = findViewById<PlayerControlView>(androidx.media3.ui.R.id.exo_controller)
     var isLiveChannel: Boolean = false
-        set(value) { field = value; refreshLiveControls(); scheduleLiveTick() }
+        set(value) { field = value; if (!value) dismissInfo(false); refreshLiveControls(); scheduleLiveTick() }
     private val liveLag = TextView(context).apply {
         id = R.id.live_lag
         setTextColor(Color.WHITE)
@@ -51,7 +70,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     private val ordinaryTimes = mutableListOf<View>()
     private var boundPlayer: Player? = null
     private val liveListener = object : Player.Listener {
-        override fun onEvents(player: Player, events: Player.Events) { refreshLiveControls() }
+        override fun onEvents(player: Player, events: Player.Events) { refreshLiveControls(); updateInfo() }
     }
     private val liveTick = object : Runnable {
         override fun run() {
@@ -77,11 +96,12 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
             for (i in 0 until time.childCount) ordinaryTimes.add(time.getChildAt(i))
             time.addView(liveLag)
             time.addView(liveButton, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48)))
+            time.addView(infoButton, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48)))
         }
         styleControls(controls)
         setControllerVisibilityListener(ControllerVisibilityListener { visibility ->
             onControlsVisibilityChanged(visibility == View.VISIBLE)
-            if (visibility != View.VISIBLE) requestFocus()
+            if (visibility != View.VISIBLE) { dismissInfo(false); requestFocus() }
             refreshLiveControls()
             scheduleLiveTick()
         })
@@ -90,6 +110,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     override fun setPlayer(player: Player?) {
+        if (player == null) dismissInfo(false)
         boundPlayer?.removeListener(liveListener)
         boundPlayer = null
         super.setPlayer(player)
@@ -105,6 +126,8 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     override fun onDetachedFromWindow() {
+        dismissInfo(false)
+        removeCallbacks(infoTimeout)
         removeCallbacks(liveTick)
         boundPlayer?.removeListener(liveListener)
         boundPlayer = null
@@ -129,6 +152,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
         ordinaryTimes.forEach { it.visibility = if (isLiveChannel) View.GONE else View.VISIBLE }
         liveLag.visibility = if (isLiveChannel) View.VISIBLE else View.GONE
         liveButton.visibility = if (isLiveChannel) View.VISIBLE else View.GONE
+        infoButton.visibility = if (isLiveChannel) View.VISIBLE else View.GONE
         val p = player
         val target = p?.let { liveDefaultPosition(it) }
         val lag = if (target != null && p != null) (target - p.currentPosition.coerceAtLeast(0)).coerceAtLeast(0) else null
@@ -188,6 +212,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     fun closeControls(): Boolean {
+        if (infoPopup != null) { dismissInfo(true); return true }
         if (!isControllerFullyVisible) return false
         hideController()
         requestFocus()
@@ -195,8 +220,58 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     private fun resetTimeout() {
-        // Use Media3's own scheduler, including its suspension while a settings popup is open.
-        controls.showTimeoutMs = PlayerViewModel.OVERLAY_MS.toInt()
+        removeCallbacks(infoTimeout)
+        // The Info popup owns the shared expiry while Media3's modal-popup timer is suspended.
+        controls.showTimeoutMs = if (infoPopup != null) 0 else PlayerViewModel.OVERLAY_MS.toInt()
+        if (infoPopup != null) postDelayed(infoTimeout, PlayerViewModel.OVERLAY_MS)
+    }
+    private fun dismissInfo(restoreFocus: Boolean) {
+        restoreInfoFocus = restoreFocus
+        infoPopup?.dismiss()
+        restoreInfoFocus = true
+    }
+
+    private fun openInfo() {
+        if (!isLiveChannel || infoPopup != null) return
+        infoText = TextView(context).apply {
+            setTextColor(Color.WHITE); textSize = 16f
+            setPadding(dp(20), dp(16), dp(20), dp(16))
+            maxLines = 9; ellipsize = android.text.TextUtils.TruncateAt.END
+            isFocusable = true; isFocusableInTouchMode = true
+            setOnKeyListener { _, _, event -> if (event.action == KeyEvent.ACTION_DOWN) resetTimeout(); false }
+        }
+        updateInfo()
+        val popup = PopupWindow(infoText, minOf(dp(420), (width * .6f).toInt()).coerceAtLeast(1), dp(220), true)
+        popup.setBackgroundDrawable(ColorDrawable(0xee191d1e.toInt()))
+        popup.isOutsideTouchable = true
+        popup.setTouchInterceptor { _, event -> if (event.action == android.view.MotionEvent.ACTION_DOWN) resetTimeout(); false }
+        popup.setOnDismissListener {
+            infoPopup = null; infoText = null
+            resetTimeout()
+            if (restoreInfoFocus && isControllerFullyVisible && isAttachedToWindow) infoButton.requestFocus()
+        }
+        infoPopup = popup
+        resetTimeout()
+        popup.showAtLocation(this, Gravity.BOTTOM or Gravity.END, dp(24), dp(CONTROLS_PANEL_DP + 12))
+        infoText?.requestFocus()
+    }
+
+    private fun updateInfo() {
+        val text = infoText ?: return
+        val unknown = context.getString(R.string.playback_info_unknown)
+        val video = player?.currentTracks?.groups?.firstOrNull { it.type == androidx.media3.common.C.TRACK_TYPE_VIDEO && it.isSelected }
+            ?.let { group -> (0 until group.length).firstOrNull { group.isTrackSelected(it) }?.let { group.getTrackFormat(it) } }
+        val audio = player?.currentTracks?.groups?.firstOrNull { it.type == androidx.media3.common.C.TRACK_TYPE_AUDIO && it.isSelected }
+            ?.let { group -> (0 until group.length).firstOrNull { group.isTrackSelected(it) }?.let { group.getTrackFormat(it) } }
+        val resolution = if (video != null && video.width > 0 && video.height > 0) "${video.width} × ${video.height}" else unknown
+        val format = audio?.sampleMimeType?.let { mime ->
+            val label = when (mime) { "audio/mpeg-L2" -> "MP2"; "audio/mp4a-latm" -> "AAC"; "audio/ac3" -> "AC-3"; "audio/eac3" -> "E-AC-3"; "audio/mpeg" -> "MPEG audio"; "audio/opus" -> "Opus"; "audio/flac" -> "FLAC"; else -> unknown }
+            listOf(label, audio.channelCount.takeIf { it > 0 }?.let { "$it ch" }, audio.sampleRate.takeIf { it > 0 }?.let { "$it Hz" }).filterNotNull().joinToString(" · ")
+        } ?: unknown
+        text.text = listOfNotNull(context.getString(R.string.playback_info_channel, channel?.name ?: unknown),
+            context.getString(R.string.playback_info_category, channel?.groupTitle ?: unknown),
+            channel?.providerNumber?.takeIf(String::isNotBlank)?.let { context.getString(R.string.playback_info_number, it) },
+            context.getString(R.string.playback_info_video, resolution), context.getString(R.string.playback_info_audio, format)).joinToString("\n")
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

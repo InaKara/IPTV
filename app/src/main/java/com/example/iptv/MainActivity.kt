@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
     private val session: SessionViewModel by viewModels()
     private val browser: HomeViewModel by viewModels()
     private val connection: LoginViewModel by viewModels()
+    private val library: com.example.iptv.ui.library.LibraryViewModel by viewModels()
 
     override fun onResume() {
         super.onResume()
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
                         PlayerScreen(
                             channel = selectedChannel,
                             selectionKey = state.selectedIndex,
+                            progressKey = state.selectedIndex?.let { state.identities.getOrNull(it) },
                             onBackPressed = { browser.returnFromPlayback(state.selectedIndex); session.browse() },
                             onNextChannel = { session.step(1) },
                             onPreviousChannel = { session.step(-1) }
@@ -80,8 +82,9 @@ class MainActivity : ComponentActivity() {
 
                         BrowserScreen(
                             channels = directory.channels,
-                            onChannelClick = session::select,
+                            onChannelClick = { index, entries -> session.select(index, entries, browser.playbackIdentities(entries)) },
                             viewModel = browser,
+                            library = library,
                             onBrowseReady = connection::onBrowseReady,
                             accountSettings = { modifier, focus, leave ->
                                 DisposableEffect(Unit) { onDispose { connection.cancelAccountEdit() } }

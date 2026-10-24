@@ -1,6 +1,8 @@
-# Metadata uses — MD-1 proposal
+# Metadata uses — MD-1 approved design
 
-24 October 2026. The user selected the recommended metadata uses with “Ok, proceed with your recommended uses for metadata”. This document makes the visible behavior, storage choice and defaults concrete for the required revision review. It is a proposal, not implementation/deployment approval. No app implementation or implementation tests are added while review is pending.
+Later status, 24 October: the user separately requested execution of `deploy-firestick.ps1`; installation and start succeeded. User-smoke confirms TRT 1 HD picture/sound after a roughly 60-second pause/resume and sampled movie Resume. Startup/UI/Info issues and the proposed MD-2 revision are recorded in [METADATA_FOLLOWUP_REVIEW.md](METADATA_FOLLOWUP_REVIEW.md). Earlier local-only/no-deployment statements below describe that earlier implementation-check phase, not the latest installation state.
+
+24 October 2026. After the concrete catalog/design revision and the in-chat overview, the user explicitly selected all three stages with “Commit and push all changes, then implement MD-1”. This authorizes DATA-008, LIB-002, VOD-006, BROWSE-015 and PLAY-014, including the reviewed VOD-root, nested return and additive identity changes. The selected local implementation and checks are complete. Deployment and provider/device investigation remain separate. The design below records the approved behavior and defaults; its original proposal wording is retained as review history.
 
 ## Selected outcomes and delivery order
 
@@ -81,8 +83,21 @@ Use local synthetic API/playlist/media fixtures only. Add meaningful assertions 
 
 Run fresh smoke/lint and debug assembly with actual evidence separate from publication and physical acceptance. Keep normal smoke cases local and useful within the 90-second warm-run target; document any slower profiling/device exclusions honestly. A provider/device/deployment acceptance session remains separately approved. No Firestick installation, app start, live provider probe, release build or publication is included in this proposed local implementation approval.
 
-## Decision requested
+## Original decision request — approved 24 October 2026
 
 Approve MD-1 stages 1–3 (DATA-008, LIB-002, VOD-006, BROWSE-015, PLAY-014), including the explicit VOD-root/return/identity changes to BROWSE-013 and the watching defaults above, or identify the stages/defaults to revise. EPG, stronger adult-flag filtering, complete movie year/genre filters, trailers/external lookups, put.io, local/network libraries, touchscreen/mouse and faster-startup optimization remain outside this selected scope.
 
 Proposal-stage maintenance: existing local smoke passed 153/153 in 33.9 seconds, with zero failures/skips/errors, after refreshing the catalog/mapping rows. All 115 requirement mappings are current. New/refined MD-1 coverage is explicitly manual/pending; baseline passes are not evidence of metadata implementation. No app source, implementation test, dependency/build behavior, provider/device state or deployment changed for this proposal.
+
+## Implementation and local evidence — 24 October 2026
+
+The user explicitly approved all stages/defaults with “Commit and push all changes, then implement MD-1”. The pre-implementation changes were committed/pushed first as `9f8d3a6`. DATA-008, LIB-002, VOD-006, BROWSE-015 and PLAY-014 are now locally implemented, including the selected BROWSE-013 VOD-root/return extension. Implementation changes remain in the checkout for review.
+
+- Built-in SQLite stores minimal credential-scoped listings, selected details/episodes and separate provider/user-owned progress and durable aliases/playable references in no-backup storage. Parsing streams records into atomic transactions; old cache/age survives invalid, failed, cancelled and stale-account refreshes. Categories, titles, seasons, episodes and Continue watching use small disk pages; global Search adds a bounded cached-library supplement to the unchanged full playlist name results. No list-wide episode/detail download or startup API request is added.
+- The 20 MiB detail/episode content budget uses response bytes plus conservative per-episode overhead, LRU eviction and automatic SQLite free-page reclamation. Lightweight listings, durable progress/favorite references and their database overhead are separate. This is not a claim that the complete database, existing M3U or total app memory fits in 20 MiB, or that the historical OOM is fixed.
+- Library cards/details, provider seasons/episodes, explicit Play/Resume/Restart/next-episode selection, watched/reset Menu actions, saved sort choices and Unwatched are connected to the existing sidebar/densities/focus. Cached API-only items participate in global favorites/search/shared recents. Exact typed route links preserve legacy keys and duplicate occurrences; retained references and aliases support eviction/password changes without deleting stored favorites/progress. The existing category-name adult rule remains reversible.
+- Native live Info reads actual selected player formats, preserves playback/seek state and exposes no stream address. It stays compact, suspends control timeout while open and restores originating focus/timeout when dismissed.
+
+Fresh `test-smoke.ps1 -Lint` passed **171/171** (131 app + 40 environment/project/runner), zero failures/skips/errors, in **52.7 seconds** after the final credential-change return check. Added stable cases TC-APP-114–131 cover streaming/optional fields, typed/duplicate aliases, SQL paging/sorting/adult visibility/atomic retention/eviction, account/cancellation/offline failures, persistent thresholds/save events/live exclusion, durable favorite resolution, nested/global returns, explicit next episode, Compose remote details/play/fallback and native actual-format Info bounds/focus/timeout/playback preservation. Debug lint: **0 errors, 31 warnings**. `:app:assembleDebug` passed separately. Generated companion rows remain the execution authority; earlier successful runs and mapping-only refreshes had different elapsed times. Credential changes safely reset library navigation to its root while provider/user-owned favorites/progress remain retained.
+
+No provider/device probe, installation, app start, release build or publication was performed. Real provider dialects, TV layout/focus across larger catalogs, actual VOD seek/resume/completion/episode playback and restart/account/password scenarios, live Info formats, and Android cache/memory pressure remain physical/provider acceptance. The prior MP2/live-control/device evidence predates MD-1. EPG and the other excluded backlog work remain unselected.

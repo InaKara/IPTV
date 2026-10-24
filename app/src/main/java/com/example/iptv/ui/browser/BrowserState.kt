@@ -33,7 +33,8 @@ data class GridBookmark(
     val sidebarIndex: Int = 0
 )
 
-data class BrowserChannel(val id: String, val channel: M3UChannel)
+data class BrowserChannel(val id: String, val channel: M3UChannel,
+    val library: com.example.iptv.data.library.LibraryEntry? = null)
 data class BrowserCategory(val id: String, val name: String, val channels: List<BrowserChannel>)
 data class BrowserTile(val id: String, val category: BrowserCategory? = null, val entry: BrowserChannel? = null)
 
@@ -134,9 +135,21 @@ class BrowserController {
     private var lastCategories = BrowserLocation()
     private val auxiliaryReturns = mutableListOf<BrowserLocation>()
     private var searchResults = emptyList<BrowserChannel>()
+    private var extraFavorites = emptyList<BrowserChannel>()
+    private var extraSearch = emptyList<BrowserChannel>()
+    private var libraryReturn: BrowserLocation? = null
+
+    fun openLibraryDetails() { libraryReturn = state.value.location; navigate(BrowserLocation(BrowserDestination.VOD)) }
+    fun closeLibraryDetails() { val target = libraryReturn ?: return; libraryReturn = null; navigate(target) }
+
+    fun supplemental(favorites: List<BrowserChannel>, search: List<BrowserChannel> = emptyList()) {
+        extraFavorites = favorites; extraSearch = search; render()
+    }
 
     fun reset() {
         catalog = null
+        libraryReturn = null
+        extraFavorites = emptyList(); extraSearch = emptyList()
         auxiliaryReturns.clear()
         favoritesReturn = BrowserLocation()
         lastCategories = BrowserLocation()
@@ -203,6 +216,7 @@ class BrowserController {
     }
 
     fun query(value: String) {
+        extraSearch = emptyList()
         searchResults = emptyList()
         mutableState.value = state.value.copy(query = value)
         // A new query starts a new result collection, while its field retains focus.
@@ -253,8 +267,10 @@ class BrowserController {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD -> if (current.location.categoryId == null) {
                 current.categories.map { BrowserTile(it.id, category = it) }
             } else current.categories.find { it.id == current.location.categoryId }?.channels.orEmpty().map { BrowserTile(it.id, entry = it) }
-            BrowserDestination.FAVORITES -> catalog?.channels.orEmpty().filter { it.id in current.favorites && it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
-            BrowserDestination.SEARCH -> searchResults.filter { it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
+            BrowserDestination.FAVORITES -> (catalog?.channels.orEmpty().filter { it.id in current.favorites }.map { old -> extraFavorites.find { it.id == old.id } ?: old } + extraFavorites)
+                .distinctBy { it.id }.filter { it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
+            BrowserDestination.SEARCH -> (searchResults.map { old -> extraSearch.find { it.id == old.id } ?: old } + extraSearch).distinctBy { it.id }
+                .filter { it.visible(current.filterAdult) }.map { BrowserTile(it.id, entry = it) }
             BrowserDestination.SETTINGS -> emptyList()
         }
         val saved = current.bookmark

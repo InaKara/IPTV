@@ -6,6 +6,42 @@
 
 After deployment approval, run only `deploy-firestick.ps1` and report its result. Do not add unrequested flags or extra ADB/device commands, tests, preference changes or remote/UI actions. The user withdrew DP-1's removal of force-stop/start before implementation; the existing script remains unchanged. This documentation update does not authorize a deployment or app start.
 
+## Corrective deployment and latest user smoke — 24 October 2026
+
+After the separate approval Deploy, the unchanged deployment script built successfully, installed the VOD-entry ANR correction with saved data retained and reported a successful app start (exit 0). No extra device commands or UI actions followed that deployment. The user subsequently reports no identified Live TV issues and successfully reaches Movies after an acceptable wait; the missing loading feedback is a new UX issue. This is positive sampled navigation/playback evidence, not a timed startup benchmark or complete stress/remote/Info acceptance.
+
+The latest requested loading/icons/direct-actions/season-favorites/logging revision is [MD-3](../design/LIBRARY_ACTIONS_REVIEW.md), pending explicit requirement review/implementation approval. No new device session, deployment, app start or setting change is authorized by that request. The local-only/no-deployment statements below describe their earlier verification points.
+
+## VOD-entry ANR correction — 24 October 2026; local verification before corrective deployment
+
+The user separately requested Deploy after MD-2. The unchanged deployment script built, installed with data retained and reported a successful app start (exit 0), with no extra investigation commands. The user then reported two freezes followed by closure on opening VOD. Separately approved read-only crash/process-event diagnostics confirm two input-dispatch ANRs and process termination; the Java OOM crash-buffer records are older, from 22 October. No investigation start, stop, install, navigation or settings/data change was performed. Raw logs remain ignored/private.
+
+The local correction removes metadata work from the five-tile VOD root and eliminates eager whole-catalog route construction under the shared account monitor. Matching is on demand with bounded retained results; only relevant favorites/history or selected/displayed aliases are persisted. Existing account/identity/progress data remains. Fresh smoke/lint passed 177/177 (137 app plus 40 shared), zero failures/skips/errors, in 39.0 seconds; debug assembly passed separately. See [investigation and evidence](../investigations/VOD_ENTRY_ANR_2026_10_24.md).
+
+At that local-verification point the corrective APK had not been installed; the subsequent deployment and sampled user navigation are recorded above. Broad physical reopening/responsiveness/stress acceptance remains separate, and historical memory safety is not claimed resolved. Another deployment requires explicit approval of the script's install/force-stop/start operation. Older local-pass records below do not establish complete physical acceptance.
+
+## MD-2 local verification — 24 October 2026; before deployment
+
+The user explicitly approved all five reviewed follow-ups. Startup metadata reconciliation is deferred until a relevant destination after first layout; the VOD root uses equal tiles with root-only Playlist categories; Resume displays HH:MM; watched menus use current saved state; redundant Back/Refresh are removed with failure-only specific retry; live Info expires with controls and cleans up on forced hide/release. Existing playback, account data and refresh thresholds are retained.
+
+Fresh `test-smoke.ps1 -Lint` passed 176/176 (136 app plus 40 shared), no failures/skips/errors, in 63.9 seconds. Debug lint: zero errors/32 warnings. Debug assembly passed separately; the local debug APK includes MD-2. See [MD-2 implementation/evidence](../design/METADATA_FOLLOWUP_REVIEW.md). The tests use synthetic local fixtures only.
+
+At that local-check point MD-2 had not yet been deployed; its subsequent installation and reported VOD-entry ANRs are recorded above. Startup improvement is not yet device-measured, and new physical layout/remote/Info/watching/provider acceptance remains separate. The following deployment/user report concerns MD-1. Another deployment still requires explicit permission for the script's install/force-stop/start operation.
+
+## MD-1 deployment and user report — 24 October 2026
+
+The user explicitly requested “execute deploy-firestick.ps1. do nothing else”. That script alone built successfully, connected, installed the update with data retained and reported a successful launch (exit 0). No extra device commands, measurements or UI actions followed. This establishes installation/start, not full feature acceptance.
+
+The subsequent user report confirms normal video and sound after pausing TRT 1 HD for about 60 seconds and resuming, with no reported jumping; a sampled movie's Resume works. It also reports considerably slower startup (untimed), live Info remaining after controls hide, unequal VOD root buttons, absent resume timestamps, unclear Retry, redundant Back/Refresh, duplicate watched/reset actions on one route and repeated Playlist categories controls. These issues are preserved as partial physical acceptance and the pending [MD-2 revision](../design/METADATA_FOLLOWUP_REVIEW.md), not silently marked fixed. Source inspection identifies optional pre-layout metadata/alias bookkeeping as a plausible startup contributor, not a proven measured cause.
+
+No further Firestick session, deployment or app start is authorized by that feedback. Comparable startup timing and physical acceptance of any future correction require separate permission. The records below describe earlier local checks or earlier deployed builds as indicated.
+
+## MD-1 local verification — 24 October 2026; before deployment
+
+The user explicitly selected all three reviewed metadata stages. Provider library/details/seasons/episodes, local watched/resume/Continue watching, metadata sorts/Unwatched and compact native live Info are implemented in the checkout. Fresh local `test-smoke.ps1 -Lint` passed 171/171 checks (131 app plus 40 environment/project/runner), no failures/skips/errors, in 52.7 seconds after the final credential-change navigation check; debug lint has zero errors and 31 warnings. Debug assembly passed separately. No build/deploy script, dependency or toolchain migration was needed. Tests use synthetic local data/HTTP/player fixtures only.
+
+At this local-verification point the MD-1 debug APK had not yet been installed or started on the Firestick; the later deployment/user report is recorded above. Full provider/physical library, VOD completion/episode/account, adult-filter/return/Info/cache and memory-pressure acceptance remain separate. Existing older MP2/live-control/device evidence below refers to the earlier deployed build. See [approved MD-1 design and implementation evidence](../design/METADATA_LIBRARY_REVIEW.md). Future deployment still needs explicit approval of the script's install/force-stop/start operation.
+
 ## Device validation — 24 October 2026; user already deployed
 
 The user explicitly approved deployment and the described device checks, then confirmed that they had already installed the update: TRT 1 HD has sound, controls function and video remains visible behind them. The installed APK's SHA-256 matches the current local debug build. No agent installation was performed. This is basic user-reported playback acceptance, distinct from the measurements below and the older local-only records.

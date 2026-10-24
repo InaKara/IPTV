@@ -48,7 +48,8 @@ fun PlayerScreen(
     onBackPressed: () -> Unit,
     onNextChannel: () -> Unit,
     onPreviousChannel: () -> Unit,
-    viewModel: PlayerViewModel = hiltViewModel()
+    viewModel: PlayerViewModel = hiltViewModel(),
+    progressKey: String? = null
 ) {
     var nativeView by remember { mutableStateOf<TvPlayerView?>(null) }
     var controlsVisible by remember { mutableStateOf(false) }
@@ -65,8 +66,8 @@ fun PlayerScreen(
     val errorFocus = remember { FocusRequester() }
     var notice by remember(channel, selectionKey) { mutableStateOf<SeekNotice?>(null) }
     LaunchedEffect(recoveryNotice) { if (recoveryNotice > 0) notice = null }
-    LifecycleStartEffect(channel, viewModel) {
-        viewModel.start(channel)
+    LifecycleStartEffect(channel, viewModel, progressKey) {
+        viewModel.start(channel, progressKey)
         onStopOrDispose { viewModel.suspendPlayback() }
     }
     LaunchedEffect(failed) { if (failed) errorFocus.requestFocus() }
@@ -90,6 +91,7 @@ fun PlayerScreen(
             update = {
                 it.player = player
                 it.isLiveChannel = !channel.isVod
+                it.channel = channel
                 it.nextChannel = onNextChannel
                 it.previousChannel = onPreviousChannel
                 it.seek = { offset -> seek(offset) }

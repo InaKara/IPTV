@@ -46,6 +46,7 @@ internal class MutablePlayback : AutoCloseable {
     var windowStart = 0L
     var playing = true
     var prepares = 0
+    var tracks = androidx.media3.common.Tracks.EMPTY
     var defaultSeeks = 0
     val seeks = mutableListOf<Long>()
     val items = mutableListOf<MediaItem>()
@@ -66,6 +67,7 @@ internal class MutablePlayback : AutoCloseable {
     val player: Player = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java)) { _, method, args ->
         when (method.name) {
             "getCurrentTimeline" -> timeline
+            "getCurrentTracks" -> tracks
             "getCurrentMediaItemIndex", "getCurrentPeriodIndex" -> 0
             "getCurrentMediaItem" -> item
             "isCurrentMediaItemLive" -> live

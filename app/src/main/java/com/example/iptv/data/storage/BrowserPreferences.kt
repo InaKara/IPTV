@@ -56,9 +56,9 @@ class BrowserPreferences @Inject constructor(
         }
     }
 
-    suspend fun toggle(id: String): BrowserPreferenceState = withContext(Dispatchers.IO) {
+    suspend fun toggle(id: String, expectedAccount: String? = null): BrowserPreferenceState = withContext(Dispatchers.IO) {
         mutex.withLock {
-            if (account.isNotEmpty() && writable) {
+            if (account.isNotEmpty() && writable && (expectedAccount == null || expectedAccount == account)) {
                 val current = accounts[account].orEmpty()
                 accounts = accounts + (account to if (id in current) current - id else current + id)
                 val values = JsonObject().apply {

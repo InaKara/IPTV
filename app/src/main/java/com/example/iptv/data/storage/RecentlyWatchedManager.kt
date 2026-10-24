@@ -59,13 +59,22 @@ class RecentlyWatchedManager @Inject constructor(@ApplicationContext context: Co
         }
     }
 
-    suspend fun addChannel(channel: M3UChannel) = withContext(Dispatchers.IO) {
+    suspend fun addChannel(channel: M3UChannel, libraryReference: String? = null, owner: String? = null) = withContext(Dispatchers.IO) {
         mutex.withLock {
-            if (scope.isEmpty() || channel.streamUrl !in playlist) return@withLock
-            accounts = accounts + (scope to RecentHistoryCodec.prepend(channel.streamUrl, accounts[scope].orEmpty()))
+            if (scope.isEmpty() || (owner != null && scope != owner)) return@withLock
+            val reference = if (channel.streamUrl in playlist) channel.streamUrl else libraryReference ?: return@withLock
+            if (reference != channel.streamUrl) playlist = playlist + (reference to channel)
+            accounts = accounts + (scope to RecentHistoryCodec.prepend(reference, accounts[scope].orEmpty()))
             persist()
             publish()
         }
+    }
+
+    suspend fun references(owner: String): Set<String> = withContext(Dispatchers.IO) {
+        mutex.withLock { if (scope == owner) accounts[scope].orEmpty().toSet() else emptySet() }
+    }
+    suspend fun resolve(owner: String, entries: Map<String, M3UChannel>) = withContext(Dispatchers.IO) {
+        mutex.withLock { if (scope == owner) { playlist = playlist + entries; publish() } }
     }
 
     suspend fun getRecentChannels(): List<M3UChannel> = withContext(Dispatchers.IO) {

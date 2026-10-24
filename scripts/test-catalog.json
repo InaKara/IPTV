@@ -1499,7 +1499,7 @@
     {
       "id": "MC-VOD-006",
       "key": "manual#VOD-006",
-      "title": "Review MD-1 persistent progress defaults, then verify account/identity/save/resume/watched/reset/Continue watching and physical VOD behavior",
+      "title": "Verify approved MD-1 on device/provider: VOD-006; actual playback, remote/layout and account/cache acceptance remain separate.",
       "kind": "Manual",
       "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
     },
@@ -1702,30 +1702,302 @@
     {
       "id": "MC-DATA-008",
       "key": "manual#DATA-008",
-      "title": "Review MD-1 DATA-008 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "title": "Verify approved MD-1 on device/provider: DATA-008; actual playback, remote/layout and account/cache acceptance remain separate.",
       "kind": "Manual",
       "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
     },
     {
       "id": "MC-LIB-002",
       "key": "manual#LIB-002",
-      "title": "Review MD-1 LIB-002 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "title": "Verify approved MD-1 on device/provider: LIB-002; actual playback, remote/layout and account/cache acceptance remain separate.",
       "kind": "Manual",
       "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-015",
       "key": "manual#BROWSE-015",
-      "title": "Review MD-1 BROWSE-015 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "title": "Verify approved MD-1 on device/provider: BROWSE-015; actual playback, remote/layout and account/cache acceptance remain separate.",
       "kind": "Manual",
       "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
     },
     {
       "id": "MC-PLAY-014",
       "key": "manual#PLAY-014",
-      "title": "Review MD-1 PLAY-014 scope; implementation and metadata/identity/cache/remote/device acceptance pending",
+      "title": "Verify approved MD-1 on device/provider: PLAY-014; actual playback, remote/layout and account/cache acceptance remain separate.",
       "kind": "Manual",
       "source": "docs/design/METADATA_LIBRARY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-114",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#encodedRoutesKeepTypesAccountsAndCredentialsSeparate",
+      "title": "encodedRoutesKeepTypesAccountsAndCredentialsSeparate",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-115",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#aliasesRequireUniqueExactRoutesAndNeverMergeNamesOrDuplicates",
+      "title": "aliasesRequireUniqueExactRoutesAndNeverMergeNamesOrDuplicates",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-116",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#streamedOptionalMetadataAndSelectedSeriesPreserveProviderLabels",
+      "title": "streamedOptionalMetadataAndSelectedSeriesPreserveProviderLabels",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-117",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#progressThresholdsCompletionResetAndActualTimelineCapability",
+      "title": "progressThresholdsCompletionResetAndActualTimelineCapability",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-118",
+      "key": "com.example.iptv.data.library.LibraryDatabaseTest#pagesStableSortUnknownRatingsAndAdultVisibilityDoNotChangeStoredRows",
+      "title": "pagesStableSortUnknownRatingsAndAdultVisibilityDoNotChangeStoredRows",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryDatabaseTest.kt"
+    },
+    {
+      "id": "TC-APP-119",
+      "key": "com.example.iptv.data.library.LibraryDatabaseTest#invalidReplacementAndStaleAccountLeaveWorkingIndexAndAgeUnchanged",
+      "title": "invalidReplacementAndStaleAccountLeaveWorkingIndexAndAgeUnchanged",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryDatabaseTest.kt"
+    },
+    {
+      "id": "TC-APP-120",
+      "key": "com.example.iptv.data.library.LibraryDatabaseTest#evictionRemovesSelectedSeriesCacheButNeverProgressAndListings",
+      "title": "evictionRemovesSelectedSeriesCacheButNeverProgressAndListings",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryDatabaseTest.kt"
+    },
+    {
+      "id": "TC-APP-121",
+      "key": "com.example.iptv.data.library.LibraryDatabaseTest#continueWatchingGroupsEpisodesRetainsOrphansAndSurvivesPasswordRotation",
+      "title": "continueWatchingGroupsEpisodesRetainsOrphansAndSurvivesPasswordRotation",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryDatabaseTest.kt"
+    },
+    {
+      "id": "TC-APP-122",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#lazySingleFlightAgeAndInvalidRefreshRetainCompleteCache",
+      "title": "lazySingleFlightAgeAndInvalidRefreshRetainCompleteCache",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-123",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#selectedSeriesLoadsEpisodesOnceAndOfflineFailureKeepsDetailAge",
+      "title": "selectedSeriesLoadsEpisodesOnceAndOfflineFailureKeepsDetailAge",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-124",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#cancellationAndAccountChangeRejectLatePartialReplacement",
+      "title": "cancellationAndAccountChangeRejectLatePartialReplacement",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-125",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#typedFavoritesRecentsAndProgressResolveWithoutBulkEpisodeDownloads",
+      "title": "typedFavoritesRecentsAndProgressResolveWithoutBulkEpisodeDownloads",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-126",
+      "key": "com.example.iptv.ui.player.VodProgressBindingTest#periodicPauseEndAndReleasePersistRealStateWhileLiveNeverWrites",
+      "title": "periodicPauseEndAndReleasePersistRealStateWhileLiveNeverWrites",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/ui/player/VodProgressBindingTest.kt"
+    },
+    {
+      "id": "TC-APP-127",
+      "key": "com.example.iptv.ui.library.LibraryNavigationTest#nestedLibraryReturnsProgressAndFallbackRetainBookmarksAndNeverAutoplay",
+      "title": "nestedLibraryReturnsProgressAndFallbackRetainBookmarksAndNeverAutoplay",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/ui/library/LibraryNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-128",
+      "key": "com.example.iptv.ui.library.LibraryNavigationTest#globalLibraryDetailsReturnToOriginalSearchWithLegacyDedupAndAdultFilter",
+      "title": "globalLibraryDetailsReturnToOriginalSearchWithLegacyDedupAndAdultFilter",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/ui/library/LibraryNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-129",
+      "key": "com.example.iptv.ui.MetadataLibraryUiTest#remoteOpensDetailsBeforePlayAndBackRestoresLibraryAndPlaylistFallback",
+      "title": "remoteOpensDetailsBeforePlayAndBackRestoresLibraryAndPlaylistFallback",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataLibraryUiTest.kt"
+    },
+    {
+      "id": "TC-APP-130",
+      "key": "com.example.iptv.ui.LiveInfoTest#compactInfoUsesActualFormatsAndRestoresFocusTimeoutAndPlaybackIntent",
+      "title": "compactInfoUsesActualFormatsAndRestoresFocusTimeoutAndPlaybackIntent",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/LiveInfoTest.kt"
+    },
+    {
+      "id": "TC-APP-131",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#favoritesAndEpisodeProgressRemainResolvableAfterEvictionAndPasswordRotation",
+      "title": "Durable favorite aliases and episode progress survive eviction/password rotation while duplicate occurrences remain separate",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "MC-REL-005",
+      "key": "manual#REL-005",
+      "title": "Verify implemented MD-2 REL-005 on Firestick; actual speed, layout, timeout, resume/menu and provider acceptance remain separate",
+      "kind": "Manual",
+      "group": "metadata-followup",
+      "source": "docs/design/METADATA_FOLLOWUP_REVIEW.md"
+    },
+    {
+      "id": "MC-PLAY-015",
+      "key": "manual#PLAY-015",
+      "title": "Verify implemented MD-2 PLAY-015 on Firestick; actual speed, layout, timeout, resume/menu and provider acceptance remain separate",
+      "kind": "Manual",
+      "group": "metadata-followup",
+      "source": "docs/design/METADATA_FOLLOWUP_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-015",
+      "key": "manual#UI-015",
+      "title": "Verify implemented MD-2 UI-015 on Firestick; actual speed, layout, timeout, resume/menu and provider acceptance remain separate",
+      "kind": "Manual",
+      "group": "metadata-followup",
+      "source": "docs/design/METADATA_FOLLOWUP_REVIEW.md"
+    },
+    {
+      "id": "MC-VOD-007",
+      "key": "manual#VOD-007",
+      "title": "Verify implemented MD-2 VOD-007 on Firestick; actual speed, layout, timeout, resume/menu and provider acceptance remain separate",
+      "kind": "Manual",
+      "group": "metadata-followup",
+      "source": "docs/design/METADATA_FOLLOWUP_REVIEW.md"
+    },
+    {
+      "id": "MC-LIB-003",
+      "key": "manual#LIB-003",
+      "title": "Verify implemented MD-2 LIB-003 on Firestick; actual speed, layout, timeout, resume/menu and provider acceptance remain separate",
+      "kind": "Manual",
+      "group": "metadata-followup",
+      "source": "docs/design/METADATA_FOLLOWUP_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-132",
+      "key": "com.example.iptv.ui.home.MetadataStartupTest#liveFirstLayoutDoesNotOpenMetadataAndDemandedAliasesRetainLegacyFavorites",
+      "title": "Live first layout avoids metadata work; demanded aliases retain old favorites with account/cancellation safety",
+      "kind": "App",
+      "group": "metadata-followup",
+      "source": "app/src/test/java/com/example/iptv/ui/home/MetadataStartupTest.kt"
+    },
+    {
+      "id": "TC-APP-133",
+      "key": "com.example.iptv.ui.library.ResumeLabelTest#elapsedHoursMinutesStayConsistentWithResumeEligibilityAndClamping",
+      "title": "Resume HH:MM represents elapsed position across hour/long-duration boundaries with existing guards",
+      "kind": "App",
+      "group": "metadata-followup",
+      "source": "app/src/test/java/com/example/iptv/ui/library/ResumeLabelTest.kt"
+    },
+    {
+      "id": "TC-APP-134",
+      "key": "com.example.iptv.ui.LiveInfoTest#infoSharesInactivityExpiryAndForcedHideNeverReopensControls",
+      "title": "Info and controls expire together; interaction extends the timer and forced hide/release dismiss without reopening",
+      "kind": "App",
+      "group": "metadata-followup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/LiveInfoTest.kt"
+    },
+    {
+      "id": "TC-APP-135",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#rootTilesMatchBrowserAtEveryDensityAndEmptyReturnsRestoreFocus",
+      "title": "All five root tiles match actual browser tile bounds at every density; remote arrows and empty Back focus work",
+      "kind": "App",
+      "group": "metadata-followup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-136",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#failureOnlyRetryAndSingleActualWatchedActionWorkAcrossAllEntryPaths",
+      "title": "Specific failure-only retry and one actual watched action across details, Favorites, Search and playlist; no nested shortcuts",
+      "kind": "App",
+      "group": "metadata-followup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-137",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#largeCatalogMatcherDoesNoConstructionScanAndCachesExactCandidates",
+      "title": "100000-entry matcher avoids eager traversal; exact cached/encoded matching and duplicate safety retain legacy identity",
+      "kind": "App",
+      "group": "metadata",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "MC-LIB-004",
+      "key": "manual#LIB-004",
+      "title": "Review MD-3 LIB-004 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "kind": "Manual",
+      "group": "library-actions-review",
+      "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-016",
+      "key": "manual#UI-016",
+      "title": "Review MD-3 UI-016 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "kind": "Manual",
+      "group": "library-actions-review",
+      "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
+    },
+    {
+      "id": "MC-VOD-008",
+      "key": "manual#VOD-008",
+      "title": "Review MD-3 VOD-008 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "kind": "Manual",
+      "group": "library-actions-review",
+      "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-016",
+      "key": "manual#BROWSE-016",
+      "title": "Review MD-3 BROWSE-016 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "kind": "Manual",
+      "group": "library-actions-review",
+      "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
+    },
+    {
+      "id": "MC-SET-009",
+      "key": "manual#SET-009",
+      "title": "Review MD-3 SET-009 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "kind": "Manual",
+      "group": "library-actions-review",
+      "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
     }
   ],
   "requirements": [
@@ -2748,10 +3020,13 @@
         "MC-BROWSE-009",
         "TC-APP-090",
         "TC-APP-092",
-        "TC-APP-093"
+        "TC-APP-093",
+        "TC-APP-127",
+        "TC-APP-128",
+        "TC-APP-129"
       ],
       "gap": "Hierarchy, ordering, Back handlers and retained return state are automated with synthetic data. Real decoder/player release and root exit dialog integration remain separate device checks.",
-      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+      "reviewNote": "Reviewed final MD-1 definitions/status and selected BROWSE-013 VOD-root replacement against real implementation/assertions. Local implemented status is distinct from physical/provider acceptance. Streaming/account/atomic retention/legacy alias/duplicate/storage/sort/page/progress tests, native Info and Compose details/play/fallback/global returns cover the selected scope; refinements include bounded category/season pages, saved focus, nested external-series Back, late/disk failure retention and explicit next episode without autoplay. Fresh smoke/lint and debug assembly follow; manual TV/provider and stress gaps remain explicit."
     },
     {
       "id": "BROWSE-010",
@@ -2997,7 +3272,7 @@
     },
     {
       "id": "BROWSE-013",
-      "fingerprint": "d07164171012cc6e64af3a6ba797f44e557471bf86df06310d822cb53eeefb83",
+      "fingerprint": "60e41b29ff9ac1d732b04324634aec44609a866790027d4be997c16715dc0cbd",
       "coverage": "Partial",
       "cases": [
         "TC-APP-089",
@@ -3011,10 +3286,14 @@
         "MC-BROWSE-013",
         "TC-APP-095",
         "TC-APP-096",
-        "TC-APP-098"
+        "TC-APP-098",
+        "TC-APP-127",
+        "TC-APP-128",
+        "TC-APP-129",
+        "TC-APP-135"
       ],
       "gap": "Synthetic parser/catalog/state tests assert exact mixed membership/count/order, canonical identities, global favorites/search, filtered existing recents, independent section/category bookmarks and nested returns, refresh/type change/removal/reset. Compose tests exercise VOD filtered playback delivery, scrolled return and empty VOD Back/focus. Existing account/history/player-session assertions retained. Full Activity recreation, authoritative provider types and actual device playback remain separate.",
-      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
+      "reviewNote": "MD-2 explicitly approved. Added TC-APP-132–136 and revised TC-APP-129/130: real SQLite first-layout/demand gating with retained favorites/account cancellation, HH:MM resume bounds, native expiry/interaction/forced-hide/release without player changes, actual tile geometry across densities/empty focus and real metadata-failure retry plus state-derived watched actions across all browser paths. Old indefinite Info assertion replaced. Preserve physical timing/provider/device gaps; fresh execution follows."
     },
     {
       "id": "UI-013",
@@ -3023,10 +3302,13 @@
       "cases": [
         "MC-UI-013",
         "TC-APP-097",
-        "TC-APP-098"
+        "TC-APP-098",
+        "TC-APP-127",
+        "TC-APP-128",
+        "TC-APP-129"
       ],
       "gap": "Actual Compose assertions cover root/category/recent/Favorites/Search/Settings titles, focus-only stability, playback/auxiliary returns, refresh fallback and long-title ellipsis/bounds plus blank fallback. Physical TV readability and full Activity recreation remain separate.",
-      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
+      "reviewNote": "Reviewed final MD-1 definitions/status and selected BROWSE-013 VOD-root replacement against real implementation/assertions. Local implemented status is distinct from physical/provider acceptance. Streaming/account/atomic retention/legacy alias/duplicate/storage/sort/page/progress tests, native Info and Compose details/play/fallback/global returns cover the selected scope; refinements include bounded category/season pages, saved focus, nested external-series Back, late/disk failure retention and explicit next episode without autoplay. Fresh smoke/lint and debug assembly follow; manual TV/provider and stress gaps remain explicit."
     },
     {
       "id": "SET-008",
@@ -3047,13 +3329,31 @@
     },
     {
       "id": "VOD-006",
-      "fingerprint": "2b785b6e13fa436386cb36cece65dfdc5faad180264b2a39bc38595797da07a6",
-      "coverage": "Manual",
+      "fingerprint": "d57852227eaf5e084885da28a0def2ea87367c82fe207f88e3e51bd2231dbd35",
+      "coverage": "Partial",
       "cases": [
-        "MC-VOD-006"
+        "TC-APP-114",
+        "TC-APP-115",
+        "TC-APP-116",
+        "TC-APP-117",
+        "TC-APP-118",
+        "TC-APP-119",
+        "TC-APP-120",
+        "TC-APP-121",
+        "TC-APP-122",
+        "TC-APP-123",
+        "TC-APP-124",
+        "TC-APP-125",
+        "TC-APP-126",
+        "TC-APP-127",
+        "TC-APP-128",
+        "MC-VOD-006",
+        "TC-APP-131",
+        "TC-APP-133",
+        "TC-APP-136"
       ],
-      "gap": "MD-1 watching defaults are proposed, not approved: per-account typed identity, 10-second/event saves, 30-second Continue watching threshold, 95%/ended watched state, reset/resume capability and eviction/account isolation need meaningful assertions after approval. Session-only baseline resume does not establish persistent progress.",
-      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+      "gap": "Local threshold/completion/reset/account/duplicate/eviction/Continue watching and real Player-listener periodic/pause/end/release/live-exclusion assertions pass. Actual provider seekability, audible VOD resume across process/lifecycle/account changes and full physical movie/episode completion scenarios remain separate; MD-1 installation/start succeeded separately; MD-2 corrections are locally implemented and verified; new physical acceptance remains separate. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
     },
     {
       "id": "EPG-001",
@@ -3158,8 +3458,8 @@
         "TC-APP-106",
         "MC-PLAY-012"
       ],
-      "gap": "Local live tests plus direct Firestick accepted -10/+10 commands, remote Live return from -00:22 to live, and 91.3-second pause followed by resumed moving video through about 79 seconds. No playback/fatal/codec/sink failure recorded, but no behind-live-window exception captured, so that exact recovery branch and original-source fallback were not provoked physically. Exhaustive window bounds, VOD, audible post-pause continuity and synchronization remain incomplete.",
-      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
+      "gap": "Local live tests plus direct Firestick accepted -10/+10 commands, remote Live return from -00:22 to live, and 91.3-second pause followed by resumed moving video through about 79 seconds. No playback/fatal/codec/sink failure recorded, but no behind-live-window exception captured, so that exact recovery branch and original-source fallback were not provoked physically. Exhaustive window bounds, VOD, audible post-pause continuity and synchronization remain incomplete. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
     },
     {
       "id": "REL-004",
@@ -3206,43 +3506,197 @@
     },
     {
       "id": "DATA-008",
-      "fingerprint": "6566b8234fc41d5cc409f16dc87cac96f0ee1444fd519ae8e0b96c770b5e60de",
-      "coverage": "Manual",
+      "fingerprint": "2f1487209af795240eac37b97834dcbb6ae1b3baf39d5238624ccfe6d4da7557",
+      "coverage": "Partial",
       "cases": [
-        "MC-DATA-008"
+        "TC-APP-114",
+        "TC-APP-115",
+        "TC-APP-116",
+        "TC-APP-117",
+        "TC-APP-118",
+        "TC-APP-119",
+        "TC-APP-120",
+        "TC-APP-121",
+        "TC-APP-122",
+        "TC-APP-123",
+        "TC-APP-124",
+        "TC-APP-125",
+        "MC-DATA-008",
+        "TC-APP-131",
+        "TC-APP-132",
+        "TC-APP-137"
       ],
-      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
-      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
     },
     {
       "id": "LIB-002",
-      "fingerprint": "5f161680eff960385ea3ad8a1af85a042f4b6680705f78bf75b472a30341b332",
-      "coverage": "Manual",
+      "fingerprint": "8a6cbb8bcdbb4d55f5f327921f688e4bf81711e45c9c93b2b6c580ece02a1951",
+      "coverage": "Partial",
       "cases": [
-        "MC-LIB-002"
+        "TC-APP-114",
+        "TC-APP-115",
+        "TC-APP-116",
+        "TC-APP-117",
+        "TC-APP-122",
+        "TC-APP-123",
+        "TC-APP-124",
+        "TC-APP-125",
+        "TC-APP-127",
+        "TC-APP-128",
+        "TC-APP-129",
+        "MC-LIB-002",
+        "TC-APP-131",
+        "TC-APP-135",
+        "TC-APP-136",
+        "TC-APP-137"
       ],
-      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
-      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
     },
     {
       "id": "BROWSE-015",
-      "fingerprint": "ee6d5a219144f7cb226302a09733780edf366bd852a657a4754fe8a9dbbbe947",
-      "coverage": "Manual",
+      "fingerprint": "0652d4ccc6f446b7dcec94f18db59c1c46c5fdffc904396435e7ab120714acb3",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-118",
+        "TC-APP-119",
+        "TC-APP-120",
+        "TC-APP-121",
+        "TC-APP-127",
+        "TC-APP-128",
+        "TC-APP-129",
         "MC-BROWSE-015"
       ],
-      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
-      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+      "gap": "SQL/page tests cover provider/name/rating/recent order, unknowns, saved type/account choices, adult/unwatched data and bounded categories/seasons. Local remote/navigation regressions pass. Actual large-provider sort/filter scroll/focus usability and physical watched/unwatched grid acceptance remain separate. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
     },
     {
       "id": "PLAY-014",
-      "fingerprint": "d61b0c21ff0a73079dd6682dc394f8b450f1f7b9f8716f90ebfcc45d660c62dc",
+      "fingerprint": "cd5130f4fa00df5b509fb07baab6562e6f2682036533fd5b45044c31da5260ee",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-130",
+        "MC-PLAY-014",
+        "TC-APP-134"
+      ],
+      "gap": "Native host tests cover actual selected video/MP2 format updates, unknown labels, bounded popup, unshaded upper controller, no URL, unchanged position/intent and Back/focus/timeout restoration. Actual Firestick audio/video-format presentation, readability and remote/overflow variants remain separate; MD-1 installation/start succeeded separately; MD-2 corrections are locally implemented and verified; new physical acceptance remains separate. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+    },
+    {
+      "id": "REL-005",
+      "fingerprint": "01fafceb34b2c2a102e178b395054c5968b43b4607b043552b97eba43db7cae1",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-132",
+        "TC-APP-131",
+        "MC-REL-005",
+        "TC-APP-137"
+      ],
+      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+    },
+    {
+      "id": "PLAY-015",
+      "fingerprint": "740fd169455275f6c8303665e065648aeac212cf8cc04f1b283df2c82670a1a7",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-134",
+        "TC-APP-130",
+        "MC-PLAY-015"
+      ],
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+    },
+    {
+      "id": "UI-015",
+      "fingerprint": "0e6c89b2da2d016cc937f4917a8f04343debcb1b0b73999b4dd09e44842ac254",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-135",
+        "TC-APP-129",
+        "MC-UI-015"
+      ],
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+    },
+    {
+      "id": "VOD-007",
+      "fingerprint": "c31508bfa60ddcbc75a6f0a392079bd380e9e40f289e7d9a763fbbc16c5d0d11",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-133",
+        "TC-APP-136",
+        "TC-APP-129",
+        "TC-APP-117",
+        "TC-APP-126",
+        "MC-VOD-007"
+      ],
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+    },
+    {
+      "id": "LIB-003",
+      "fingerprint": "160f93fb7021a8d2e6c8bfcca8f63bcd819df34aa741b21dc804796bdb20d77a",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-136",
+        "TC-APP-135",
+        "TC-APP-129",
+        "MC-LIB-003"
+      ],
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
+      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+    },
+    {
+      "id": "LIB-004",
+      "fingerprint": "71278360343032ed80668c43e9e4db5860e400fcb8de9a176db9d9b7cff4a47d",
       "coverage": "Manual",
       "cases": [
-        "MC-PLAY-014"
+        "MC-LIB-004"
       ],
-      "gap": "MD-1 concrete proposal only. No implementation tests may be added before revision approval. Synthetic data/cache/identity/paging/remote/visibility assertions and appropriate physical acceptance must follow selected scope; prior baseline passes do not deliver this feature.",
-      "reviewNote": "MD-1 proposal after metadata-use selection: explicit staged library/API SQLite paging and legacy identity compatibility, proposed progress thresholds/save/reset/Continue watching, bounded sort/unwatched and live Info. Reviewed current code/private saved API fields and existing baseline assertions; no implementation assertions added before explicit revision approval. All new/refined criteria have honest manual/pending coverage, with cache/account/identity/remote/player tests required after selected approval. Broader API migration/EPG/adult flags/movie year-genre harvest/startup work are not silently selected."
+      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+    },
+    {
+      "id": "UI-016",
+      "fingerprint": "990aa476aeb3d01ac36306eb65907a1be1c6c56fd0d1c3c5362083ff8853851c",
+      "coverage": "Manual",
+      "cases": [
+        "MC-UI-016"
+      ],
+      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+    },
+    {
+      "id": "VOD-008",
+      "fingerprint": "07e0b6b78953abb14167b5e614ab951116aab9e6ce9274968d791dd0316be235",
+      "coverage": "Manual",
+      "cases": [
+        "MC-VOD-008"
+      ],
+      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+    },
+    {
+      "id": "BROWSE-016",
+      "fingerprint": "14049646dde19fa45dcbe253f0e70fbc0f78b04054f6c8d31ecc88a64216599f",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-016"
+      ],
+      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+    },
+    {
+      "id": "SET-009",
+      "fingerprint": "14b257988e18d103fcc137adeddb174c6213d221fdd8b64082e94eed7157bb1b",
+      "coverage": "Manual",
+      "cases": [
+        "MC-SET-009"
+      ],
+      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
+      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
     }
   ]
 }
