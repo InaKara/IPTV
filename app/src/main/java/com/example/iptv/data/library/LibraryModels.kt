@@ -18,6 +18,11 @@ data class LibraryEntry(
 )
 data class LibraryDetails(val synopsis: String = "", val year: String = "", val runtime: String = "",
     val genre: String = "", val cast: String = "", val director: String = "")
+data class SeasonFavorite(val seriesId: String, val season: String, val name: String,
+    val category: String = "", val categoryName: String = "", val poster: String? = null) {
+    fun key(account: LibraryAccount) = "season:${account.owner}:$seriesId:${privateReference(season)}"
+    fun series() = LibraryEntry(LibraryKind.SERIES, seriesId, name, category, categoryName, poster)
+}
 data class WatchProgress(val position: Long = 0, val duration: Long = 0, val watched: Boolean = false,
     val seekable: Boolean = false, val updated: Long = 0) {
     val resumable get() = !watched && seekable && duration > 0 && position >= 30_000

@@ -87,6 +87,19 @@ class LibraryPolicyTest {
         assertThrows(Exception::class.java) { LibraryParser.listing("{\"user_info\":{}}".byteInputStream(), LibraryKind.MOVIE) {} }
         assertThrows(Exception::class.java) { LibraryParser.listing("[] false".byteInputStream(), LibraryKind.MOVIE) {} }
     }
+    @Test fun nestedEpisodeMetadataNeverOverridesStructuralFieldsInEitherOrder() {
+        val nested = """"info":{"id":"900","title":"Wrong","name":"Wrong","series_id":"999","season":"99","episode_num":"99","container_extension":"ts","duration":"00:42:00"}"""
+        val top = """"id":"101","title":"Pilot","container_extension":"mkv","episode_num":"1""""
+        for (episode in listOf("$top,$nested", "$nested,$top")) {
+            val rows = mutableListOf<LibraryEntry>()
+            LibraryParser.details("""{"episodes":{"Specials":[{$episode},{"id":"102",$nested}],"2":[{"id":"201",$nested},{$nested},{"id":"bad",$nested}]}}""".byteInputStream(), "10", rows::add)
+            assertEquals(listOf("101", "102", "201"), rows.map { it.id })
+            assertEquals(listOf("Specials", "Specials", "2"), rows.map { it.season })
+            assertTrue(rows.all { it.seriesId == "10" && it.runtime == "00:42:00" })
+            assertEquals("Pilot", rows.first().name); assertEquals("mkv", rows.first().extension)
+            assertEquals("1", rows.first().episode); assertEquals("mp4", rows.last().extension)
+        }
+    }
     @Test fun progressThresholdsCompletionResetAndActualTimelineCapability() {
         val empty = WatchProgress()
         val short = WatchProgress.record(empty, 29_999, 100_000, true, false, 1)

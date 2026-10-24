@@ -83,6 +83,7 @@ fun BrowserScreen(
 ) {
     LaunchedEffect(channels) { viewModel.loadChannels(channels) }
     val loading by viewModel.uiState.collectAsStateWithLifecycle()
+    val verbose by viewModel.verboseLogging.collectAsStateWithLifecycle()
     val state by viewModel.browser.state.collectAsStateWithLifecycle()
     val controller = viewModel.browser
     val libraryPage = library?.state?.collectAsStateWithLifecycle()?.value
@@ -109,6 +110,7 @@ fun BrowserScreen(
     val queryRequester = remember { FocusRequester() }
     val accountRequester = remember { FocusRequester() }
     val filterRequester = remember { FocusRequester() }
+    val loggingRequester = remember { FocusRequester() }
     val densityRequesters = remember { GridDensity.values().associateWith { FocusRequester() } }
     val itemRequesters = remember(viewKey) { mutableMapOf<String, FocusRequester>() }
     var command by remember(viewKey) { mutableStateOf<FocusCommand?>(null) }
@@ -126,6 +128,7 @@ fun BrowserScreen(
             target == "query" -> queryRequester
             target == "account" -> accountRequester
             target == "adult_filter" -> filterRequester
+            target == "logging" -> loggingRequester
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]
             visible != null && visible.offset.y >= 0 && visible.offset.y + visible.size.height <= gridState.layoutInfo.viewportSize.height -> itemRequesters[target]
             else -> null
@@ -168,6 +171,12 @@ fun BrowserScreen(
                 if (horizontal < 0) move("sidebar:${BrowserDestination.SETTINGS.ordinal}")
                 else if (horizontal > 0 && accountSettings != null) move("account")
                 else if (vertical < 0) move("density:${GridDensity.COMPACT.name}")
+                else if (vertical > 0 && com.example.iptv.BuildConfig.DEBUG) move("logging")
+            }
+            target == "logging" -> {
+                if (horizontal < 0) move("sidebar:${BrowserDestination.SETTINGS.ordinal}")
+                else if (horizontal > 0 && accountSettings != null) move("account")
+                else if (vertical < 0) move("adult_filter")
             }
             else -> {
                 val index = items.indexOfFirst { it.id == target }
@@ -200,6 +209,7 @@ fun BrowserScreen(
             BrowserFocus.DENSITY -> request("density:${saved.focusedId ?: density.name}")
             BrowserFocus.ACCOUNT -> request("account")
             BrowserFocus.ADULT_FILTER -> request("adult_filter")
+            BrowserFocus.LOGGING -> request("logging")
             BrowserFocus.GRID -> requestGrid()
         }
     }
@@ -210,6 +220,7 @@ fun BrowserScreen(
             target == "query" -> queryRequester.requestFocus()
             target == "account" -> accountRequester.requestFocus()
             target == "adult_filter" -> filterRequester.requestFocus()
+            target == "logging" -> loggingRequester.requestFocus()
             target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]?.requestFocus()
             else -> {
                 val index = items.indexOfFirst { it.id == target }
@@ -325,6 +336,27 @@ fun BrowserScreen(
                                 Text(filterStatus, color = tint, fontSize = (20 * scale).sp)
                             }
                         }
+                        if (com.example.iptv.BuildConfig.DEBUG) {
+                            val status = stringResource(if (verbose) R.string.logging_on else R.string.logging_off)
+                            BrowserControl(Modifier.fillMaxWidth().height((100 * scale).dp).focusRequester(loggingRequester).testTag("verbose_logging")
+                                .semantics { toggleableState = if (verbose) ToggleableState.On else ToggleableState.Off; stateDescription = status },
+                                scale, role = Role.Switch,
+                                onFocus = { focused("logging"); controller.focusArea(BrowserFocus.LOGGING) },
+                                onKey = { direction(it, "logging") }, onClick = { viewModel.setVerboseLogging(!verbose) }) { tint ->
+                                Column(Modifier.padding((18 * scale).dp).align(Alignment.CenterStart)) {
+                                    Text(stringResource(R.string.verbose_logging), color = tint, fontSize = (24 * scale).sp)
+                                    Text(status, color = tint, fontSize = (20 * scale).sp)
+                                }
+                            }
+                        }
+                        Column(Modifier.fillMaxWidth().testTag("software_info"), verticalArrangement = Arrangement.spacedBy((6 * scale).dp)) {
+                            Text(stringResource(R.string.software_information), color = BrowserColors.secondary, fontSize = (22 * scale).sp)
+                            Text(stringResource(R.string.software_version, com.example.iptv.BuildConfig.VERSION_NAME,
+                                com.example.iptv.BuildConfig.VERSION_CODE), color = BrowserColors.text, fontSize = (20 * scale).sp,
+                                modifier = Modifier.testTag("software_version"))
+                            Text(stringResource(R.string.software_built, stringResource(R.string.software_build_timestamp)),
+                                color = BrowserColors.text, fontSize = (20 * scale).sp, modifier = Modifier.testTag("software_built"))
+                        }
                     }
                     accountSettings?.invoke(Modifier.weight(1f).fillMaxHeight().onFocusChanged {
                         if (it.hasFocus) { focused("account"); controller.focusArea(BrowserFocus.ACCOUNT) }
@@ -388,6 +420,10 @@ fun BrowserScreen(
                                     if (tile.category != null) controller.openCategory(tile.category.id)
                                     else {
                                         if (controller.state.value.items.none { it.id == tile.id }) return@BrowserControl
+                                        val season = tile.entry?.season
+                                        if (season != null && library != null) {
+                                            controller.openLibraryDetails(); library.externalSeason(season, state.filterAdult); return@BrowserControl
+                                        }
                                         val metadata = tile.entry?.library
                                         if (metadata != null && library != null) {
                                             controller.openLibraryDetails()
@@ -396,7 +432,7 @@ fun BrowserScreen(
                                         }
                                         // Re-read visibility so an obsolete tile cannot launch a filtered entry.
                                         val visible = controller.state.value.items
-                                        val playable = visible.filter { it.entry != null && it.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES }
+                                        val playable = visible.filter { it.entry != null && it.entry.season == null && it.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES }
                                         val selected = playable.indexOfFirst { it.id == tile.id }
                                         if (selected >= 0) {
                                             val collection = viewModel.preparePlayback(selected, playable)
@@ -414,7 +450,7 @@ fun BrowserScreen(
                 Dialog(onDismissRequest = { closeMenu() }) {
                     val actionRequester = remember(tile.id) { FocusRequester() }
                     var watched by remember(tile.id) { mutableStateOf<Boolean?>(null) }
-                    LaunchedEffect(tile.id) { tile.entry?.takeIf { it.channel.isVod }?.let { watched = viewModel.watched(it) } }
+                    LaunchedEffect(tile.id) { tile.entry?.takeIf { it.channel.isVod && it.season == null }?.let { watched = viewModel.watched(it) } }
                     LaunchedEffect(tile.id) { withFrameNanos { }; actionRequester.requestFocus() }
                     Column(Modifier.width((600 * scale).dp).background(BrowserColors.tile, RoundedCornerShape(8.dp)).padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {

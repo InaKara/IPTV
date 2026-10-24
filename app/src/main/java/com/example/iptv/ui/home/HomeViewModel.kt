@@ -30,10 +30,13 @@ class HomeViewModel @Inject constructor(
     private val recents: RecentlyWatchedManager,
     private val startup: StartupTimings = StartupTimings(),
     private val preferences: BrowserPreferences? = null,
-    private val library: com.example.iptv.data.library.LibraryRepository? = null
+    private val library: com.example.iptv.data.library.LibraryRepository? = null,
+    private val logging: com.example.iptv.diagnostics.VerboseLogging? = null
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState = _uiState.asStateFlow()
+    val verboseLogging = logging?.enabled ?: MutableStateFlow(false).asStateFlow()
+    fun setVerboseLogging(value: Boolean) { logging?.setEnabled(value) }
     private var source: List<M3UChannel>? = null
     private var regularGroups = emptyList<ChannelGroup>()
     private var refresh: Job? = null

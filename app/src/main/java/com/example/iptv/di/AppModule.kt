@@ -1,7 +1,6 @@
 package com.example.iptv.di
 
 import android.content.Context
-import android.util.Log
 import coil.disk.DiskCache
 import coil.ImageLoader
 import coil.decode.SvgDecoder
@@ -25,10 +24,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideStartupTimings(): StartupTimings = StartupTimings(BuildConfig.DEBUG, output = {
+    fun provideStartupTimings(logging: com.example.iptv.diagnostics.VerboseLogging): StartupTimings = StartupTimings(BuildConfig.DEBUG, output = {
         // Fire OS commonly sets persist.log.tag=I, which discards DEBUG records.
         // The entire trace is still disabled in release builds.
-        Log.i("AypiStartup", it)
+        logging.gate.startup(it)
     })
 
     @Provides

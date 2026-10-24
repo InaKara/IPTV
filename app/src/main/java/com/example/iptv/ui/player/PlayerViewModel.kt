@@ -42,7 +42,8 @@ internal fun seekTarget(current: Long, offset: Long, duration: Long, allowed: Bo
 @androidx.annotation.OptIn(UnstableApi::class)
 @HiltViewModel
 class PlayerViewModel @Inject constructor(private val application: Application,
-    private val credentials: CredentialsManager, private val library: LibraryRepository? = null) : AndroidViewModel(application) {
+    private val credentials: CredentialsManager, private val library: LibraryRepository? = null,
+    private val logging: com.example.iptv.diagnostics.VerboseLogging? = null) : AndroidViewModel(application) {
     private var engine: ExoPlayer? = null
     private val _player = MutableStateFlow<Player?>(null)
     val player = _player.asStateFlow()
@@ -86,6 +87,7 @@ class PlayerViewModel @Inject constructor(private val application: Application,
     }
 
     private fun begin(channel: M3UChannel) {
+        logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.PLAY_PREPARE)
         if (!channel.streamUrl.startsWith("https://", true) && !channel.streamUrl.startsWith("http://", true)) {
             _uiState.value = PlayerUiState.Unsupported
             return
@@ -99,6 +101,7 @@ class PlayerViewModel @Inject constructor(private val application: Application,
             credentials.username, credentials.password))
         val recovery = LiveWindowRecovery()
         val exo = ExoPlayer.Builder(application, audioFallbackRenderers(application))
+            .setLoadControl(playbackLoadControl(channel.isVod))
             .setSeekBackIncrementMs(DEDICATED_SEEK_MS).setSeekForwardIncrementMs(DEDICATED_SEEK_MS)
             .setMediaSourceFactory(mediaSources).build()
         engine = exo
@@ -106,14 +109,14 @@ class PlayerViewModel @Inject constructor(private val application: Application,
             .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(), true)
         if (BuildConfig.DEBUG) exo.addAnalyticsListener(object : AnalyticsListener {
             override fun onAudioCodecError(eventTime: AnalyticsListener.EventTime, audioCodecError: Exception) {
-                android.util.Log.i("AypiAudio", "event=codec_error")
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.AUDIO_CODEC_ERROR)
             }
             override fun onAudioSinkError(eventTime: AnalyticsListener.EventTime, audioSinkError: Exception) {
-                android.util.Log.i("AypiAudio", "event=sink_error")
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.AUDIO_SINK_ERROR)
             }
             override fun onAudioDecoderInitialized(eventTime: AnalyticsListener.EventTime, decoderName: String,
                 initializedTimestampMs: Long, initializationDurationMs: Long) {
-                android.util.Log.i("AypiAudio", "event=decoder_initialized")
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.AUDIO_INITIALIZED, initializationDurationMs)
             }
         })
         exo.addListener(object : Player.Listener {
@@ -126,9 +129,10 @@ class PlayerViewModel @Inject constructor(private val application: Application,
                 }
             }
             override fun onTracksChanged(tracks: Tracks) {
-                if (BuildConfig.DEBUG) audioTrackDiagnostics(tracks).forEach { android.util.Log.i("AypiAudio", it) }
+                if (logging?.enabled?.value == true) audioTrackDiagnostics(tracks).forEach { logging.gate.audio(it) }
             }
             override fun onEvents(player: Player, events: Player.Events) {
+                if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.PLAY_STATE, count = player.playbackState)
                 _uiState.value = when {
                     player.playerError != null -> PlayerUiState.Error
                     player.playbackState == Player.STATE_BUFFERING -> PlayerUiState.Buffering

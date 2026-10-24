@@ -29,15 +29,21 @@ data class LibraryPage(val location: LibraryLocation = LibraryLocation(), val ro
     val details: LibraryDetails? = null, val progress: WatchProgress = WatchProgress(), val loading: Boolean = false,
     val failed: Boolean = false, val page: Int = 0, val more: Boolean = false,
     val sort: LibrarySort = LibrarySort.PROVIDER, val unwatched: Boolean = false, val bookmark: LibraryBookmark = LibraryBookmark(),
-    val nextEpisode: LibraryEntry? = null)
+    val nextEpisode: LibraryEntry? = null, val favorite: Boolean = false, val unavailable: Boolean = false,
+    val preparing: Boolean = false)
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(private val repository: LibraryRepository,
-    private val recents: RecentlyWatchedManager, private val preferences: BrowserPreferences) : ViewModel() {
+    private val recents: RecentlyWatchedManager, private val preferences: BrowserPreferences,
+    private val logging: com.example.iptv.diagnostics.VerboseLogging? = null) : ViewModel() {
     private val mutable = MutableStateFlow(LibraryPage())
     val state = mutable.asStateFlow()
+    private val choice = MutableStateFlow<WatchProgress?>(null)
+    val playChoice = choice.asStateFlow()
+    fun cancelPlayChoice() { choice.value = null }
     private val parents = mutableListOf<LibraryPage>()
     private var job: Job? = null
+    private var watchWrite: Job? = null
     private var filter = true
     private var account: LibraryAccount? = null
     var externalReturn = false
@@ -48,6 +54,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
         if (account?.cache != active.cache) {
             job?.cancel(); parents.clear(); externalReturn = false
             mutable.value = LibraryPage()
+            choice.value = null
             account = active
         }
         val changed = filter != filterAdult
@@ -57,7 +64,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
     }
     private fun hidden(account: LibraryAccount, entry: LibraryEntry) = filter &&
         repository.resolve(account, entry).channel.groupTitle.contains("adult", true)
-    fun root() { job?.cancel(); parents.clear(); externalReturn = false; mutable.value = LibraryPage(); load() }
+    fun root() { job?.cancel(); parents.clear(); externalReturn = false; choice.value = null; mutable.value = LibraryPage(); load() }
     fun openRoot(route: LibraryRoute, kind: LibraryKind = LibraryKind.MOVIE) = navigate(LibraryLocation(route, kind))
     fun fallback() = navigate(LibraryLocation(LibraryRoute.PLAYLIST))
     fun external(entry: LibraryEntry, filterAdult: Boolean) {
@@ -69,15 +76,23 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
         externalKey = target.key
         navigate(target)
     }
+    fun externalSeason(season: SeasonFavorite, filterAdult: Boolean) {
+        activate(filterAdult)
+        if (filterAdult && season.categoryName.contains("adult", true)) return
+        val target = LibraryLocation(LibraryRoute.EPISODES, LibraryKind.SERIES, label = season.name,
+            entry = season.series(), season = season.season)
+        externalReturn = true; externalKey = target.key; navigate(target)
+    }
     fun back(): Boolean {
         if (parents.isEmpty()) return false
-        job?.cancel(); mutable.value = parents.removeAt(parents.lastIndex); load(); return true
+        job?.cancel(); choice.value = null; mutable.value = parents.removeAt(parents.lastIndex); load(); return true
     }
     fun consumeExternalReturn(): Boolean {
         if (!externalReturn || mutable.value.location.key != externalKey) return false
         externalReturn = false; back(); return true
     }
     private fun navigate(location: LibraryLocation) {
+        choice.value = null
         parents.add(mutable.value)
         job?.cancel(); mutable.value = LibraryPage(location); load()
     }
@@ -127,6 +142,51 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
         val location = state.value.location
         return location.playable?.id ?: account?.let { a -> location.entry?.let { repository.resolve(a, it).id } }
     }
+    private fun selectedChannel(): BrowserChannel? {
+        val a = account ?: return null
+        val location = state.value.location
+        return location.playable ?: location.entry?.takeIf { it.kind != LibraryKind.SERIES }?.let { repository.resolve(a, it) }
+    }
+    fun toggleWatched() {
+        val a = account ?: return
+        val selected = selectedChannel() ?: return
+        val previous = watchWrite
+        watchWrite = viewModelScope.launch {
+            previous?.join()
+            repository.flush()
+            val progress = repository.progress(a, selected.channel, selected.id)
+            repository.reset(a, selected.channel, !progress.watched, selected.id)
+            if (repository.valid(a)) load()
+        }
+    }
+    fun toggleFavorite() {
+        val a = account ?: return
+        val location = state.value.location
+        val series = location.entry?.takeIf { it.kind == LibraryKind.SERIES }
+        if (location.route == LibraryRoute.EPISODES && series != null && location.season != null) {
+            val season = SeasonFavorite(series.id, location.season, series.name, series.category, series.categoryName, series.poster)
+            viewModelScope.launch {
+                val saved = preferences.load()
+                if (saved.account != a.owner || !repository.valid(a)) return@launch
+                repository.saveSeason(a, season)
+                if (!repository.valid(a)) return@launch
+                preferences.toggle(season.key(a), a.owner)
+                if (repository.valid(a)) load()
+            }
+        } else selectedChannel()?.let(::favorite)
+    }
+    fun requestPlay(action: (Int, List<M3UChannel>) -> Unit) {
+        val a = account ?: return
+        val location = state.value.location
+        val selected = selectedChannel() ?: return
+        viewModelScope.launch {
+            repository.flush()
+            val saved = repository.progress(a, selected.channel, selected.id)
+            if (!repository.valid(a) || state.value.location != location) return@launch
+            mutable.value = state.value.copy(progress = saved)
+            if (saved.resumable) choice.value = saved else play(true, action)
+        }
+    }
     fun favorite(channel: BrowserChannel) {
         val a = account ?: return
         viewModelScope.launch {
@@ -140,6 +200,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
     }
     fun nextEpisode() { state.value.nextEpisode?.let { open(LibraryRow(it.id, it.name, it)) } }
     fun play(restart: Boolean, action: (Int, List<M3UChannel>) -> Unit) {
+        choice.value = null
         val a = account ?: return
         val entry = state.value.location.entry ?: return
         if (entry.kind == LibraryKind.SERIES) return
@@ -160,9 +221,16 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
         val location = requested.location
         job?.cancel()
         if (location.route == LibraryRoute.ROOT || location.route == LibraryRoute.PLAYLIST) return
+        val needsListing = location.route == LibraryRoute.CATEGORIES || location.route == LibraryRoute.TITLES
+        val freshListing = needsListing && !force && repository.listingKnownFresh(a, location.kind)
+        mutable.value = requested.copy(loading = !freshListing, preparing = true, failed = false)
+        logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.LIBRARY_OPEN)
         job = viewModelScope.launch {
           try {
             repository.flush()
+            val savedPreferences = preferences.load()
+            val favoriteRefs = if (location.route in setOf(LibraryRoute.DETAIL, LibraryRoute.EPISODES))
+                repository.favoriteReferences(a, savedPreferences.favorites) else emptyMap()
             if (location.route == LibraryRoute.RECENT) {
                 val references = recents.references(a.owner)
                 val resolved = repository.supplemental(a, references)
@@ -214,14 +282,22 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
                     db.progress(a.owner, repository.key(a, resolved.channel, resolved.id))
                 } ?: WatchProgress()
                 val details = selected?.let { db.details(a, it, System.currentTimeMillis())?.first }
-                requested.copy(rows = rows, sort = sort, details = details, progress = progress,
-                    loading = loading, failed = failed, nextEpisode = selected?.takeIf { it.kind == LibraryKind.EPISODE && progress.watched }?.let { db.nextEpisode(a, it) },
+                val seasonKey = selected?.takeIf { it.kind == LibraryKind.SERIES && location.season != null }?.let {
+                    SeasonFavorite(it.id, location.season!!, it.name).key(a)
+                }
+                val favorite = if (seasonKey != null) seasonKey in savedPreferences.favorites else selectedChannel()?.let { item -> favoriteRefs.values.any { it.id == item.id } } ?: false
+                val unavailable = location.route == LibraryRoute.EPISODES && selected != null && details != null &&
+                    !db.hasSeason(a, selected.id, location.season.orEmpty())
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.CACHE_READ, count = rows.size)
+                requested.copy(rows = rows, sort = sort, details = details, progress = progress, preparing = false,
+                    loading = loading, failed = failed, favorite = favorite, unavailable = unavailable,
+                    nextEpisode = selected?.takeIf { it.kind == LibraryKind.EPISODE && progress.watched }?.let { db.nextEpisode(a, it) },
                     more = entries.size == LibraryDatabase.PAGE_SIZE || categoryPage.size == LibraryDatabase.PAGE_SIZE || seasonPage.size == LibraryDatabase.PAGE_SIZE ||
                         (location.route == LibraryRoute.CONTINUE && rows.size == LibraryDatabase.PAGE_SIZE))
             }
-            val needsListing = location.route == LibraryRoute.CATEGORIES || location.route == LibraryRoute.TITLES
-            val needsDetail = location.route == LibraryRoute.DETAIL && location.entry?.kind != LibraryKind.EPISODE && location.playable == null
-            publish(cached(needsListing || needsDetail, false))
+            val needsDetail = location.entry?.let { it.kind != LibraryKind.EPISODE } == true && location.playable == null &&
+                location.route in setOf(LibraryRoute.DETAIL, LibraryRoute.SEASONS, LibraryRoute.EPISODES)
+            publish(cached((needsListing && !freshListing) || needsDetail, false))
             val success = when {
                 needsListing -> repository.refresh(a, location.kind, force)
                 needsDetail -> repository.details(a, location.entry!!, force)
@@ -230,7 +306,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
             publish(cached(false, !success))
           } catch (cancelled: CancellationException) { throw cancelled }
           catch (_: Exception) {
-              if (repository.valid(a) && state.value.location == location) mutable.value = state.value.copy(loading = false, failed = true)
+              if (repository.valid(a) && state.value.location == location) mutable.value = state.value.copy(loading = false, preparing = false, failed = true)
           }
         }
     }

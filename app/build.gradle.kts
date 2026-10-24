@@ -1,10 +1,34 @@
 import java.security.MessageDigest
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+}
+
+// Execution-time stamping keeps one immutable value in each produced APK. Unchanged
+// inputs reuse the output, so ordinary checks do not invalidate Kotlin compilation.
+abstract class GenerateSoftwareInfo : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val buildInputs: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ROOT)
+            .withZone(ZoneOffset.UTC).format(Instant.now())
+        val output = outputDirectory.file("values/software_build.xml").get().asFile
+        output.parentFile.mkdirs()
+        output.writeText("<resources><string name=\"software_build_timestamp\" translatable=\"false\">$timestamp</string></resources>\n")
+    }
 }
 
 // Read literal KEY=value pairs without evaluating shell syntax or logging values.
@@ -131,6 +155,24 @@ android {
     sourceSets.getByName("main") {
         java.srcDir(rootProject.file("third_party/media3-ffmpeg/java"))
         jniLibs.srcDir(layout.buildDirectory.dir("generated/ffmpeg/jniLibs"))
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        val variantTitle = variant.name.replaceFirstChar { it.uppercaseChar() }
+        val softwareInfo = tasks.register<GenerateSoftwareInfo>("generate${variantTitle}SoftwareInfo") {
+            buildInputs.from(fileTree("src/main"), fileTree("src/${variant.name}"), file("build.gradle.kts"),
+                rootProject.file("build.gradle.kts"), rootProject.file("settings.gradle.kts"),
+                rootProject.file("gradle.properties"), rootProject.file("gradle/wrapper/gradle-wrapper.properties"),
+                rootProject.fileTree("third_party/media3-ffmpeg"),
+                layout.buildDirectory.dir("generated/ffmpeg/jniLibs"),
+                configurations.named("${variant.name}RuntimeClasspath"),
+                tasks.matching { it.name == "generate${variantTitle}BuildConfig" })
+            dependsOn("verifyFfmpegNative")
+            // addGeneratedSourceDirectory supplies AGP's per-task output directory.
+        }
+        variant.sources.res?.addGeneratedSourceDirectory(softwareInfo, GenerateSoftwareInfo::outputDirectory)
     }
 }
 

@@ -71,10 +71,30 @@ class MetadataLibraryUiTest {
             compose.waitUntil(5000) { compose.onAllNodesWithTag("library_play").fetchSemanticsNodes().isNotEmpty() }
             assertEquals(0, plays)
             compose.onNodeWithTag("browser_heading").assertTextEquals("A movie")
-            compose.onNodeWithTag("library_play").assertTextEquals("Resume from 01:23")
+            compose.onNodeWithTag("library_play").assertTextEquals("Play")
+            val primary = listOf("play", "watch", "favorite").map { compose.onNodeWithTag("library_$it").getUnclippedBoundsInRoot() }
+            primary.drop(1).forEach { assertEquals(primary.first().top, it.top); assertEquals(primary.first().bottom, it.bottom) }
+            compose.onNodeWithTag("library_icon_PLAY", useUnmergedTree = true).assertExists()
+            compose.onNodeWithTag("library_icon_UNWATCHED", useUnmergedTree = true).assertExists()
+            compose.onNodeWithTag("library_icon_HEART", useUnmergedTree = true).assertExists()
+            compose.onNodeWithTag("library_favorite").assertIsOff().performClick()
+            compose.waitUntil(5000) { library.state.value.favorite }
+            compose.onNodeWithTag("library_favorite").assertIsOn().performClick()
+            compose.waitUntil(5000) { !library.state.value.favorite }
+            compose.onNodeWithTag("library_play").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            compose.onNodeWithTag("library_actions").assertDoesNotExist()
+            compose.onNodeWithTag("library_restart").assertDoesNotExist()
             compose.onNodeWithTag("library_retry").assertDoesNotExist()
             compose.onNodeWithTag("library_fallback").assertDoesNotExist()
             compose.onNodeWithTag("library_play").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
+            compose.waitUntil(5000) { compose.onAllNodesWithTag("play_resume").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("play_resume").assertTextEquals("Resume from 01:23").assertIsFocused()
+            assertEquals(0, plays)
+            compose.runOnIdle { back!!.onBackPressed() }
+            compose.onNodeWithTag("play_resume").assertDoesNotExist()
+            compose.onNodeWithTag("library_play").assertIsFocused().performClick()
+            compose.waitUntil(5000) { compose.onAllNodesWithTag("play_resume").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("play_resume").performClick()
             compose.waitUntil(5000) { plays == 1 }
             compose.runOnIdle { browsing = true }
             compose.onNodeWithTag("browser_heading").assertTextEquals("A movie")

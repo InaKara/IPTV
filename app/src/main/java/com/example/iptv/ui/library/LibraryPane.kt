@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,6 +16,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +59,39 @@ internal fun resumeTime(positionMs: Long): String {
     return String.format(java.util.Locale.ROOT, "%02d:%02d", minutes / 60, minutes % 60)
 }
 
+private fun actionSymbol(id: String, watched: Boolean) = when (id) {
+    "play" -> LibrarySymbol.PLAY
+    "watch" -> if (watched) LibrarySymbol.WATCHED else LibrarySymbol.UNWATCHED
+    "sort" -> LibrarySymbol.SORT
+    "unwatched" -> LibrarySymbol.FILTER
+    "retry" -> LibrarySymbol.RETRY
+    "previous" -> LibrarySymbol.PREVIOUS
+    "next" -> LibrarySymbol.NEXT
+    "next_episode" -> LibrarySymbol.NEXT_EPISODE
+    else -> LibrarySymbol.SERIES
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun LibraryLoading(page: LibraryPage, scale: Float, modifier: Modifier, updating: Boolean) {
+    val message = when (page.location.route) {
+        LibraryRoute.CATEGORIES, LibraryRoute.TITLES -> if (page.location.kind == LibraryKind.MOVIE) {
+            if (updating) R.string.updating_movies else R.string.loading_movies
+        } else if (updating) R.string.updating_series else R.string.loading_series
+        LibraryRoute.SEASONS, LibraryRoute.EPISODES -> if (updating) R.string.updating_episodes else R.string.loading_episodes
+        LibraryRoute.DETAIL -> if (updating) R.string.updating_details else R.string.loading_details
+        else -> R.string.library_loading
+    }
+    Row(modifier.testTag("library_loading").padding((16 * scale).dp), horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically) {
+        androidx.compose.material3.CircularProgressIndicator(Modifier.size((36 * scale).dp), color = BrowserColors.amber,
+            strokeWidth = (3 * scale).dp)
+        Spacer(Modifier.width((16 * scale).dp))
+        Text(stringResource(message), color = BrowserColors.text, fontSize = (25 * scale).sp,
+            modifier = Modifier.testTag("library_loading_status"))
+    }
+}
+
 /** Uses the existing sidebar shell. Disk pages bound the grid's retained metadata. */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -60,6 +99,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     modifier: Modifier, entryRequester: FocusRequester, leave: () -> Unit,
     onPlay: (Int, List<M3UChannel>) -> Unit, externalBack: () -> Unit) {
     val page by viewModel.state.collectAsStateWithLifecycle()
+    val playChoice by viewModel.playChoice.collectAsStateWithLifecycle()
     val route = page.location.route
     val key = page.location.key + ":${page.page}"
     val grid = remember(key, density) { LazyGridState(page.bookmark.first, page.bookmark.offset) }
@@ -67,9 +107,15 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     var contextRow by remember(key) { mutableStateOf<LibraryRow?>(null) }
     var menuReturn by remember(key) { mutableStateOf<String?>(null) }
     var previousRows by remember(key) { mutableStateOf(emptySet<String>()) }
+    var choiceWasOpen by remember(key) { mutableStateOf(false) }
+    LaunchedEffect(playChoice) {
+        if (playChoice != null) choiceWasOpen = true
+        else if (choiceWasOpen) { choiceWasOpen = false; menuReturn = "play" }
+    }
     BackHandler(enabled = route != LibraryRoute.ROOT) {
         if (viewModel.consumeExternalReturn()) externalBack() else viewModel.back()
     }
+    BackHandler(enabled = playChoice != null) { viewModel.cancelPlayChoice() }
     LaunchedEffect(grid, key) {
         snapshotFlow { grid.firstVisibleItemIndex to grid.firstVisibleItemScrollOffset }.collect { (index, offset) -> viewModel.scroll(index, offset) }
     }
@@ -77,7 +123,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
         val target = menuReturn ?: return@LaunchedEffect
         withFrameNanos { }
         val visibleTarget = page.rows.any { it.key == target } || (route == LibraryRoute.DETAIL &&
-            target in setOf("play", "restart", "actions", "seasons", "next_episode"))
+            target in setOf("play", "watch", "favorite", "seasons", "next_episode"))
         (if (visibleTarget) requesters[target] ?: entryRequester else entryRequester).requestFocus()
         menuReturn = null
     }
@@ -85,9 +131,9 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
         withFrameNanos { }
         (requesters[page.bookmark.focus] ?: entryRequester).requestFocus()
     }
-    LaunchedEffect(key, page.rows, page.failed) {
+    LaunchedEffect(key, page.rows, page.failed, page.loading, page.preparing) {
         if (route in setOf(LibraryRoute.CATEGORIES, LibraryRoute.SEASONS, LibraryRoute.CONTINUE, LibraryRoute.RECENT) &&
-            page.rows.isEmpty() && !page.failed) leave()
+            page.rows.isEmpty() && !page.failed && !page.loading && !page.preparing) leave()
     }
     // Restore a surviving item after paging, sorting or filtering; explicit sidebar focus stays there.
     LaunchedEffect(key, page.rows) {
@@ -104,17 +150,12 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
         previousRows = page.rows.mapTo(mutableSetOf()) { it.key }
     }
     Column(modifier.focusRequester(entryRequester).focusGroup().onPreviewKeyEvent {
-        if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_MENU &&
-            route == LibraryRoute.DETAIL && page.location.entry?.kind != LibraryKind.SERIES) {
-            val entry = page.location.entry!!
-            contextRow = LibraryRow(entry.id, entry.name, entry, page.location.playable, progress = page.progress)
-            true
-        } else if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+        if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             // Compose handles left between controls; only the first column returns to the sidebar.
             val focused = page.bookmark.focus
             val index = page.rows.indexOfFirst { row -> row.key == focused }
             val rootIndex = focused?.takeIf { it.startsWith("root_") }?.substringAfter('_')?.toIntOrNull()
-            val firstControl = focused in setOf("play", "seasons", "actions", "next_episode", "retry", "sort", "previous") ||
+            val firstControl = focused in setOf("play", "seasons", "next_episode", "retry", "sort", "previous") ||
                 (focused == "unwatched" && route == LibraryRoute.EPISODES) || (focused == "next" && page.page == 0)
             if ((rootIndex != null && rootIndex % density.columns == 0) || (index >= 0 && index % density.columns == 0) ||
                 (index < 0 && firstControl)) { leave(); true } else false
@@ -122,11 +163,28 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     }, verticalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
         @Composable fun action(label: String, id: String, click: () -> Unit) {
             val requester = requesters.getOrPut(id) { FocusRequester() }
+            val watchedAction = if (id == "watch") stringResource(if (page.progress.watched) R.string.library_reset else R.string.library_mark) else null
             BrowserControl(Modifier.height((60 * scale).dp).widthIn(min = (150 * scale).dp)
-                .focusRequester(requester).testTag("library_$id"), scale,
+                .focusRequester(requester).testTag("library_$id")
+                .semantics { if (watchedAction != null) { contentDescription = watchedAction; stateDescription = label } }, scale,
                 onFocus = { viewModel.focus(id) }, onClick = click) { tint ->
-                Text(label, color = tint, fontSize = (21 * scale).sp, maxLines = 1,
-                    modifier = Modifier.padding(horizontal = (16 * scale).dp).align(Alignment.Center))
+                Row(Modifier.padding(horizontal = (16 * scale).dp).align(Alignment.Center), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy((10 * scale).dp)) {
+                    LibraryIcon(actionSymbol(id, page.progress.watched), tint, Modifier.size((26 * scale).dp))
+                    Text(label, color = tint, fontSize = (21 * scale).sp, maxLines = 1)
+                }
+            }
+        }
+        @Composable fun heart(season: Boolean = false) {
+            val label = stringResource(if (season) {
+                if (page.favorite) R.string.remove_season_favorite else R.string.add_season_favorite
+            } else if (page.favorite) R.string.remove_favorite else R.string.add_favorite)
+            val status = stringResource(if (page.favorite) R.string.is_favorite else R.string.not_favorite)
+            val requester = requesters.getOrPut("favorite") { FocusRequester() }
+            BrowserControl(Modifier.size((60 * scale).dp).focusRequester(requester).testTag("library_favorite")
+                .semantics { contentDescription = label; stateDescription = status; toggleableState = if (page.favorite) ToggleableState.On else ToggleableState.Off },
+                scale, onFocus = { viewModel.focus("favorite") }, onClick = viewModel::toggleFavorite) { tint ->
+                LibraryIcon(LibrarySymbol.HEART, tint, Modifier.size((28 * scale).dp).align(Alignment.Center), page.favorite)
             }
         }
         if (route == LibraryRoute.ROOT) {
@@ -147,9 +205,15 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                         3 -> viewModel.openRoot(LibraryRoute.RECENT)
                         else -> viewModel.fallback()
                     }
-                }) { tint -> Text(stringResource(label), color = tint, fontSize = (22 * scale).sp,
-                    fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding((18 * scale).dp).align(Alignment.Center)) }
+                }) { tint ->
+                    Column(Modifier.align(Alignment.Center).padding((18 * scale).dp), horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
+                        LibraryIcon(listOf(LibrarySymbol.MOVIES, LibrarySymbol.SERIES, LibrarySymbol.CONTINUE, LibrarySymbol.HISTORY, LibrarySymbol.FOLDER)[index],
+                            tint, Modifier.size((58 * scale).dp))
+                        Text(stringResource(label), color = tint, fontSize = (22 * scale).sp,
+                            fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
+                }
               }
             }
         } else if (route == LibraryRoute.DETAIL) {
@@ -160,14 +224,9 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                     if (entry.kind == LibraryKind.SERIES) action(stringResource(R.string.library_seasons), "seasons", viewModel::seasons)
                     else {
                         Row(horizontalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
-                            val playLabel = if (page.progress.resumable) stringResource(R.string.library_resume_from, resumeTime(page.progress.position))
-                                else stringResource(R.string.library_play)
-                            action(playLabel, "play") { viewModel.play(false, onPlay) }
-                            action(stringResource(R.string.library_restart), "restart") { viewModel.play(true, onPlay) }
-                        }
-                        if (page.progress.watched) Text(stringResource(R.string.library_watched), color = BrowserColors.secondary, fontSize = (20 * scale).sp)
-                        action(stringResource(R.string.library_actions), "actions") {
-                            contextRow = LibraryRow(entry.id, entry.name, entry, progress = page.progress)
+                            action(stringResource(R.string.library_play), "play") { viewModel.requestPlay(onPlay) }
+                            action(stringResource(if (page.progress.watched) R.string.library_watched else R.string.library_unwatched), "watch", viewModel::toggleWatched)
+                            heart()
                         }
                         if (page.nextEpisode != null) action(stringResource(R.string.library_next_episode), "next_episode", click = viewModel::nextEpisode)
                     }
@@ -181,7 +240,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
-                if (page.loading) Text(stringResource(R.string.library_loading), color = BrowserColors.secondary)
+                if (page.loading) LibraryLoading(page, scale, Modifier.weight(1f), page.details != null)
                 if (page.failed) Text(stringResource(R.string.library_unavailable), color = BrowserColors.secondary)
                 if (page.failed && !page.loading) action(stringResource(R.string.library_retry_details), "retry", click = viewModel::refresh)
             }
@@ -195,14 +254,21 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                 }), "sort", click = viewModel::sort)
                 if ((route == LibraryRoute.TITLES && page.location.kind == LibraryKind.MOVIE) || route == LibraryRoute.EPISODES)
                     action(stringResource(if (page.unwatched) R.string.library_unwatched_on else R.string.library_unwatched_off), "unwatched", click = viewModel::unwatched)
-                if (page.failed && !page.loading) action(stringResource(if (route == LibraryRoute.CATEGORIES || route == LibraryRoute.TITLES) {
-                    if (page.location.kind == LibraryKind.SERIES) R.string.library_retry_series else R.string.library_retry_movies
-                } else R.string.library_retry_details), "retry", click = viewModel::refresh)
+                if (route == LibraryRoute.EPISODES) heart(season = true)
+                if ((page.failed || page.unavailable) && !page.loading) {
+                    val retry = if (route == LibraryRoute.CATEGORIES || route == LibraryRoute.TITLES) {
+                        if (page.location.kind == LibraryKind.SERIES) R.string.library_retry_series else R.string.library_retry_movies
+                    } else R.string.library_retry_details
+                    action(stringResource(retry), "retry", click = viewModel::refresh)
+                }
             }
-            if (page.loading) Text(stringResource(R.string.library_loading), color = BrowserColors.secondary)
+            val usable = page.rows.any { it.category?.id != "" }
+            if (page.loading && usable) LibraryLoading(page, scale, Modifier.fillMaxWidth(), true)
             if (page.failed) Text(stringResource(R.string.library_unavailable), color = BrowserColors.secondary)
-            if (page.rows.isEmpty() && !page.loading) Text(stringResource(R.string.category_empty), color = BrowserColors.secondary)
-            LazyVerticalGrid(GridCells.Fixed(density.columns), state = grid, modifier = Modifier.weight(1f).testTag("library_grid"),
+            if (page.unavailable && !page.loading) Text(stringResource(R.string.season_unavailable), color = BrowserColors.secondary)
+            if (page.rows.isEmpty() && !page.loading && !page.preparing) Text(stringResource(R.string.category_empty), color = BrowserColors.secondary)
+            if (page.loading && !usable) LibraryLoading(page, scale, Modifier.fillMaxWidth().weight(1f), false)
+            else LazyVerticalGrid(GridCells.Fixed(density.columns), state = grid, modifier = Modifier.weight(1f).testTag("library_grid"),
                 horizontalArrangement = Arrangement.spacedBy((12 * scale).dp), verticalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
                 itemsIndexed(page.rows, key = { _, row -> row.key }) { _, row ->
                     val requester = requesters.getOrPut(row.key) { FocusRequester() }
@@ -238,6 +304,28 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
             }
         }
     }
+    playChoice?.let { progress ->
+        androidx.compose.ui.window.Dialog(onDismissRequest = viewModel::cancelPlayChoice) {
+            val resume = remember { FocusRequester() }
+            LaunchedEffect(Unit) { withFrameNanos { }; resume.requestFocus() }
+            Column(Modifier.width((650 * scale).dp).background(BrowserColors.tile).padding((24 * scale).dp),
+                verticalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
+                listOf(false, true).forEach { beginning ->
+                    BrowserControl(Modifier.fillMaxWidth().height((72 * scale).dp)
+                        .then(if (!beginning) Modifier.focusRequester(resume) else Modifier)
+                        .testTag(if (beginning) "play_beginning" else "play_resume"), scale,
+                        onClick = { viewModel.play(beginning, onPlay) }) { tint ->
+                        Row(Modifier.padding((16 * scale).dp).align(Alignment.CenterStart), verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
+                            LibraryIcon(if (beginning) LibrarySymbol.BEGINNING else LibrarySymbol.CONTINUE, tint, Modifier.size((28 * scale).dp))
+                            Text(stringResource(if (beginning) R.string.library_beginning else R.string.library_resume_from, resumeTime(progress.position)),
+                                color = tint, fontSize = (23 * scale).sp)
+                        }
+                    }
+                }
+            }
+        }
+    }
     contextRow?.let { row ->
         LibraryActions(viewModel, row) {
             if (contextRow != null) {
@@ -264,12 +352,18 @@ private fun LibraryActions(viewModel: LibraryViewModel, row: LibraryRow, close: 
               if (watched != null) {
                 BrowserControl(Modifier.fillMaxWidth().height(60.dp).focusRequester(focus).testTag("library_mark"), 1f,
                     onClick = { viewModel.mark(channel.channel, watched != true, channel.id, close) }) { tint ->
-                    Text(stringResource(if (watched == true) R.string.library_reset else R.string.library_mark), color = tint, modifier = Modifier.align(Alignment.Center))
+                    Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        LibraryIcon(if (watched == true) LibrarySymbol.WATCHED else LibrarySymbol.UNWATCHED, tint, Modifier.size(26.dp))
+                        Text(stringResource(if (watched == true) R.string.library_reset else R.string.library_mark), color = tint)
+                    }
                 }
               }
                 BrowserControl(Modifier.fillMaxWidth().height(60.dp).focusRequester(favoriteFocus), 1f,
                     onClick = { viewModel.favorite(channel); close() }) { tint ->
-                    Text(stringResource(R.string.library_favorite), color = tint, modifier = Modifier.align(Alignment.Center))
+                    Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        LibraryIcon(LibrarySymbol.HEART, tint, Modifier.size(26.dp))
+                        Text(stringResource(R.string.library_favorite), color = tint)
+                    }
                 }
             }
         }

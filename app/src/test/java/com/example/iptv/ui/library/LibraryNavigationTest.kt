@@ -88,6 +88,19 @@ class LibraryNavigationTest {
             repo.record(account, channel, 40_000, 100_000, true)
             vm.external(movie, true); page = ready { it.location.entry?.id == "1" && it.progress.resumable }
             assertEquals(40_000, page.progress.position)
+            vm.requestPlay { _, _ -> plays++ }
+            withTimeout(5000) { vm.playChoice.first { it != null } }
+            vm.cancelPlayChoice()
+            assertEquals(1, plays)
+            assertEquals(40_000, repo.progress(account, channel).position)
+            vm.requestPlay { _, _ -> plays++ }
+            withTimeout(5000) { vm.playChoice.first { it != null } }
+            vm.play(true) { _, _ -> plays++ }
+            withTimeout(5000) { while (plays != 2) delay(5) }
+            assertEquals(0L, repo.progress(account, channel).position)
+            vm.requestPlay { _, _ -> plays++ }
+            withTimeout(5000) { while (plays != 3) delay(5) }
+            assertNull(vm.playChoice.value)
             vm.mark(channel, true); ready { it.progress.watched }
             vm.mark(channel, false); ready { !it.progress.watched && it.progress.position == 0L }
             recents.addChannel(channel, account.key(LibraryKind.MOVIE, "1"), account.owner)

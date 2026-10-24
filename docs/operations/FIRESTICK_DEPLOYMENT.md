@@ -6,11 +6,61 @@
 
 After deployment approval, run only `deploy-firestick.ps1` and report its result. Do not add unrequested flags or extra ADB/device commands, tests, preference changes or remote/UI actions. The user withdrew DP-1's removal of force-stop/start before implementation; the existing script remains unchanged. This documentation update does not authorize a deployment or app start.
 
+## SI-1 Settings software information — 24 October 2026; not deployed
+
+The user explicitly approved SET-010 after adding 24-hour HH:mm to the reviewed UTC date. Settings now displays read-only Software information, Version 1.1.2 (build 4), and Built YYYY-MM-DD HH:mm (UTC). The current debug APK was inspected with SDK 34 aapt: actual package version/code are 1.1.2/4 and the packaged software_build_timestamp equals 2026-10-24 20:59 UTC. No version-number bump, signing, application ID, credential policy or deployment workflow changed.
+
+GenerateSoftwareInfo stamps at Gradle task execution, with application source/resources, variant BuildConfig outputs, runtime dependencies, native libraries and build recipe files as inputs. AGP registers the generated resource directory per variant. No runtime clock/install timestamp or configuration-time clock value is used. No-op debug/release invocations reported UP-TO-DATE with identical output hashes. A temporary synthetic debug resource forced regeneration; it was removed in finally and final inputs regenerated. Both generated values match their file-generation minute in UTC. This local metadata check does not build or publish a release APK.
+
+Repeatable local checks (repository root, JDK 17): run `.gradlew.bat :app:generateDebugSoftwareInfo :app:generateReleaseSoftwareInfo --console=plain` twice. The second unchanged run should keep both generation tasks UP-TO-DATE and preserve their generated values under app/build/generated/res/generateDebugSoftwareInfo/values/software_build.xml and the corresponding generateReleaseSoftwareInfo path. Real app/build-input changes regenerate that variant; reuse of an unchanged APK retains its original stamp. Use SDK 34 aapt dump badging and dump --values resources on the debug APK to verify actual package version/code and software_build_timestamp. Do not expose other APK/private settings when reporting results.
+
+TC-APP-150/151 verify actual Settings resource text/minute format, timezone/reentry invariance, no new focus stops, all-density/narrow-account layout and remote/Back returns. The attempt to simulate a large clock jump stalled the Robolectric UI runner and was removed; only its specifically identified local worker was stopped. Initial verification also used the wrong generated-directory assumption, corrected to AGP's actual output. These were local fixture/check issues; no product/device clock was changed. Physical reinstall/device-clock/readability acceptance remains separate.
+
+Fresh test-smoke.ps1 -Lint passed 191/191 (151 app plus 40 shared), zero failures/skips/errors, in 93.7 seconds; debug assembly and APK inspection passed separately. This lint-including run exceeded the 90-second warm target; the two new UI cases are small, and a separate warm maintenance run is recorded below. No Firestick command, app start, installation, setting change or provider request occurred. Changes remain local/uncommitted; a separate deployment approval is still required.
+
+## MP-1 local implementation — 24 October 2026; not deployed
+
+The user explicitly approved REL-006 after the concrete review/in-chat overview. The shared library/legacy VOD engine now uses a 24 MiB sample-buffer target with size priority and a 10–30 second time policy. Pinned playback-start/rebuffer thresholds and Live TV's default policy remain. Quality/audio/seek/progress/identity/release behavior and the deployment script are retained.
+
+Fresh test-smoke.ps1 -Lint passed 189/189 (149 app plus 40 shared), zero failures/skips/errors, in 85.8 seconds. Lint: zero errors/32 existing warnings. Debug assembly passed separately. Real allocator/size/release, time/start/rebuffer/live and actual player-construction checks are TC-APP-147–149. The initial fixture compile mismatch with the pinned allocator release API was corrected before these passing checks. No unresolved local errors remain.
+
+The new debug APK is local and implementation changes remain uncommitted. No Firestick command, provider probe, app start, deployment or setting change occurred during this implementation. INV-VOD-1 remains completed. A separately approved installation and actual-source heap/seek/Resume retest are required before claiming the reproduced OOM fixed. See [MP-1](../design/VOD_MEMORY_REVIEW.md). Another deployment requires explicit approval of the retained script installing, force-stopping and starting the app, then execution of only that script.
+
+## INV-VOD-1 completed device diagnosis — 24 October 2026
+
+The user separately approved opening/navigating the installed app, bounded seek/Resume checks and reading diagnostics, with possible interruption/saved-position changes. Version 1.1.2 was investigated; MD-4 was not installed. No installation, force-stop, clear-data, decoder/buffer/code change or provider mutation occurred. Logging was already On and remained On.
+
+The reported movie produced video and a seekable positive duration, but the forward request exposed a generic data-read error under current severe memory pressure. Runtime logs show roughly 64 KiB allocations failing at the 192 MiB heap limit; Resume was followed by an am_crash event explicitly identifying java.lang.OutOfMemoryError and process death. The saved point persisted at 38,175 ms. A fresh idle-app baseline used about 52.7 MiB Dalvik heap allocation; automatic video/audio buffer targets are 137.5 MiB in the pinned library, not a measured ownership breakdown. No working control was supplied. See [sanitized diagnosis](../investigations/VOD_SEEK_2026_10_24.md).
+
+The session ended at idle Live TV browsing with no video running; initial logging remained unchanged. The user was explicitly told Firestick testing was finished. No more device actions are included in this completed session. Raw screenshots/logs/database files remain ignored/private. [MP-1 / REL-006](../design/VOD_MEMORY_REVIEW.md) was subsequently explicitly approved and locally implements the focused VOD buffer budget; installation and device retesting remain separate. The historical startup OOM/ANR evidence does not replace these current playback findings.
+
+## MD-4 local verification — 24 October 2026; not deployed
+
+The user approved LIB-005/LIB-006 local implementation plus VOD-009 bounded PC diagnosis. Movie categories now reuse the full fresh catalog without redundant catalog loading states and alias preparation; episode parsing preserves structural top-level IDs. Schema v3 adds parser revisions so old selected-series caches refresh atomically without clearing durable data or all-series prefetch.
+
+Fresh test-smoke.ps1 -Lint passed 186/186 (146 app plus 40 shared), zero failures/skips/errors, in 57.7 seconds. Debug lint passed with zero errors/32 existing warnings; debug assembly passed separately. Focused fixtures also passed after correcting the migration fixture quoting and waiting for actual empty-route preparation before focus acceptance. The earlier intermittent TC-APP-136 baseline timeout remains historical evidence; its cause is not claimed fixed. No MD-4 deployment or Firestick action occurred.
+
+The reported movie returned exact nonzero byte ranges and usable-looking MP4 index headers on PC. Its actual Android seek/resume cause is unresolved; a source/control and device diagnosis remains separate. See [sanitized PC evidence](../investigations/VOD_SEEK_2026_10_24.md) and [MD-4 including pending INV-VOD-1](../design/LIBRARY_RELIABILITY_REVIEW.md). The debug APK is built locally; no install/start or device logging change is authorized by implementation approval. Deployment requires separate explicit approval of the unchanged script's install/force-stop/start operation.
+
+## MD-3 subsequent deployment and latest report — 24 October 2026
+
+The user separately requested Deploy after the local MD-3 completion report. The unchanged deploy-firestick.ps1 built successfully, installed the update preserving app data and reported Installed and launched (exit 0). No flags, extra device commands or UI actions followed that invocation. The earlier local-only statements below describe their verification point, not the current installation state.
+
+The latest user sample reports repeated movie-category loading, incomplete season/episode lists and seek/resume failure for one movie while another worked. These are unresolved under [MD-4](../design/LIBRARY_RELIABILITY_REVIEW.md), awaiting revision approval. A local compiled-parser synthetic invocation reproduces nested metadata overwriting distinct episode IDs; no affected provider series or actual movie was inspected. No further device probe, start, install, navigation or setting change has run. Physical acceptance is not complete, and the successful script start does not establish usable playback for every source.
+
+## MD-3 local verification — 24 October 2026; not deployed
+
+After explicit approval, all prior changes were first committed/pushed as d28c14f. MD-3 adds explicit loading/update feedback, library icons, the direct Play/watched/heart row with eligible Play-time Resume choice, durable season shortcuts in Favorites and a saved default-Off debug Verbose logging setting. Existing data and the VOD root/ANR correction are retained; the built-in database migration is additive.
+
+Fresh test-smoke.ps1 -Lint passed 182/182 (142 app plus 40 shared), zero failures/skips/errors, in 74.6 seconds. Lint: zero errors/32 existing warnings. Debug assembly passed separately. The initial lint indentation finding was corrected and the fresh full rerun passed. No MD-3 installation, app start, provider probe, device setting change or physical acceptance occurred.
+
+The new debug APK is built locally. MD-3 changes remain uncommitted. No unresolved local build/test/lint errors remain. See [MD-3 implementation/evidence](../design/LIBRARY_ACTIONS_REVIEW.md). To deploy, obtain separate explicit approval of the unchanged script's install/force-stop/start operation, then run only deploy-firestick.ps1. Physical checks should cover loading visibility, details/Resume/Back and icon readability, season favorite add/open/remove and Settings logging with the remote; saved logging defaults Off and need not be enabled for ordinary playback.
+
 ## Corrective deployment and latest user smoke — 24 October 2026
 
 After the separate approval Deploy, the unchanged deployment script built successfully, installed the VOD-entry ANR correction with saved data retained and reported a successful app start (exit 0). No extra device commands or UI actions followed that deployment. The user subsequently reports no identified Live TV issues and successfully reaches Movies after an acceptable wait; the missing loading feedback is a new UX issue. This is positive sampled navigation/playback evidence, not a timed startup benchmark or complete stress/remote/Info acceptance.
 
-The latest requested loading/icons/direct-actions/season-favorites/logging revision is [MD-3](../design/LIBRARY_ACTIONS_REVIEW.md), pending explicit requirement review/implementation approval. No new device session, deployment, app start or setting change is authorized by that request. The local-only/no-deployment statements below describe their earlier verification points.
+The latest requested loading/icons/direct-actions/season-favorites/logging revision is [MD-3](../design/LIBRARY_ACTIONS_REVIEW.md), explicitly approved and locally implemented. The approval covers local implementation/checks; no new device session, deployment, app start or device setting change is authorized. The local-only/no-deployment statements below describe their earlier verification points.
 
 ## VOD-entry ANR correction — 24 October 2026; local verification before corrective deployment
 
@@ -294,3 +344,15 @@ PLAY-013 was explicitly approved with approved, implement. Native controls now u
 Fresh smoke/debug lint passed **153/153 in 44.6 seconds**, zero failures/skips/errors; lint **0 errors/31 warnings**. Debug APK assembly passed. Native bright/dark pixel and widget-bound checks pass at 960 x 540 mdpi and 1920 x 1080 xhdpi, with inspected live/VOD previews. Surface/state and repeated live/VOD playing/paused seeks, actual settings popup dismissal, Back/timeout and Compose notice position/event-timeout checks pass. Earlier row-padding and paused-fixture layout failures are resolved; no unresolved local build/test failure remains.
 
 No Firestick command, provider request, installation, app start/stop or setting change occurred. After separately approved script deployment, confirm real decoded video and paused frames remain visible while navigating controls and seeking, including Live and settings dismissal. The local frame fixture is not moving-video acceptance. Deployment approval must still describe the script's install, force-stop and start; additional viewing/profiling/device actions need their own scope.
+
+### MD-4 catalog-maintenance verification
+
+No app or implementation-test change was made for this pending proposal. The first fresh baseline smoke after the MD-4 catalog additions reported 173/182 passed, one failure (TC-APP-136, five-second wait for the watched action in a global route) and eight downstream Gradle environment checks not executed because Gradle stopped after the UI failure. This does not diagnose the user's stream/series report. An unchanged fresh rerun was requested to distinguish a repeatable failure from test timing; its outcome is recorded below. Do not describe the first run as successful or erase it if a later run passes. No device action or provider access followed the prior deployment.
+
+The unchanged fresh rerun passed 182/182 (142 app plus 40 shared), zero failures/skips/errors, in 50.1 seconds. Generated companion rows reflect that latest execution. The earlier TC-APP-136 timeout remains evidence of intermittent local UI-test/behavior timing requiring follow-up; a passing rerun does not establish its cause or correction. No new product criteria were implemented and no feature/device/provider acceptance is inferred from the baseline pass.
+
+Catalog-maintenance verification after recording INV-VOD-1 and the pending MP-1 proposal: fresh local smoke passed 186/186 (146 app plus 40 shared), zero failures/skips/errors, in 57.9 seconds. No app/implementation-test changes were made for MP-1; this is unchanged baseline evidence, not a memory-fix or physical acceptance result. Device testing has ended and no additional device action followed the user's status question.
+
+After updating the related VOD-009 approval/physical-acceptance gap, a fresh catalog-maintenance smoke also passed 189/189, zero failures/skips/errors, in 56.5 seconds. These are the same 189 unique cases, not additional test coverage. The preceding lint/debug-build results remain separate; no further app or device change occurred.
+
+SI-1 final warm maintenance: fresh smoke passed 191/191, zero failures/skips/errors, in 41.1 seconds, within the 90-second target. This is the same 191 unique cases; preceding full lint (zero errors/32 warnings), debug assembly, UTC/incremental task checks and packaged timestamp inspection are separate evidence. No further app/input/device change occurred, and the temporary synthetic source resource is absent. Physical TV/readability/clock/reinstall acceptance remains separate.

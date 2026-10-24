@@ -1,6 +1,6 @@
 # MD-3 — loading feedback, icons, direct actions, season favorites and logging
 
-24 October 2026. Concrete proposal following the latest user report. No implementation approval, new app/test source, provider/device access or deployment is implied. Review the in-chat overview and explicitly select this revision before implementation.
+24 October 2026. After the concrete revision and in-chat overview, the user approved all five MD-3 IDs with “Approved, but First commit and push, then start implementation”. All prior changes were committed/pushed first as d28c14f. Selected local implementation is complete; current local verification is recorded below. Provider/device access and deployment remain separate. Proposal wording below records the approved scope/defaults.
 
 ## Latest user evidence
 
@@ -26,12 +26,32 @@ The separately requested corrective deployment completed installation/start with
 - Resolving a season favorite can load that one series response when needed. Opening VOD's five tiles still performs no metadata/database reconciliation or eager whole-catalog construction. Preserve the ANR correction, bounded result retention and off-main-thread work.
 - Verbose logging adds some runtime/log-buffer overhead while enabled. Default Off avoids that ongoing cost. Logging does not turn on broader provider/device probes, bypass deployment permissions or change diagnostics into an information export feature. The current installed workflow uses a debug APK; release startup diagnostics remain disabled under existing guidance.
 
-## Proposed validation after approval
+## Validation scope
 
 Use delayed/failing synthetic local API responses and local fixtures to assert visible initial load/update labels and spinner semantics, no premature empty state, retained usable cached data and safe cancellation/account switches. Check distinct meaningful root/action icons, consistent icon/text/heart semantics, equal primary-row height and all TV density/focus/Back/return paths. Verify no old Actions/Restart controls, both Play-dialog choices/cancel/default focus/HH:MM and actual saved-state side effects; preserve existing progress/seek/completion regression coverage.
 
 Test season favorite identity separation, explicit add/remove/open, reload/password/detail eviction/unavailable handling, unchanged episode favorites/progress, adult-filter reversibility and bounded selected-series fetches. Test logging Off/On persistence and immediate gating with a synthetic capture sink, fixed allowed fields, forbidden private values, bounded/log-buffer approach, and disabled diagnostics under a non-debug policy. No real provider, extra device session, external icon/dependency migration or release build is needed for normal local smoke. Fresh smoke/lint/debug assembly and current requirement mappings follow selected implementation; physical acceptance/deployment stays separately approved.
 
-## Scope requested for approval
+## Approved scope
 
-Approve MD-3: LIB-004, UI-016, VOD-008, BROWSE-016 and SET-009, including Resume prompt eligibility/default focus, one season bookmark per collection and verbose logging Off by default in the debug app. Existing MD-1/MD-2 definitions remain the delivered baseline until this revision is approved. This is not approval of EPG, local/network/put.io, general icon-library/platform work, arbitrary performance migration or device deployment.
+The user approved MD-3: LIB-004, UI-016, VOD-008, BROWSE-016 and SET-009, including Resume prompt eligibility/default focus, one season bookmark per collection and verbose logging Off by default in the debug app. Overlapping MD-1/MD-2 detail controls are now refined by this revision; their storage/threshold/return rules remain. This is not approval of EPG, local/network/put.io, general icon-library/platform work, arbitrary performance migration or device deployment.
+
+## Implementation
+
+LibraryViewModel publishes pending work before preferences/disk/network preparation. LibraryPane displays specific indeterminate Loading/Updating states and retains usable cached controls. Small app-owned Canvas symbols supply the selected icon set. Movie/episode details expose the aligned direct row; actual persisted progress is read when Play is pressed, with a cancel-safe Resume/Start-from-beginning dialog only when eligible.
+
+SQLite schema version 2 additively creates season_favorites without replacing old tables. Typed account/series/actual-season keys and minimal durable context are independent of temporary selected details and playable favorites/progress. Global Favorites routes season entries into the selected episode list and excludes them from playable channel collections. Only that series is refreshed if missing/stale; unavailable references retain Retry and removal. Existing category-name filtering and nested returns remain.
+
+VerboseLogging is a device-wide saved debug-only default-Off gate. Typed fixed events and validated fixed startup/audio records use Android managed log buffers. Settings switches subsequent output immediately; no response/title/account/address/raw exception data or private log file/export was added. Existing safe errors/crash reporting remains.
+
+Synthetic checks include delayed initial loading, selectable cache updates and cancellation; equal row geometry/icon/heart semantics, Play default focus/cancel/resume/beginning/no-progress behavior; actual watched toggles across library/global/playlist routes; additive upgrade/account/password/cache survival, season add/open/remove/selected-only recovery/unavailability/adult reversibility; root no-database/large-catalog regressions; and logging persistence/privacy/non-debug policy/Settings remote navigation. Cases TC-APP-138–142 are added; TC-APP-127/129/136 and the startup provider integration assertion are updated. Existing VOD timeline/completion/account/duplicate regressions remain.
+
+## Local verification — 24 October 2026
+
+Fresh test-smoke.ps1 -Lint passed 182/182 (142 app plus 40 shared), zero failures/skips/errors, in 74.6 seconds. Lint: zero errors/32 existing warnings. Debug assembly passed separately. The initial lint indentation finding was corrected and the fresh full rerun passed. No MD-3 installation, app start, provider probe, device setting change or physical acceptance occurred.
+
+The earlier checkout was committed/pushed first as d28c14f, as requested. MD-3 implementation remains local/uncommitted. Physical TV readability, complete remote/density/episode/movie/provider acceptance and runtime log observation remain manual coverage gaps. A further deployment requires separate explicit approval of deploy-firestick.ps1 installing, force-stopping and starting the app.
+
+## Subsequent deployment and new user report
+
+After the user separately requested Deploy, the unchanged deployment script built, installed preserving data and reported a successful app start (exit 0); no extra device actions followed. The local-only statements above describe the pre-deployment verification point. The user now reports repeated movie-category loading, incomplete seasons/episodes and failure to seek/resume one movie while another worked. These are tracked in [MD-4](LIBRARY_RELIABILITY_REVIEW.md); no full MD-3 physical acceptance or provider-specific seek diagnosis is claimed.

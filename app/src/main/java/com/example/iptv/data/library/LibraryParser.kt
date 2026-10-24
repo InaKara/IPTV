@@ -16,16 +16,23 @@ internal object LibraryParser {
     }
     private fun JsonReader.fields(): Map<String, String> {
         val fields = mutableMapOf<String, String>()
+        val metadata = mutableMapOf<String, String>()
         beginObject()
         while (hasNext()) {
             require(fields.size < 256)
             val key = nextName()
-            if (key == "info" && peek() == JsonToken.BEGIN_OBJECT) fields.putAll(fields())
+            if (key == "info" && peek() == JsonToken.BEGIN_OBJECT) {
+                // Descriptive metadata is not a playable route. Merge only optional facts,
+                // then apply top-level fields last, regardless of their JSON order.
+                fields().filterKeys { it in descriptiveFields }.forEach { (name, value) -> metadata[name] = value }
+            }
             else fields[key] = scalar()
         }
         endObject()
-        return fields
+        return metadata + fields
     }
+    private val descriptiveFields = setOf("plot", "description", "releasedate", "releaseDate", "year", "genre",
+        "cast", "actors", "director", "duration", "duration_secs", "movie_image", "stream_icon", "cover", "rating", "rating_5based")
     private fun Map<String, String>.first(vararg keys: String) = keys.firstNotNullOfOrNull { get(it)?.takeIf(String::isNotBlank) }.orEmpty()
     private fun entry(f: Map<String, String>, kind: LibraryKind, ordinal: Int, series: String = "", season: String = ""): LibraryEntry? {
         val id = f.first(if (kind == LibraryKind.SERIES) "series_id" else if (kind == LibraryKind.EPISODE) "id" else "stream_id")

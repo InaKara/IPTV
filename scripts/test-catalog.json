@@ -1962,7 +1962,7 @@
     {
       "id": "MC-LIB-004",
       "key": "manual#LIB-004",
-      "title": "Review MD-3 LIB-004 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "title": "Verify implemented MD-3 LIB-004 on Firestick; physical/provider acceptance remains separate",
       "kind": "Manual",
       "group": "library-actions-review",
       "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
@@ -1970,7 +1970,7 @@
     {
       "id": "MC-UI-016",
       "key": "manual#UI-016",
-      "title": "Review MD-3 UI-016 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "title": "Verify implemented MD-3 UI-016 on Firestick; physical/provider acceptance remains separate",
       "kind": "Manual",
       "group": "library-actions-review",
       "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
@@ -1978,7 +1978,7 @@
     {
       "id": "MC-VOD-008",
       "key": "manual#VOD-008",
-      "title": "Review MD-3 VOD-008 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "title": "Verify implemented MD-3 VOD-008 on Firestick; physical/provider acceptance remains separate",
       "kind": "Manual",
       "group": "library-actions-review",
       "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
@@ -1986,7 +1986,7 @@
     {
       "id": "MC-BROWSE-016",
       "key": "manual#BROWSE-016",
-      "title": "Review MD-3 BROWSE-016 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "title": "Verify implemented MD-3 BROWSE-016 on Firestick; physical/provider acceptance remains separate",
       "kind": "Manual",
       "group": "library-actions-review",
       "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
@@ -1994,10 +1994,162 @@
     {
       "id": "MC-SET-009",
       "key": "manual#SET-009",
-      "title": "Review MD-3 SET-009 behavior/defaults and implementation scope; feature assertions and physical acceptance pending",
+      "title": "Verify implemented MD-3 SET-009 on Firestick; physical/provider acceptance remains separate",
       "kind": "Manual",
       "group": "library-actions-review",
       "source": "docs/design/LIBRARY_ACTIONS_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-138",
+      "key": "com.example.iptv.diagnostics.VerboseLoggingTest#defaultPersistenceImmediateGatingAndPrivateInputsRespectDebugBoundary",
+      "title": "Verbose logging defaults, persistence, immediate privacy gate and non-debug boundary",
+      "kind": "App",
+      "group": "library-actions",
+      "source": "app/src/test/java/com/example/iptv/diagnostics/VerboseLoggingTest.kt"
+    },
+    {
+      "id": "TC-APP-139",
+      "key": "com.example.iptv.data.library.SeasonFavoriteTest#upgradeAndSeasonReferencesPreserveEpisodeStateAcrossEvictionPasswordAndRemoval",
+      "title": "Additive season schema and durable account references preserve episode favorites/progress across eviction and password rotation",
+      "kind": "App",
+      "group": "library-actions",
+      "source": "app/src/test/java/com/example/iptv/data/library/SeasonFavoriteTest.kt"
+    },
+    {
+      "id": "TC-APP-140",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#pendingListsShowLoadingThenSelectableUpdatingCacheAndBackCancels",
+      "title": "Delayed loading spinner, no premature empty state, selectable cached Updating content and sidebar/Back cancellation",
+      "kind": "App",
+      "group": "library-actions",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-141",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#seasonHeartRoutesGlobalFavoriteWithoutBulkEpisodeFavoritesAndSettingsLogToggleIsRemoteUsable",
+      "title": "Distinct root icons, season heart/global Favorites remote return and saved Settings logging switch navigation",
+      "kind": "App",
+      "group": "library-actions",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-142",
+      "key": "com.example.iptv.ui.library.SeasonNavigationTest#missingSeasonFetchesOnlySelectedSeriesAndRetainsUnavailableBookmarkAndAdultReversibility",
+      "title": "Selected-series-only recovery, unavailable season removal, nested returns and reversible adult filtering",
+      "kind": "App",
+      "group": "library-actions",
+      "source": "app/src/test/java/com/example/iptv/ui/library/SeasonNavigationTest.kt"
+    },
+    {
+      "id": "MC-LIB-005",
+      "key": "manual#LIB-005",
+      "title": "Verify implemented MD-4 LIB-005 with representative provider series/catalog on Firestick; deployment remains separate",
+      "kind": "Manual",
+      "group": "library-reliability-review",
+      "source": "docs/design/LIBRARY_RELIABILITY_REVIEW.md"
+    },
+    {
+      "id": "MC-LIB-006",
+      "key": "manual#LIB-006",
+      "title": "Verify implemented MD-4 LIB-006 with representative provider series/catalog on Firestick; deployment remains separate",
+      "kind": "Manual",
+      "group": "library-reliability-review",
+      "source": "docs/design/LIBRARY_RELIABILITY_REVIEW.md"
+    },
+    {
+      "id": "MC-VOD-009",
+      "key": "manual#VOD-009",
+      "title": "Complete remaining working-control/allocation and post-correction acceptance; current-device OOM diagnosis is separately observed",
+      "kind": "Manual",
+      "group": "library-reliability-review",
+      "source": "docs/design/LIBRARY_RELIABILITY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-143",
+      "key": "com.example.iptv.data.library.LibraryPolicyTest#nestedEpisodeMetadataNeverOverridesStructuralFieldsInEitherOrder",
+      "title": "Top-level episode route/season fields survive nested ID/title/container collisions in both field orders; invalid route IDs stay invalid",
+      "kind": "App",
+      "group": "library-reliability",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryPolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-144",
+      "key": "com.example.iptv.data.library.LibraryRepositoryTest#oldSeriesRevisionRefreshesOnlySelectedSeriesAndRetainsDurableStateOnFailure",
+      "title": "Old selected-series cache repaired atomically through additive migration; failures retain data, favorites/progress and other series",
+      "kind": "App",
+      "group": "library-reliability",
+      "source": "app/src/test/java/com/example/iptv/data/library/LibraryRepositoryTest.kt"
+    },
+    {
+      "id": "TC-APP-145",
+      "key": "com.example.iptv.ui.library.LibraryCatalogReuseTest#fullCatalogIsReusedAcrossCategoriesPagesSortFilterAndBackUntilExpired",
+      "title": "Full movie catalog is fetched once; fresh local navigation/page/sort/filter/Back avoids catalog loading and duplicate provider requests",
+      "kind": "App",
+      "group": "library-reliability",
+      "source": "app/src/test/java/com/example/iptv/ui/library/LibraryCatalogReuseTest.kt"
+    },
+    {
+      "id": "TC-APP-146",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#freshMovieCategoriesReuseCatalogWithoutFullCatalogSpinner",
+      "title": "Fresh movie category navigation suppresses misleading full catalog spinner while preserving local content",
+      "kind": "App",
+      "group": "library-reliability",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "MC-REL-006",
+      "key": "manual#REL-006",
+      "title": "Verify installed MP-1 with actual VOD seek/Resume, working control and heap measurements; installation/device session separate",
+      "kind": "Manual",
+      "group": "vod-memory-review",
+      "source": "docs/design/VOD_MEMORY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-147",
+      "key": "com.example.iptv.ui.player.PlaybackBufferingTest#vodStopsAtSizeTargetBeforeMinimumTimeAndReleasesAllocator",
+      "title": "Actual Media3 VOD load control stops loading at 24 MiB before its time minimum and releases reusable allocations",
+      "kind": "App",
+      "group": "vod-memory",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/PlaybackBufferingTest.kt"
+    },
+    {
+      "id": "TC-APP-148",
+      "key": "com.example.iptv.ui.player.PlaybackBufferingTest#vodTimeWindowAndStartupDecisionsPreserveLiveBaseline",
+      "title": "VOD 10–30 second hysteresis and unchanged playback/rebuffer decisions; Live TV retains pinned default loading behavior",
+      "kind": "App",
+      "group": "vod-memory",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/PlaybackBufferingTest.kt"
+    },
+    {
+      "id": "TC-APP-149",
+      "key": "com.example.iptv.ui.player.PlaybackBufferingTest#actualPlayerUsesVodPolicyForLegacyAndLibraryAndDefaultForLive",
+      "title": "Actual PlayerViewModel-created engines use the VOD policy for legacy/library and retain the Live TV baseline",
+      "kind": "App",
+      "group": "vod-memory",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/PlaybackBufferingTest.kt"
+    },
+    {
+      "id": "MC-SET-010",
+      "key": "manual#SET-010",
+      "title": "Verify installed software version/date-time readability, device-clock/reinstall invariance and Settings navigation; deployment separate",
+      "kind": "Manual",
+      "group": "settings-identity-review",
+      "source": "docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "TC-APP-150",
+      "key": "com.example.iptv.ui.SettingsSoftwareInfoTest#versionAndPackagedTimestampStayFixedAcrossTimezoneAndReentry",
+      "title": "Settings shows actual version/code and the packaged UTC minute stamp, fixed across timezone changes and screen reentry",
+      "kind": "App",
+      "group": "settings-software",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/SettingsSoftwareInfoTest.kt"
+    },
+    {
+      "id": "TC-APP-151",
+      "key": "com.example.iptv.ui.SettingsSoftwareInfoTest#softwareBlockFitsDensitiesWithoutAddingRemoteFocusStops",
+      "title": "Read-only software block fits the narrow account Settings layout at every density and preserves remote/Back navigation",
+      "kind": "App",
+      "group": "settings-software",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/SettingsSoftwareInfoTest.kt"
     }
   ],
   "requirements": [
@@ -2916,7 +3068,7 @@
     },
     {
       "id": "LOGIN-007",
-      "fingerprint": "1d9465a9d2894208c12743e59498c652cee623fa62cc12182ac614c515644e07",
+      "fingerprint": "45ac340366eba75437f31ae079000f147cc2c8f7ccd1ade245c646766b7645f0",
       "coverage": "Partial",
       "cases": [
         "TC-APP-046",
@@ -2927,10 +3079,11 @@
         "TC-APP-026",
         "MC-LOGIN-007",
         "TC-APP-051",
-        "TC-APP-080"
+        "TC-APP-080",
+        "TC-APP-138"
       ],
-      "gap": "Fixed numeric diagnostic output, streaming phase arithmetic, network retry and file-cache-to-browser layout are automated. Real-provider performance and large cached-start device timing are not measured by this suite.",
-      "reviewNote": "SC-1 approved: assertions 065-080 cover versioned snapshots, exact freshness, background/manual failure retention, automatic startup, draft cancellation/obsolete responses, Settings keyboard/focus and lifecycle-owned keep-screen-on. Adapted 035/039 and extended 029; removed retired login-heading branding evidence. Physical startup/IME/real decoder/inactivity and performance gaps remain explicit. Deployment requires fresh consultation."
+      "gap": "Fixed numeric diagnostic output, streaming phase arithmetic, network retry and file-cache-to-browser layout are automated. Real-provider performance and large cached-start device timing are not measured by this suite. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "LOGIN-008",
@@ -3329,7 +3482,7 @@
     },
     {
       "id": "VOD-006",
-      "fingerprint": "d57852227eaf5e084885da28a0def2ea87367c82fe207f88e3e51bd2231dbd35",
+      "fingerprint": "8bc33eac1cce75c01217dfa3cf1d3bae6920ad39a39ec9b2acc30e6ecaee27d8",
       "coverage": "Partial",
       "cases": [
         "TC-APP-114",
@@ -3352,8 +3505,8 @@
         "TC-APP-133",
         "TC-APP-136"
       ],
-      "gap": "Local threshold/completion/reset/account/duplicate/eviction/Continue watching and real Player-listener periodic/pause/end/release/live-exclusion assertions pass. Actual provider seekability, audible VOD resume across process/lifecycle/account changes and full physical movie/episode completion scenarios remain separate; MD-1 installation/start succeeded separately; MD-2 corrections are locally implemented and verified; new physical acceptance remains separate. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error.",
-      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+      "gap": "Local threshold/completion/reset/account/duplicate/eviction/Continue watching and real Player-listener periodic/pause/end/release/live-exclusion assertions pass. Actual provider seekability, audible VOD resume across process/lifecycle/account changes and full physical movie/episode completion scenarios remain separate; MD-1 installation/start succeeded separately; MD-2 corrections are locally implemented and verified; new physical acceptance remains separate. Latest user-smoke: TRT 1 HD video/sound normal after about 60 seconds paused/resumed; sampled movie Resume works. Startup slowdown is untimed and Info/root/action defects are reported; see MD-2. This is partial user evidence, not whole-case physical acceptance or a provoked behind-window error. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "EPG-001",
@@ -3483,8 +3636,8 @@
         "TC-APP-081",
         "MC-REL-004"
       ],
-      "gap": "Exact local sharing tests and host comparison pass. Android two cached starts/actual refresh maxima 81.32/85.64 and 146.29 MiB Java against 192 MiB, no fresh fatal/OOM; sampled live AAC pause/resume highest Java 74.12 MiB. Brief peaks can be missed; no matched pre-change Android build, isolated MP2 delta, playback-refresh overlap/repeated-refresh or pressure stress acceptance. Historical OOM resolution remains unproven.",
-      "reviewNote": "Evidence-only follow-up after user confirmed no remote input. Actual native hierarchy/direct screenshots disprove the stale accessibility snapshot exit; no app change or new test assertion. Record physical 10-second acceptance, remote Live catch-up, 91.3-second pause/visible frame and resumed video through 79 seconds, popup/Back/player release. The inspected track is AAC; preserve unprovoked behind-live-window/fallback and audible sync/isolated MP2/stress gaps rather than claiming full physical acceptance."
+      "gap": "Exact local sharing tests and host comparison pass. Android two cached starts/actual refresh maxima 81.32/85.64 and 146.29 MiB Java against 192 MiB, no fresh fatal/OOM; sampled live AAC pause/resume highest Java 74.12 MiB. Brief peaks can be missed; no matched pre-change Android build, isolated MP2 delta, playback-refresh overlap/repeated-refresh or pressure stress acceptance. Historical OOM resolution remains unproven. Subsequent approved movie session confirms current playback OOM at 192 MiB; exact-metadata sharing tests do not establish playback memory safety. See proposed REL-006 and VOD seek investigation.",
+      "reviewNote": "INV-VOD-1 explicitly approved; observed current-session 64 KiB allocation failures at 192 MiB, forward seek generic I/O failure, Resume OutOfMemoryError am_crash, and persisted 38,175 ms progress. Logging unchanged, no install/player behavior changes. Evidence is distinct from old startup OOM/ANRs and local tests. MP-1 REL-006 buffer budget is pending with manual disposition; preserve working-control/ownership/post-fix gaps."
     },
     {
       "id": "PLAY-013",
@@ -3506,7 +3659,7 @@
     },
     {
       "id": "DATA-008",
-      "fingerprint": "2f1487209af795240eac37b97834dcbb6ae1b3baf39d5238624ccfe6d4da7557",
+      "fingerprint": "30b5db76237eb02bbc663cc9d719a270b24f15e8de196954105a4cb8045dfc03",
       "coverage": "Partial",
       "cases": [
         "TC-APP-114",
@@ -3524,14 +3677,17 @@
         "MC-DATA-008",
         "TC-APP-131",
         "TC-APP-132",
-        "TC-APP-137"
+        "TC-APP-137",
+        "TC-APP-139",
+        "TC-APP-143",
+        "TC-APP-144"
       ],
-      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
     },
     {
       "id": "LIB-002",
-      "fingerprint": "8a6cbb8bcdbb4d55f5f327921f688e4bf81711e45c9c93b2b6c580ece02a1951",
+      "fingerprint": "3f7e6a1e6ee2a051c1fc3331ecd0b7a89f9a63da406f41edd99dd0ad3c4cfaa1",
       "coverage": "Partial",
       "cases": [
         "TC-APP-114",
@@ -3549,10 +3705,14 @@
         "TC-APP-131",
         "TC-APP-135",
         "TC-APP-136",
-        "TC-APP-137"
+        "TC-APP-137",
+        "TC-APP-141",
+        "TC-APP-142",
+        "TC-APP-143",
+        "TC-APP-144"
       ],
-      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "Deployed MD-2 has two confirmed input-dispatch ANRs. The local root/no-database and bounded on-demand matcher correction passed fresh smoke/lint 177/177 and debug assembly. TC-APP-137/135 exercise large-catalog/root regressions; TC-APP-131/127 retain relevant-only aliases, password/duplicate progress and API-only recents on demand. Corrective deployment subsequently succeeded; the latest user sample reaches Movies without reporting another entry closure and identifies no Live TV issues. Broad timed/repeated/pressure/physical acceptance remains separate. Historical OOM records do not diagnose these events. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
     },
     {
       "id": "BROWSE-015",
@@ -3610,19 +3770,19 @@
     },
     {
       "id": "UI-015",
-      "fingerprint": "0e6c89b2da2d016cc937f4917a8f04343debcb1b0b73999b4dd09e44842ac254",
+      "fingerprint": "623c414f88390f36dacf85eb7f3a4d6d7ef6c1dfa7841d0de4f0638d00fb9563",
       "coverage": "Partial",
       "cases": [
         "TC-APP-135",
         "TC-APP-129",
         "MC-UI-015"
       ],
-      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
-      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "VOD-007",
-      "fingerprint": "c31508bfa60ddcbc75a6f0a392079bd380e9e40f289e7d9a763fbbc16c5d0d11",
+      "fingerprint": "8f082fd523fd0782d9bfd70df7af80604ef8bf0494bf099bdc29b69afcc1cdbf",
       "coverage": "Partial",
       "cases": [
         "TC-APP-133",
@@ -3632,8 +3792,8 @@
         "TC-APP-126",
         "MC-VOD-007"
       ],
-      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate.",
-      "reviewNote": "Final approved MD-2 implementation passed fresh smoke/lint 176/176 and debug assembly. Actual TC-APP-132–136/129/130 evidence reviewed, including startup first-layout demand gating/account retention, shared native Info expiry and forced hide, density bounds and remote empty returns, elapsed labels and current watched/retry behavior across entry paths. Updated old pending/unapproved gaps to precise physical timing/TV/provider limits. No further app/assertion/definition change; regenerate companion evidence with a fresh mapping-maintenance run."
+      "gap": "Fresh MD-2 local smoke/lint passed 176/176 and debug assembly passed separately. TC-APP-132–136 plus updated TC-APP-129/130 cover startup/demand/account retention, Info lifecycle, equal tile geometry/remote/empty focus, HH:MM resume and real failure/current watched controls across all entry paths. Actual Firestick startup-speed improvement is unmeasured; new physical TV/remote/timeout/provider/watching acceptance and deployment remain separate. Approved MD-3 refinement: Play-time HH:MM choice/direct controls, explicit loading/icons, additive season bookmarks and default-Off debug diagnostic gating replace overlapping old presentation; physical acceptance remains separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "LIB-003",
@@ -3650,53 +3810,135 @@
     },
     {
       "id": "LIB-004",
-      "fingerprint": "71278360343032ed80668c43e9e4db5860e400fcb8de9a176db9d9b7cff4a47d",
-      "coverage": "Manual",
+      "fingerprint": "30aee832539caa558afea4d2132f370ce90e02ff7247ce19867cfe4ec20cb3cb",
+      "coverage": "Partial",
       "cases": [
-        "MC-LIB-004"
+        "TC-APP-140",
+        "TC-APP-136",
+        "MC-LIB-004",
+        "TC-APP-145",
+        "TC-APP-146"
       ],
-      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
+      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
     },
     {
       "id": "UI-016",
-      "fingerprint": "990aa476aeb3d01ac36306eb65907a1be1c6c56fd0d1c3c5362083ff8853851c",
-      "coverage": "Manual",
+      "fingerprint": "8e15c47f4130c15760c1851821ba0478a771739b033a3e0254947c6f1b1c9070",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-141",
+        "TC-APP-129",
+        "TC-APP-135",
         "MC-UI-016"
       ],
-      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "VOD-008",
-      "fingerprint": "07e0b6b78953abb14167b5e614ab951116aab9e6ce9274968d791dd0316be235",
-      "coverage": "Manual",
+      "fingerprint": "14bf8fc117bf1bc5559406a69b759aefb089798427ce6931af9f33e445eeb0c2",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-129",
+        "TC-APP-127",
+        "TC-APP-136",
+        "TC-APP-117",
+        "TC-APP-126",
         "MC-VOD-008"
       ],
-      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "BROWSE-016",
-      "fingerprint": "14049646dde19fa45dcbe253f0e70fbc0f78b04054f6c8d31ecc88a64216599f",
-      "coverage": "Manual",
+      "fingerprint": "14b0dc8bb7b651f8758520a6eabf77970575c9029c6bda385e6b1d21ccc88972",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-139",
+        "TC-APP-141",
+        "TC-APP-142",
+        "TC-APP-128",
         "MC-BROWSE-016"
       ],
-      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
     },
     {
       "id": "SET-009",
-      "fingerprint": "14b257988e18d103fcc137adeddb174c6213d221fdd8b64082e94eed7157bb1b",
-      "coverage": "Manual",
+      "fingerprint": "aff6f158e332948ce1ac0519f90032ff6e20357e8899ec350c50f5bb9a653581",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-138",
+        "TC-APP-141",
         "MC-SET-009"
       ],
-      "gap": "MD-3 concrete proposal only; explicit revision/implementation approval is pending. No new feature tests before approval. Existing 177 automated checks cover the delivered baseline and do not establish prominent loading, icon/direct-action changes, Play-time resume choices, durable season favorites or runtime verbose gating. Add meaningful delayed/error/cache/focus/dialog/identity/persistence/privacy assertions after selected approval; physical acceptance/deployment remains separate.",
-      "reviewNote": "MD-3 proposal after latest corrective deployment/user smoke. Reviewed delivered generic loading/direct-action/favorite/diagnostic code; new criteria are manual/pending only and no implementation tests are added before approval. Proposed explicit loading/update states, app-owned icons, equal-height direct Play/watch/heart row with eligible Resume prompt, additive season bookmarks and default-Off debug-only safe verbose logging. Existing assertions remain baseline coverage; record sampled Live TV/Movie navigation evidence without full physical/timing acceptance. Fresh catalog-maintenance smoke follows."
+      "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
+      "reviewNote": "MD-3 approved after in-chat overview; implementation assertions reviewed: delayed loading/cache cancellation, equal primary-row geometry/icons/heart and Play prompt cancel/resume/start/no-progress, current watched state, additive season migration/eviction/password/account/selected recovery/unavailable/adult filtering/global remote return, saved default-Off debug diagnostics/privacy. Updated existing TC-APP-127/129/136 and added TC-APP-138–142; physical/provider gaps retained."
+    },
+    {
+      "id": "LIB-005",
+      "fingerprint": "100aec67cbab5e73497838a0aa26fbcb8632262f8f9a19dca4a02b496824fc3d",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-145",
+        "TC-APP-146",
+        "TC-APP-122",
+        "TC-APP-124",
+        "TC-APP-137",
+        "MC-LIB-005"
+      ],
+      "gap": "MD-4 local implementation and meaningful synthetic assertions cover full catalog request reuse, no misleading fresh-category spinner, bounded already-prepared alias reuse, structural parser collisions/field order and selected-series repair across additive schema-v1/v2 upgrades with durable-state/failure retention. Physical latency/readability, representative affected provider series and post-install acceptance remain separate.",
+      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
+    },
+    {
+      "id": "LIB-006",
+      "fingerprint": "48caecd85e2fb396efb6dea00418938e71be5fa3e71551ba38a5dab6205a97e4",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-143",
+        "TC-APP-144",
+        "TC-APP-139",
+        "TC-APP-142",
+        "MC-LIB-006"
+      ],
+      "gap": "MD-4 local implementation and meaningful synthetic assertions cover full catalog request reuse, no misleading fresh-category spinner, bounded already-prepared alias reuse, structural parser collisions/field order and selected-series repair across additive schema-v1/v2 upgrades with durable-state/failure retention. Physical latency/readability, representative affected provider series and post-install acceptance remain separate.",
+      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
+    },
+    {
+      "id": "VOD-009",
+      "fingerprint": "1c8cbdd1a64d349c43693b12e443580203d3b6b51a4fb33bad49b20a7846943d",
+      "coverage": "Manual",
+      "cases": [
+        "MC-VOD-009"
+      ],
+      "gap": "Separately approved INV-VOD-1 reproduced current-device seek/read failure with 192 MiB heap exhaustion and a Resume am_crash explicitly identifying java.lang.OutOfMemoryError. Saved 38,175 ms position persisted; logging already On/unchanged; no install/player change. Working-control comparison, exact allocation ownership and verified correction remain separate. MP-1 / REL-006 was subsequently approved and locally implemented with real load-control/player assertions; installation and actual-source OOM/working-control acceptance remain separate. PC range/index evidence alone had not diagnosed this failure.",
+      "reviewNote": "Refresh the manual evidence boundary after separately approved MP-1 implementation: INV-VOD-1 confirms the prior device OOM, TC-APP-147–149 establish local buffering policy, and the actual source/device correction and working-control comparison remain unverified. No assertion, mapping key, acceptance definition or playback scope expansion."
+    },
+    {
+      "id": "REL-006",
+      "fingerprint": "c15ff8827666b43c8761449d35b1d39068f508d16925ccf323b9962259802741",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-147",
+        "TC-APP-148",
+        "TC-APP-149",
+        "MC-REL-006"
+      ],
+      "gap": "MP-1 locally implemented. TC-APP-147–149 exercise the real pinned allocator/load-control size-priority decision and release, VOD 10–30 second hysteresis, retained startup/rebuffer/live baseline and policies captured from actual legacy/library/live PlayerViewModel engines. Existing progress/seek/release regressions remain. Synthetic tests/build do not establish device OOM resolution; separate installation, actual-source heap sampling, working-control comparison and sustained seek/Resume acceptance remain required.",
+      "reviewNote": "MP-1 local policy implemented after explicit approval. Real Media3 allocator/size-priority/release, 10–30 second hysteresis, retained start/rebuffer/live baseline and actual player-engine construction assertions TC-APP-147–149 passed focused execution. Corrected fixture release to pinned allocator API; no production scope change. Existing live/progress regression checks pass; physical source/heap and post-deployment OOM acceptance retained as separate gaps."
+    },
+    {
+      "id": "SET-010",
+      "fingerprint": "996dd9afef563e0deb8e1d234af0d0e72e64a9e0496e5cf771c76fd832b25742",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-150",
+        "TC-APP-151",
+        "MC-SET-010"
+      ],
+      "gap": "SI-1 local UI assertions exercise actual packaged version/date-time resources, timezone/reentry invariance, every density in narrow account Settings and unchanged remote/Back focus. Real Gradle checks establish both-variant UTC stamps, no-op reuse and regeneration when app resource inputs change; debug APK inspection confirms actual version 1.1.2/code 4 and the generated timestamp 2026-10-24 20:59 UTC. The date/time is a fixed resource with no runtime-clock dependency; direct whole-device clock/reinstall and physical readability acceptance remain manual. The large synthetic clock jump fixture was removed after exposing a Robolectric runner stall; no product behavior was changed for it.",
+      "reviewNote": "SI-1 local assertions passed and actual debug APK metadata was inspected: version 1.1.2/code 4, UTC minute stamp matches generated resource. Both variant metadata tasks preserve no-op output hashes, regenerate on changed app resource inputs and encode UTC generation minute. Physical clock/reinstall/readability gap retained. Full smoke/lint passed 191/191 in 93.7s; run warm catalog maintenance separately to review the 90-second target after cold lint cost."
     }
   ]
 }

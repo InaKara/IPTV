@@ -115,6 +115,47 @@ class LibraryRepositoryTest {
         assertTrue(repo.progress(rotated, resolved.channel.copy(streamUrl = rotated.stream(entry))).resumable)
         assertEquals(count, server.requestCount)
     }
+    @Test fun oldSeriesRevisionRefreshesOnlySelectedSeriesAndRetainsDurableStateOnFailure() = runBlocking {
+        val account = repo.account()
+        val show = LibraryEntry(LibraryKind.SERIES, "10", "Show", "cat")
+        val other = show.copy(id = "20", name = "Other")
+        val episode = LibraryEntry(LibraryKind.EPISODE, "900", "Old collapsed row", "cat", seriesId = "10", season = "2")
+        val channel = repo.resolve(account, episode)
+        val prefs = com.example.iptv.data.storage.BrowserPreferences(RuntimeEnvironment.getApplication(), credentials)
+        prefs.load(); prefs.toggle(channel.id)
+        repo.record(account, channel.channel, 40_000, 100_000, true, legacyKey = channel.id)
+        db.transaction { sql ->
+            db.entry(sql, account.cache, episode)
+            db.entry(sql, account.cache, episode.copy(id = "901", seriesId = "20"))
+            db.putDetails(sql, account, show, LibraryDetails("Old"), System.currentTimeMillis(), 200)
+            db.putDetails(sql, account, other, LibraryDetails("Other"), System.currentTimeMillis(), 200)
+            // Recreate the deployed v2 schema, preserving its actual rows and durable tables.
+            sql.execSQL("ALTER TABLE details RENAME TO details_current")
+            sql.execSQL("CREATE TABLE details(cache TEXT,kind TEXT,id TEXT,plot TEXT,year TEXT,runtime TEXT,genre TEXT,cast TEXT,director TEXT,time INTEGER,used INTEGER,bytes INTEGER,PRIMARY KEY(cache,kind,id))")
+            sql.execSQL("INSERT INTO details SELECT cache,kind,id,plot,year,runtime,genre,\"cast\",director,time,used,bytes FROM details_current")
+            sql.execSQL("DROP TABLE details_current")
+        }
+        db.writableDatabase.version = 2; db.close()
+        db = LibraryDatabase(RuntimeEnvironment.getApplication()); repo = LibraryRepository(db, credentials, client)
+        val active = repo.account()
+        assertEquals(3, db.readableDatabase.version); assertFalse(db.seriesParserCurrent(active, show))
+        assertEquals(0, server.requestCount)
+        server.enqueue(MockResponse().setResponseCode(503))
+        assertFalse(repo.details(active, show))
+        assertEquals(listOf("900"), db.page(active, LibraryKind.EPISODE, series = "10").map { it.id })
+        assertEquals("Old", db.details(active, show, 0)!!.first.synopsis)
+        assertFalse(db.seriesParserCurrent(active, show))
+        server.enqueue(MockResponse().setBody("""{"info":{"plot":"Repaired"},"episodes":{"1":[{"id":"101","title":"One","info":{"id":"900"}},{"id":"102","info":{"id":"900"}}],"2":[{"id":"201","info":{"id":"900"}}]}}"""))
+        assertTrue(repo.details(active, show)); assertTrue(db.seriesParserCurrent(active, show))
+        assertEquals(listOf("101", "102", "201"), db.page(active, LibraryKind.EPISODE, series = "10").map { it.id })
+        assertEquals(listOf("1", "2"), db.seasons(active, "10"))
+        assertEquals(listOf("901"), db.page(active, LibraryKind.EPISODE, series = "20").map { it.id })
+        assertFalse(db.seriesParserCurrent(active, other))
+        assertEquals(40_000, repo.progress(active, channel.channel, channel.id).position)
+        assertTrue(channel.id in prefs.load().favorites)
+        assertTrue(repo.details(active, show)); assertEquals(2, server.requestCount)
+        repeat(2) { assertEquals("10", server.takeRequest().requestUrl!!.queryParameter("series_id")) }
+    }
     @Test fun favoritesAndEpisodeProgressRemainResolvableAfterEvictionAndPasswordRotation() = runBlocking {
         val account = repo.account()
         val episode = LibraryEntry(LibraryKind.EPISODE, "99", "Episode", categoryName = "Drama", seriesId = "10")

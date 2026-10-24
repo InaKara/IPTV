@@ -27,9 +27,15 @@ import javax.inject.Singleton
 
 @Singleton
 class LibraryRepository @Inject constructor(val database: LibraryDatabase, private val credentials: CredentialsManager,
-    private val client: OkHttpClient) {
+    private val client: OkHttpClient, private val logging: com.example.iptv.diagnostics.VerboseLogging? = null) {
     private val flights = ConcurrentHashMap<String, Mutex>()
     private val refreshVersions = ConcurrentHashMap<String, Long>()
+    private val listingAges = ConcurrentHashMap<LibraryKind, Long>()
+    @Volatile private var listingAccount: String? = null
+    private val preparedAliases = java.util.Collections.synchronizedMap(object : LinkedHashMap<String, Unit>(256, .75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Unit>?) = size > 256
+    })
+    private var aliasGeneration = 0L
     private var activeAccount: LibraryAccount? = null
     private var accountGeneration = 0L
     private val writeScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -49,7 +55,10 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
     @Synchronized fun account(): LibraryAccount {
         val current = LibraryAccount.create(credentials.serverUrl, credentials.username, credentials.password)
         return activeAccount?.takeIf { it.cache == current.cache } ?: LibraryAccount(current.base, current.user,
-            current.password, ++accountGeneration).also { activeAccount = it }
+            current.password, ++accountGeneration).also {
+                listingAccount = null; listingAges.clear(); preparedAliases.clear()
+                activeAccount = it; listingAccount = it.cache
+            }
     }
     fun valid(account: LibraryAccount) = runCatching {
         val current = account(); current.cache == account.cache && current.generation == account.generation
@@ -57,6 +66,8 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
     @Synchronized fun activate(account: LibraryAccount, catalog: BrowserCatalog) {
         this.catalog = catalog
         identity = null
+        aliasGeneration++
+        preparedAliases.clear()
         identityCache = account.cache
     }
     @Synchronized fun identity(account: LibraryAccount): LibraryIdentity {
@@ -71,12 +82,19 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
         database.transaction({ valid(account) }) { db -> links.forEach { database.alias(db, account.owner, it.first, it.second, it.third) } }
     }
     fun retainPageAliases(account: LibraryAccount, entries: List<LibraryEntry>) {
-        val links = identity(account)
-        val selected = entries.mapNotNull { entry -> links.legacy(entry)?.let { Triple(it.id, entry.kind, entry.id) } }
+        val (links, generation) = synchronized(this) { identity(account) to aliasGeneration }
+        fun preparationKey(entry: LibraryEntry) = "${account.cache}:${account.generation}:$generation:${entry.kind}:${entry.id}:${entry.extension}"
+        val pending = entries.distinctBy { preparationKey(it) }.filter { preparedAliases[preparationKey(it)] == null }
+        val selected = pending.mapNotNull { entry -> links.legacy(entry)?.let { Triple(it.id, entry.kind, entry.id) } }
         if (selected.isNotEmpty()) database.transaction({ valid(account) }) { db ->
             selected.forEach { database.alias(db, account.owner, it.first, it.second, it.third) }
         }
+        if (valid(account)) pending.forEach { preparedAliases[preparationKey(it)] = Unit }
+        logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.ALIAS_LINKS, count = selected.size)
     }
+    private fun fresh(age: Long, now: Long) = age > 0 && now >= age && now - age < LIST_AGE
+    fun listingKnownFresh(account: LibraryAccount, kind: LibraryKind): Boolean = listingAccount == account.cache &&
+        listingAges[kind]?.let { fresh(it, System.currentTimeMillis()) } == true
     private fun reference(account: LibraryAccount, key: String): Pair<LibraryKind, String>? {
         if (key.startsWith("library:${account.owner}:")) {
             val parts = key.split(':')
@@ -94,7 +112,7 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
             seriesId = database.storedSeries(account.owner, typed))
     }
     suspend fun retainPlayable(account: LibraryAccount, channel: BrowserChannel) = local {
-        if (!channel.channel.isVod || !valid(account)) return@local
+        if (!channel.channel.isVod || channel.season != null || !valid(account)) return@local
         ensureAliases(account, setOf(channel.id))
         val key = key(account, channel.channel, channel.id)
         if (database.storedPlayable(account.owner, key) == null) database.transaction({ valid(account) }) {
@@ -147,7 +165,13 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
             val job = currentCoroutineContext()[Job]!!
             if (!valid(account)) return@withLock false
             if (force && (refreshVersions[flight] ?: 0) != before) return@withLock true
-            if (!force && System.currentTimeMillis() - database.age(account.cache, kind) < LIST_AGE) return@withLock true
+            val age = database.age(account.cache, kind)
+            if (!force && fresh(age, System.currentTimeMillis())) {
+                if (valid(account)) listingAges[kind] = age
+                return@withLock true
+            }
+            val started = System.nanoTime()
+            logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.LIST_BEGIN)
             try {
                 database.transaction({ valid(account) && job.isActive }) { db ->
                     database.clearListing(db, account.cache, kind)
@@ -162,9 +186,11 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
                     database.fresh(db, account.cache, kind, System.currentTimeMillis())
                 }
                 refreshVersions[flight] = before + 1
+                if (valid(account)) listingAges[kind] = database.age(account.cache, kind)
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.LIST_OK, (System.nanoTime() - started) / 1_000_000)
                 true
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { false }
+            catch (_: Exception) { logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.LIST_FAILED); false }
         }
     }
     suspend fun details(account: LibraryAccount, entry: LibraryEntry, force: Boolean = false): Boolean = withContext(Dispatchers.IO) {
@@ -176,7 +202,10 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
             if (!valid(account)) return@withLock false
             if (force && (refreshVersions[flight] ?: 0) != before) return@withLock true
             val now = System.currentTimeMillis()
-            if (!force && database.details(account, entry, now)?.second?.let { now - it < DETAIL_AGE } == true) return@withLock true
+            val parserCurrent = entry.kind != LibraryKind.SERIES || database.seriesParserCurrent(account, entry)
+            if (!force && parserCurrent && database.details(account, entry, now)?.second?.let { now >= it && now - it < DETAIL_AGE } == true) return@withLock true
+            val started = System.nanoTime()
+            logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.DETAIL_BEGIN)
             try {
                 val series = entry.kind == LibraryKind.SERIES
                 database.transaction({ valid(account) && job.isActive }) { db ->
@@ -196,9 +225,10 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
                     }
                 }
                 refreshVersions[flight] = before + 1
+                logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.DETAIL_OK, (System.nanoTime() - started) / 1_000_000)
                 true
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { false }
+            catch (_: Exception) { logging?.gate?.event(com.example.iptv.diagnostics.DiagnosticEvent.DETAIL_FAILED); false }
         }
     }
     suspend fun progress(account: LibraryAccount, channel: M3UChannel, legacyKey: String? = null): WatchProgress = local {
@@ -239,7 +269,21 @@ class LibraryRepository @Inject constructor(val database: LibraryDatabase, priva
         rows.map { it to resolve(account, it) }.distinctBy { it.second.id }
     }
     suspend fun favoriteReferences(account: LibraryAccount, ids: Set<String>): Map<String, BrowserChannel> = local {
-        ids.mapNotNull { id -> retainedEntry(account, id)?.takeIf { it.kind != LibraryKind.SERIES }?.let { id to resolve(account, it) } }.toMap()
+        if (!valid(account)) return@local emptyMap()
+        ids.mapNotNull { id ->
+            if (id.startsWith("season:${account.owner}:")) {
+                database.season(account, id)?.let { saved ->
+                    val latest = database.find(account, LibraryKind.SERIES, saved.seriesId)
+                    val season = if (latest != null) saved.copy(name = latest.name, category = latest.category,
+                        categoryName = latest.categoryName, poster = latest.poster) else saved
+                    id to BrowserChannel(id, M3UChannel("${season.name} · ${season.season}", season.categoryName,
+                        season.poster, "", null, null, null, true), season = season)
+                }
+            } else retainedEntry(account, id)?.takeIf { it.kind != LibraryKind.SERIES }?.let { id to resolve(account, it) }
+        }.toMap()
+    }
+    suspend fun saveSeason(account: LibraryAccount, season: SeasonFavorite) = local {
+        if (valid(account)) database.transaction({ valid(account) }) { database.saveSeason(account, season) }
     }
     companion object { const val LIST_AGE = 24L * 60 * 60 * 1000; const val DETAIL_AGE = 7 * LIST_AGE }
 }

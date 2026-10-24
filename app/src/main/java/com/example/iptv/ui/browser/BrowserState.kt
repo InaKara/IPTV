@@ -14,7 +14,7 @@ enum class BrowserDestination {
 
     val isCategorySection: Boolean get() = this == CATEGORIES || this == VOD
 }
-enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT, ADULT_FILTER }
+enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT, ADULT_FILTER, LOGGING }
 
 data class BrowserLocation(
     val destination: BrowserDestination = BrowserDestination.CATEGORIES,
@@ -34,7 +34,8 @@ data class GridBookmark(
 )
 
 data class BrowserChannel(val id: String, val channel: M3UChannel,
-    val library: com.example.iptv.data.library.LibraryEntry? = null)
+    val library: com.example.iptv.data.library.LibraryEntry? = null,
+    val season: com.example.iptv.data.library.SeasonFavorite? = null)
 data class BrowserCategory(val id: String, val name: String, val channels: List<BrowserChannel>)
 data class BrowserTile(val id: String, val category: BrowserCategory? = null, val entry: BrowserChannel? = null)
 

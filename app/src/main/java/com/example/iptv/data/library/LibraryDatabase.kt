@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class LibraryDatabase @Inject constructor(@ApplicationContext context: Context) : SQLiteOpenHelper(context,
-    context.noBackupFilesDir.resolve("library.db").absolutePath, null, 1) {
+    context.noBackupFilesDir.resolve("library.db").absolutePath, null, 3) {
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
         db.execSQL("PRAGMA auto_vacuum=FULL")
@@ -23,13 +23,33 @@ class LibraryDatabase @Inject constructor(@ApplicationContext context: Context) 
         db.execSQL("CREATE INDEX entry_pages ON entries(cache,kind,category,ord)")
         db.execSQL("CREATE INDEX episode_pages ON entries(cache,series,season,ord)")
         db.execSQL("CREATE TABLE freshness(cache TEXT,kind TEXT,time INTEGER,PRIMARY KEY(cache,kind))")
-        db.execSQL("CREATE TABLE details(cache TEXT,kind TEXT,id TEXT,plot TEXT,year TEXT,runtime TEXT,genre TEXT,cast TEXT,director TEXT,time INTEGER,used INTEGER,bytes INTEGER,PRIMARY KEY(cache,kind,id))")
+        db.execSQL("CREATE TABLE details(cache TEXT,kind TEXT,id TEXT,plot TEXT,year TEXT,runtime TEXT,genre TEXT,cast TEXT,director TEXT,time INTEGER,used INTEGER,bytes INTEGER,parser INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(cache,kind,id))")
         db.execSQL("CREATE TABLE progress(owner TEXT,identity TEXT,position INTEGER,duration INTEGER,watched INTEGER,seekable INTEGER,updated INTEGER,series TEXT,name TEXT,category TEXT,poster TEXT,url TEXT,agent TEXT,PRIMARY KEY(owner,identity))")
         db.execSQL("CREATE INDEX continuing ON progress(owner,updated DESC)")
         db.execSQL("CREATE TABLE sorts(owner TEXT,kind TEXT,value TEXT,PRIMARY KEY(owner,kind))")
         db.execSQL("CREATE TABLE aliases(owner TEXT,identity TEXT,kind TEXT,id TEXT,PRIMARY KEY(owner,identity))")
+        createSeasons(db)
     }
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) { error("Unsupported library schema") }
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) createSeasons(db)
+        if (oldVersion < 3) db.execSQL("ALTER TABLE details ADD COLUMN parser INTEGER NOT NULL DEFAULT 0")
+    }
+    private fun createSeasons(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS season_favorites(owner TEXT,identity TEXT,series TEXT,season TEXT,name TEXT,category TEXT,category_name TEXT,poster TEXT,PRIMARY KEY(owner,identity))")
+    }
+    fun saveSeason(account: LibraryAccount, season: SeasonFavorite) {
+        writableDatabase.insertWithOnConflict("season_favorites", null, ContentValues().apply {
+            put("owner", account.owner); put("identity", season.key(account)); put("series", season.seriesId)
+            put("season", season.season); put("name", season.name); put("category", season.category)
+            put("category_name", season.categoryName); put("poster", season.poster)
+        }, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    fun season(account: LibraryAccount, key: String): SeasonFavorite? = readableDatabase.rawQuery(
+        "SELECT series,season,name,category,category_name,poster FROM season_favorites WHERE owner=? AND identity=?",
+        arrayOf(account.owner, key)).use { if (it.moveToFirst()) SeasonFavorite(it.getString(0), it.getString(1), it.getString(2), it.getString(3), it.getString(4), it.getString(5)) else null }
+    fun hasSeason(account: LibraryAccount, series: String, season: String): Boolean = readableDatabase.rawQuery(
+        "SELECT 1 FROM entries WHERE cache=? AND kind='EPISODE' AND series=? AND season=? LIMIT 1",
+        arrayOf(account.cache, series, season)).use { it.moveToFirst() }
 
     fun <T> transaction(valid: () -> Boolean = { true }, action: (SQLiteDatabase) -> T): T {
         val db = writableDatabase
@@ -108,10 +128,15 @@ class LibraryDatabase @Inject constructor(@ApplicationContext context: Context) 
         if (result != null) writableDatabase.update("details", ContentValues().apply { put("used", now) }, "cache=? AND kind=? AND id=?", args)
         return result
     }
+    fun seriesParserCurrent(account: LibraryAccount, entry: LibraryEntry): Boolean = readableDatabase.rawQuery(
+        "SELECT parser FROM details WHERE cache=? AND kind='SERIES' AND id=?", arrayOf(account.cache, entry.id)).use {
+        it.moveToFirst() && it.getInt(0) == SERIES_PARSER
+    }
     fun putDetails(db: SQLiteDatabase, account: LibraryAccount, entry: LibraryEntry, detail: LibraryDetails, now: Long, bytes: Long) {
         db.insertWithOnConflict("details", null, ContentValues().apply {
             put("cache", account.cache); put("kind", entry.kind.name); put("id", entry.id); put("plot", detail.synopsis)
             put("year", detail.year); put("runtime", detail.runtime); put("genre", detail.genre); put("cast", detail.cast)
+            put("parser", SERIES_PARSER)
             put("director", detail.director); put("time", now); put("used", now); put("bytes", bytes)
         }, SQLiteDatabase.CONFLICT_REPLACE)
         evict(db, account.cache, entry.kind, entry.id)
@@ -169,5 +194,5 @@ class LibraryDatabase @Inject constructor(@ApplicationContext context: Context) 
     fun saveSort(owner: String, kind: LibraryKind, value: LibrarySort) {
         writableDatabase.insertWithOnConflict("sorts", null, ContentValues().apply { put("owner", owner); put("kind", kind.name); put("value", value.name) }, SQLiteDatabase.CONFLICT_REPLACE)
     }
-    companion object { const val PAGE_SIZE = 60; const val DETAIL_BUDGET = 20L * 1024 * 1024 }
+    companion object { const val PAGE_SIZE = 60; const val DETAIL_BUDGET = 20L * 1024 * 1024; private const val SERIES_PARSER = 1 }
 }
