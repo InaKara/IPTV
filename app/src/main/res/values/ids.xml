@@ -1,4 +1,5 @@
 <resources>
     <item name="go_live" type="id" />
     <item name="live_lag" type="id" />
+    <item name="playback_controls_panel" type="id" />
 </resources>

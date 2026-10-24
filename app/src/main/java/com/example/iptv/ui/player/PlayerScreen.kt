@@ -51,6 +51,7 @@ fun PlayerScreen(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     var nativeView by remember { mutableStateOf<TvPlayerView?>(null) }
+    var controlsVisible by remember { mutableStateOf(false) }
     val player by viewModel.player.collectAsStateWithLifecycle()
     val view = LocalView.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -81,7 +82,10 @@ fun PlayerScreen(
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
-                TvPlayerView(context).also { nativeView = it }
+                TvPlayerView(context).also {
+                    it.onControlsVisibilityChanged = { visible -> controlsVisible = visible }
+                    nativeView = it
+                }
             },
             update = {
                 it.player = player
@@ -90,14 +94,19 @@ fun PlayerScreen(
                 it.previousChannel = onPreviousChannel
                 it.seek = { offset -> seek(offset) }
             },
-            onRelease = { it.player = null; nativeView = null }
+            onRelease = {
+                it.onControlsVisibilityChanged = {}
+                it.player = null
+                nativeView = null
+                controlsVisible = false
+            }
         )
-        TimedOverlay(channel.streamUrl to selectionKey, channel.name, 48)
+        TimedOverlay(channel.streamUrl to selectionKey, channel.name, 48, controlsVisible)
         notice?.let {
-            TimedOverlay(it, stringResource(R.string.seek_seconds, if (it.seconds > 0) "+" else "", it.seconds), 120)
+            TimedOverlay(it, stringResource(R.string.seek_seconds, if (it.seconds > 0) "+" else "", it.seconds), 120, controlsVisible)
         }
         if (recoveryNotice > 0) {
-            TimedOverlay(channel.streamUrl to recoveryNotice, stringResource(R.string.live_window_recovered), 120)
+            TimedOverlay(channel.streamUrl to recoveryNotice, stringResource(R.string.live_window_recovered), 120, controlsVisible)
         }
         if (failed) {
             Surface(Modifier.fillMaxSize(), colors = NonInteractiveSurfaceDefaults.colors(containerColor = Color.Black.copy(alpha = 0.8f))) {
@@ -113,11 +122,13 @@ fun PlayerScreen(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-internal fun TimedOverlay(event: Any, text: String, bottomPadding: Int) {
+internal fun TimedOverlay(event: Any, text: String, bottomPadding: Int, controlsVisible: Boolean = false) {
     var visible by remember(event) { mutableStateOf(true) }
     LaunchedEffect(event) { delay(PlayerViewModel.OVERLAY_MS); visible = false }
     if (visible) {
-        Box(Modifier.fillMaxSize().padding(bottom = bottomPadding.dp), contentAlignment = Alignment.BottomCenter) {
+        // Lift both notice rows equally, retaining their separation and event-based timeout.
+        val inset = bottomPadding + if (controlsVisible) TvPlayerView.CONTROLS_PANEL_DP + 8 - 48 else 0
+        Box(Modifier.fillMaxSize().padding(bottom = inset.dp), contentAlignment = Alignment.BottomCenter) {
             Surface(
                 colors = NonInteractiveSurfaceDefaults.colors(containerColor = Color.Black.copy(alpha = 0.7f)),
                 shape = MaterialTheme.shapes.small

@@ -6,9 +6,11 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.StateListDrawable
 import android.view.KeyEvent
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -25,6 +27,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     var nextChannel: () -> Unit = {}
     var previousChannel: () -> Unit = {}
     var seek: (Long) -> Unit = {}
+    var onControlsVisibilityChanged: (Boolean) -> Unit = {}
     private val controls get() = findViewById<PlayerControlView>(androidx.media3.ui.R.id.exo_controller)
     var isLiveChannel: Boolean = false
         set(value) { field = value; refreshLiveControls(); scheduleLiveTick() }
@@ -69,6 +72,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
         isFocusableInTouchMode = true
         descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
         controls.setAnimationEnabled(false)
+        configureBottomPanel()
         findViewById<LinearLayout>(androidx.media3.ui.R.id.exo_time).let { time ->
             for (i in 0 until time.childCount) ordinaryTimes.add(time.getChildAt(i))
             time.addView(liveLag)
@@ -76,6 +80,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
         }
         styleControls(controls)
         setControllerVisibilityListener(ControllerVisibilityListener { visibility ->
+            onControlsVisibilityChanged(visibility == View.VISIBLE)
             if (visibility != View.VISIBLE) requestFocus()
             refreshLiveControls()
             scheduleLiveTick()
@@ -143,6 +148,37 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
+
+    private fun configureBottomPanel() {
+        // Keep Media3's layout manager/IDs, but never shade the picture above the controls.
+        findViewById<View>(androidx.media3.ui.R.id.exo_controls_background).setBackgroundColor(Color.TRANSPARENT)
+        findViewById<View>(androidx.media3.ui.R.id.exo_bottom_bar).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            layoutParams = (layoutParams as FrameLayout.LayoutParams).apply { height = dp(52); topMargin = 0 }
+        }
+        controls.addView(View(context).apply {
+            id = R.id.playback_controls_panel
+            setBackgroundColor(0xb3000000.toInt())
+        }, 0, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(CONTROLS_PANEL_DP), Gravity.BOTTOM))
+        findViewById<LinearLayout>(androidx.media3.ui.R.id.exo_center_controls).apply {
+            setPadding(0, 0, 0, 0)
+            // Keep 52dp TV focus targets without expanding this row through native padding.
+            for (index in 0 until childCount) getChildAt(index).apply {
+                minimumWidth = 0
+                minimumHeight = 0
+                setPadding(0, 0, 0, 0)
+                layoutParams = layoutParams.apply { width = dp(52); height = dp(52) }
+            }
+            layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                height = dp(52)
+                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                bottomMargin = dp(76)
+            }
+        }
+        findViewById<View>(androidx.media3.ui.R.id.exo_progress).apply {
+            layoutParams = (layoutParams as FrameLayout.LayoutParams).apply { height = dp(24) }
+        }
+    }
 
     fun openControls() {
         showController()
@@ -231,6 +267,7 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     }
 
     companion object {
+        const val CONTROLS_PANEL_DP = 128
         const val AMBER = 0xffffd15c.toInt()
         const val DARK = 0xff171817.toInt()
     }

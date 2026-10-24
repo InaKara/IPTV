@@ -1667,6 +1667,37 @@
       "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#snapshotPoolsAreBoundedAndIsolatedBetweenAccountsAndReads",
       "id": "TC-APP-110",
       "kind": "App"
+    },
+    {
+      "id": "MC-PLAY-013",
+      "key": "manual#PLAY-013",
+      "title": "Verify PV-1 moving video and paused frames stay visible during repeated live/VOD seeks, Live, focus and settings on Firestick",
+      "kind": "Manual",
+      "source": "docs/design/PLAYBACK_VISIBILITY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-111",
+      "key": "com.example.iptv.ui.PlaybackVisibilityTest#controllerLeavesBrightAndDarkFramesClearAboveBottomQuarter",
+      "title": "Actual native controller preserves bright/dark frame pixels above compact panel at TV resolutions",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/PlaybackVisibilityTest.kt"
+    },
+    {
+      "id": "TC-APP-112",
+      "key": "com.example.iptv.ui.PlaybackVisibilityTest#openingSeekingAndDismissingControlsPreserveSurfaceAndPlayIntent",
+      "title": "Bottom controls retain surface state remote seek focus popup and dismissal for live/VOD playing/paused",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/PlaybackVisibilityTest.kt"
+    },
+    {
+      "id": "TC-APP-113",
+      "key": "com.example.iptv.ui.RemoteFocusTest#playbackNoticesClearVisiblePanelWithoutRestartingTheirTimer",
+      "title": "Actual Compose notices clear visible controller panel and retain event timeout",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/RemoteFocusTest.kt"
     }
   ],
   "requirements": [
@@ -3126,6 +3157,24 @@
       ],
       "gap": "Exact metadata/identity/schema sharing, bounds, per-load/account isolation, interrupted input and retained cache/refresh/cancel regressions pass locally. Representative offline host retained savings are about 18 MiB on loading and 37 MiB during refresh overlap, with about 5.35 MiB additional cumulative snapshot-read allocation. Actual Android peaks/decoder memory and physical playback continuity remain pending; historical OOM resolution is unproven.",
       "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
+    },
+    {
+      "id": "PLAY-013",
+      "fingerprint": "4f1ed91a3fed2c7dafc717250cbfff3b656800962655dace63a3ced53acfd047",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-111",
+        "TC-APP-112",
+        "TC-APP-113",
+        "TC-APP-084",
+        "TC-APP-085",
+        "TC-APP-088",
+        "TC-APP-105",
+        "TC-APP-106",
+        "MC-PLAY-013"
+      ],
+      "gap": "Local native pixel comparisons preserve bright/dark frames above the bottom quarter at both TV resolutions/densities. Actual widget bounds, surface/shutter/scale/play intent, repeated live/VOD playing/paused seeks, popup dismissal and remote timeout checks plus actual Compose notice movement/event-timeout checks pass. Physical moving-video/paused-frame visibility, real repeated seeking and TV readability remain separate Firestick acceptance.",
+      "reviewNote": "PV-1 implemented after explicit approval. TC-APP-111 compares unchanged bright/dark pixels and actual lower-quarter widget bounds at mdpi/xhdpi TV sizes. TC-APP-112 retains rendered-surface/shutter/scale and play intent through repeated live/VOD playing/paused seeks, actual settings popup dismissal, Back and timeout. TC-APP-113 verifies actual Compose notice clearance after completed recomposition and unchanged event timeout. Existing native key/focus/Live tests retained; hardware moving-video/paused-frame acceptance remains manual."
     }
   ]
 }

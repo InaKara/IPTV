@@ -35,6 +35,13 @@
 - Ask for explicit approval before any other agent-initiated app start, including testing or investigation through ADB, UI/remote automation or helpers. The user may be using the Firestick and must not be interrupted.
 - The user withdrew DP-1's stop/start removal before implementation and explicitly chose to retain both actions. Do not remove them under the former approval; retain OPS-001 and follow the revised permission policy in OPS-007.
 
+## Commit and push requests
+
+- When the user asks to commit and push, treat it as a simple request to stage the files, commit with a concise appropriate message and push. Default to all current non-ignored changes, equivalent to `git add .`, unless the user specifies a narrower scope.
+- Do not run tests, builds, reviews, extended analysis, requirement updates or other tasks as part of that request. Do not first prepare a staging plan. Earlier implementation verification requirements do not add work to a commit-and-push-only request.
+- If what to stage is unclear, or a known issue needs resolution first (including sensitive files or a Git failure), briefly flag it and ask the user before proceeding. Do not investigate or fix it as an extra task without direction.
+- Aim to finish within one minute under normal conditions, subject to Git/network operation time. Report the commit and push result briefly.
+
 ## Build and verification
 
 - Use the repository Gradle wrapper (8.2) and JDK 17. AGP is 8.2.2, compile/target SDK 34, Build Tools 34.0.0. Java/Kotlin output targets 1.8.

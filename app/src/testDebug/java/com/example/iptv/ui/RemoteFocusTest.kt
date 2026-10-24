@@ -1,6 +1,8 @@
 package com.example.iptv.ui
 
 import android.app.Application
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -61,6 +63,36 @@ class RemoteFocusTest {
         compose.runOnIdle { event++ }
         compose.mainClock.autoAdvance = true
         compose.onNodeWithText("+30 s").assertExists()
+    }
+
+    @Test fun playbackNoticesClearVisiblePanelWithoutRestartingTheirTimer() {
+        var controlsVisible by androidx.compose.runtime.mutableStateOf(false)
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            IPTVTheme {
+                androidx.compose.foundation.layout.Box(androidx.compose.ui.Modifier.fillMaxSize().testTag(if (controlsVisible) "controls_visible" else "controls_hidden")) {
+                    TimedOverlay(1, "Channel notice", 48, controlsVisible)
+                    TimedOverlay(2, "+10 s", 120, controlsVisible)
+                }
+            }
+        }
+        val root = compose.onRoot().fetchSemanticsNode().boundsInRoot
+        val panelTop = root.bottom - com.example.iptv.ui.player.TvPlayerView.CONTROLS_PANEL_DP
+        val original = compose.onNodeWithText("Channel notice").fetchSemanticsNode().boundsInRoot
+        org.junit.Assert.assertTrue("Initial notice $original should sit below panel top $panelTop within $root", original.bottom > panelTop)
+        compose.mainClock.advanceTimeBy(2000)
+        compose.runOnIdle { controlsVisible = true }
+        compose.mainClock.autoAdvance = true
+        compose.waitUntil(5000) { compose.onAllNodesWithTag("controls_visible").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("controls_visible").assertExists()
+        val channel = compose.onNodeWithText("Channel notice").fetchSemanticsNode().boundsInRoot
+        val seek = compose.onNodeWithText("+10 s").fetchSemanticsNode().boundsInRoot
+        org.junit.Assert.assertTrue("Channel notice $channel must clear panel top $panelTop within $root", channel.bottom < panelTop)
+        org.junit.Assert.assertTrue("Notice rows stay separate", seek.bottom < channel.top)
+        compose.mainClock.autoAdvance = false
+        compose.mainClock.advanceTimeBy(1100)
+        compose.onNodeWithText("Channel notice").assertDoesNotExist()
+        compose.onNodeWithText("+10 s").assertDoesNotExist()
     }
 
     @Test fun selectingCategoryAndChannelDeliversExactPositionAndList() {
