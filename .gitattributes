@@ -1,0 +1,5 @@
+# Preserve official vendored bytes and executable Linux scripts across Windows checkouts.
+third_party/media3-ffmpeg/** text eol=lf
+scripts/*ffmpeg* text eol=lf
+scripts/check-mp2.* text eol=lf
+scripts/fixtures/*.mp2 binary

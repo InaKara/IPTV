@@ -1,0 +1,4 @@
+<resources>
+    <item name="go_live" type="id" />
+    <item name="live_lag" type="id" />
+</resources>

@@ -1,4 +1,10 @@
 <resources>
+    <string name="live_button">Live</string>
+    <string name="at_live_button">● Live</string>
+    <string name="at_live">At Live</string>
+    <string name="jump_to_live">Jump to Live</string>
+    <string name="live_lag_description">Behind Live: %1$s</string>
+    <string name="live_window_recovered">Live buffer expired. Returned to Live.</string>
     <string name="app_name">Aypi Tivi</string>
     <string name="server_url">Server URL</string>
     <string name="username">Username</string>

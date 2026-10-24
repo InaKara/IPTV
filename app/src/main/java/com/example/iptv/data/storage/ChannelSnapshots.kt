@@ -55,7 +55,7 @@ class FileChannelSnapshots @Inject constructor(@ApplicationContext context: Cont
         mutex.withLock {
             try {
                 val value = AtomicFile(File(directory, account.key)).openRead().bufferedReader(Charsets.UTF_8).use {
-                    gson.fromJson(it, Envelope::class.java)
+                    snapshotReaderGson().fromJson(it, Envelope::class.java)
                 }
                 require(value.version == 1 && value.account == account.key)
                 val channels = value.channels?.map { requireNotNull(it) } ?: return@withLock null

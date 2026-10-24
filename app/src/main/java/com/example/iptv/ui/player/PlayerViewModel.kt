@@ -4,19 +4,21 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.ForwardingPlayer
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.BuildConfig
+import com.example.iptv.data.storage.CredentialsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,12 +34,15 @@ internal fun seekTarget(current: Long, offset: Long, duration: Long, allowed: Bo
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @HiltViewModel
-class PlayerViewModel @Inject constructor(private val application: Application) : AndroidViewModel(application) {
+class PlayerViewModel @Inject constructor(private val application: Application,
+    private val credentials: CredentialsManager) : AndroidViewModel(application) {
     private var engine: ExoPlayer? = null
     private val _player = MutableStateFlow<Player?>(null)
     val player = _player.asStateFlow()
     private val _uiState = MutableStateFlow(PlayerUiState.Idle)
     val uiState = _uiState.asStateFlow()
+    private val _liveRecoveryNotice = MutableStateFlow(0L)
+    val liveRecoveryNotice = _liveRecoveryNotice.asStateFlow()
     private var current: M3UChannel? = null
     private var resumePosition = 0L
     private var resumePlaying = true
@@ -49,6 +54,7 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
             resumePlaying = true
         }
         releasePlayer()
+        _liveRecoveryNotice.value = 0
         current = channel
         if (!channel.streamUrl.startsWith("https://", true) && !channel.streamUrl.startsWith("http://", true)) {
             _uiState.value = PlayerUiState.Unsupported
@@ -57,8 +63,14 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
         val http = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(false)
             .setUserAgent(channel.userAgent?.takeIf { it.isNotBlank() } ?: "AypiTivi")
-        val mediaSources = DefaultMediaSourceFactory(DefaultDataSource.Factory(application, http))
-        val exo = ExoPlayer.Builder(application).setMediaSourceFactory(mediaSources).build()
+        val data = DefaultDataSource.Factory(application, http)
+        val mediaSources = DefaultMediaSourceFactory(data)
+        val route = PlaybackRoute(channel, liveHlsAlternative(channel, credentials.serverUrl,
+            credentials.username, credentials.password))
+        val recovery = LiveWindowRecovery()
+        val exo = ExoPlayer.Builder(application, audioFallbackRenderers(application))
+            .setSeekBackIncrementMs(DEDICATED_SEEK_MS).setSeekForwardIncrementMs(DEDICATED_SEEK_MS)
+            .setMediaSourceFactory(mediaSources).build()
         engine = exo
         exo.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
             .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(), true)
@@ -75,6 +87,14 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
             }
         })
         exo.addListener(object : Player.Listener {
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                if (!playWhenReady) recovery.paused()
+            }
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                if (route.rejectsTimeline(timeline, exo.currentMediaItemIndex)) {
+                    route.fallback()?.let { exo.setMediaItem(it); exo.prepare() }
+                }
+            }
             override fun onTracksChanged(tracks: Tracks) {
                 if (BuildConfig.DEBUG) audioTrackDiagnostics(tracks).forEach { android.util.Log.i("AypiAudio", it) }
             }
@@ -89,44 +109,29 @@ class PlayerViewModel @Inject constructor(private val application: Application) 
                 }
             }
             override fun onPlayerError(error: PlaybackException) {
+                if (handlePlaybackFailure(exo, error, route, recovery, android.os.SystemClock.elapsedRealtime()) {
+                        _liveRecoveryNotice.value += 1
+                    }) return
                 // Fixed Media3 error names are useful diagnostics; provider messages/causes are private.
                 if (BuildConfig.DEBUG) android.util.Log.w("AypiTivi", "Playback failed: ${error.errorCodeName}")
                 _uiState.value = PlayerUiState.Error
             }
         })
         // The native time bar and its buttons go through the same policy as remote seeks.
-        _player.value = object : ForwardingPlayer(exo) {
-            override fun getAvailableCommands(): Player.Commands = super.getAvailableCommands().buildUpon().apply {
-                if (!canSeek(exo) || exo.duration <= 0) removeAll(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM,
-                    Player.COMMAND_SEEK_BACK, Player.COMMAND_SEEK_FORWARD)
-            }.build()
-            override fun isCommandAvailable(command: Int): Boolean = availableCommands.contains(command)
-            override fun seekTo(positionMs: Long) { seekAbsolute(positionMs) }
-            override fun seekTo(mediaItemIndex: Int, positionMs: Long) {
-                if (mediaItemIndex == 0) seekAbsolute(positionMs)
-            }
-            override fun seekBack() { seekBy(-DEDICATED_SEEK_MS) }
-            override fun seekForward() { seekBy(DEDICATED_SEEK_MS) }
-        }
-        exo.setMediaItem(MediaItem.fromUri(channel.streamUrl), if (channel.isVod) resumePosition else 0)
+        _player.value = guardedPlayback(exo, channel.isVod)
+        if (route.usingAlternative) {
+            // Media3 validates the manifest/timeline; a failed alternative falls back once.
+            val hls = HlsMediaSource.Factory(data).setLoadErrorHandlingPolicy(DefaultLoadErrorHandlingPolicy(0))
+            exo.setMediaSource(hls.createMediaSource(route.initialItem))
+        } else if (channel.isVod) exo.setMediaItem(route.initialItem, resumePosition)
+        else exo.setMediaItem(route.initialItem) // HLS starts at its safe default live position.
         exo.prepare()
         exo.playWhenReady = resumePlaying
     }
 
-    private fun canSeek(p: Player) = current?.isVod == true && p.isCurrentMediaItemSeekable &&
-        p.isCommandAvailable(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
-
     fun seekBy(offsetMs: Long): Boolean {
         val p = engine ?: return false
-        val target = seekTarget(p.currentPosition, offsetMs, p.duration, canSeek(p)) ?: return false
-        p.seekTo(target)
-        return true
-    }
-
-    private fun seekAbsolute(position: Long) {
-        val p = engine ?: return
-        val target = seekTarget(0, position, p.duration, canSeek(p)) ?: return
-        p.seekTo(target)
+        return seekPlaybackBy(p, offsetMs, current?.isVod == true)
     }
 
     fun suspendPlayback() {

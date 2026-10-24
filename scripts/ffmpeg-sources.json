@@ -1,0 +1,17 @@
+{
+  "ndk": {
+    "file": "ndk.zip",
+    "url": "https://dl.google.com/android/repository/android-ndk-r26b-linux.zip",
+    "sha256": "ad73c0370f0b0a87d1671ed2fd5a9ac9acfd1eb5c43a7fbfbd330f85d19dd632"
+  },
+  "media3": {
+    "file": "media3.tar.gz",
+    "url": "https://codeload.github.com/androidx/media/tar.gz/refs/tags/1.2.1",
+    "sha256": "524d1ae3d720be744d95b807a318e3087905d45445cdf444e5ec4bfb91e6b038"
+  },
+  "ffmpeg": {
+    "file": "ffmpeg.tar.xz",
+    "url": "https://ffmpeg.org/releases/ffmpeg-6.0.1.tar.xz",
+    "sha256": "9b16b8731d78e596b4be0d720428ca42df642bb2d78342881ff7f5bc29fc9623"
+  }
+}

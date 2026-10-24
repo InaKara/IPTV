@@ -8,12 +8,16 @@ import android.graphics.drawable.StateListDrawable
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.Player
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerControlView
 import androidx.media3.ui.PlayerView
+import com.example.iptv.R
 
 /** Native controller owns visible navigation; hidden-controller keys keep the TV shortcuts. */
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -22,6 +26,38 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
     var previousChannel: () -> Unit = {}
     var seek: (Long) -> Unit = {}
     private val controls get() = findViewById<PlayerControlView>(androidx.media3.ui.R.id.exo_controller)
+    var isLiveChannel: Boolean = false
+        set(value) { field = value; refreshLiveControls(); scheduleLiveTick() }
+    private val liveLag = TextView(context).apply {
+        id = R.id.live_lag
+        setTextColor(Color.WHITE)
+        textSize = 14f
+        setPadding(dp(8), 0, dp(8), 0)
+    }
+    private val liveButton = Button(context).apply {
+        id = R.id.go_live
+        isAllCaps = false
+        textSize = 14f
+        minWidth = dp(72)
+        minimumHeight = dp(48)
+        backgroundTintList = null
+        stateListAnimator = null
+        setPadding(dp(12), 0, dp(12), 0)
+        setOnClickListener { player?.takeIf { canGoLive(it) }?.seekToDefaultPosition(); resetTimeout() }
+    }
+    private val ordinaryTimes = mutableListOf<View>()
+    private var boundPlayer: Player? = null
+    private val liveListener = object : Player.Listener {
+        override fun onEvents(player: Player, events: Player.Events) { refreshLiveControls() }
+    }
+    private val liveTick = object : Runnable {
+        override fun run() {
+            if (isAttachedToWindow && isLiveChannel && isControllerFullyVisible) {
+                refreshLiveControls()
+                postDelayed(this, 1000)
+            }
+        }
+    }
 
     init {
         useController = true
@@ -33,12 +69,80 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
         isFocusableInTouchMode = true
         descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
         controls.setAnimationEnabled(false)
+        findViewById<LinearLayout>(androidx.media3.ui.R.id.exo_time).let { time ->
+            for (i in 0 until time.childCount) ordinaryTimes.add(time.getChildAt(i))
+            time.addView(liveLag)
+            time.addView(liveButton, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48)))
+        }
         styleControls(controls)
         setControllerVisibilityListener(ControllerVisibilityListener { visibility ->
             if (visibility != View.VISIBLE) requestFocus()
+            refreshLiveControls()
+            scheduleLiveTick()
         })
+        refreshLiveControls()
         hideController()
     }
+
+    override fun setPlayer(player: Player?) {
+        boundPlayer?.removeListener(liveListener)
+        boundPlayer = null
+        super.setPlayer(player)
+        bindLiveListener()
+        refreshLiveControls()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        bindLiveListener()
+        refreshLiveControls()
+        scheduleLiveTick()
+    }
+
+    override fun onDetachedFromWindow() {
+        removeCallbacks(liveTick)
+        boundPlayer?.removeListener(liveListener)
+        boundPlayer = null
+        super.onDetachedFromWindow()
+    }
+
+    private fun bindLiveListener() {
+        if (isAttachedToWindow && boundPlayer !== player) {
+            boundPlayer?.removeListener(liveListener)
+            boundPlayer = player
+            boundPlayer?.addListener(liveListener)
+        }
+    }
+
+    private fun scheduleLiveTick() {
+        removeCallbacks(liveTick)
+        if (isAttachedToWindow && isLiveChannel && isControllerFullyVisible) postDelayed(liveTick, 1000)
+    }
+
+    private fun refreshLiveControls() {
+        val wasFocused = liveButton.hasFocus()
+        ordinaryTimes.forEach { it.visibility = if (isLiveChannel) View.GONE else View.VISIBLE }
+        liveLag.visibility = if (isLiveChannel) View.VISIBLE else View.GONE
+        liveButton.visibility = if (isLiveChannel) View.VISIBLE else View.GONE
+        val p = player
+        val target = p?.let { liveDefaultPosition(it) }
+        val lag = if (target != null && p != null) (target - p.currentPosition.coerceAtLeast(0)).coerceAtLeast(0) else null
+        val atLive = lag != null && lag <= 2000
+        liveLag.text = liveLagText(lag)
+        liveLag.contentDescription = context.getString(R.string.live_lag_description, liveLag.text)
+        liveButton.text = context.getString(if (atLive) R.string.at_live_button else R.string.live_button)
+        liveButton.contentDescription = context.getString(if (atLive) R.string.at_live else R.string.jump_to_live)
+        liveButton.isEnabled = p != null && canGoLive(p)
+        liveButton.alpha = if (liveButton.isEnabled) 1f else 0.4f
+        if (wasFocused && (!isLiveChannel || !liveButton.isEnabled)) {
+            // Play/Pause can also be disabled while the replacement timeline is empty.
+            val fallback = listOf(androidx.media3.ui.R.id.exo_play_pause, androidx.media3.ui.R.id.exo_settings)
+                .map { findViewById<View>(it) }.firstOrNull { it.isEnabled && it.isShown }
+            (fallback ?: this).requestFocus()
+        }
+    }
+
+    private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
     fun openControls() {
         showController()
@@ -92,8 +196,8 @@ internal class TvPlayerView(context: Context) : PlayerView(context) {
         val hiddenAction: (() -> Unit)? = when (code) {
             KeyEvent.KEYCODE_DPAD_UP -> nextChannel
             KeyEvent.KEYCODE_DPAD_DOWN -> previousChannel
-            KeyEvent.KEYCODE_DPAD_LEFT -> ({ seek(-PlayerViewModel.DPAD_SEEK_MS) })
-            KeyEvent.KEYCODE_DPAD_RIGHT -> ({ seek(PlayerViewModel.DPAD_SEEK_MS) })
+            KeyEvent.KEYCODE_DPAD_LEFT -> ({ if (!isLiveChannel) seek(-PlayerViewModel.DPAD_SEEK_MS) })
+            KeyEvent.KEYCODE_DPAD_RIGHT -> ({ if (!isLiveChannel) seek(PlayerViewModel.DPAD_SEEK_MS) })
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER ->
                 ({ player?.let { if (it.playWhenReady) it.pause() else it.play() } })
             else -> null

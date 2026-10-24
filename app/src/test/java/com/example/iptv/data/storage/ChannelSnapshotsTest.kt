@@ -3,6 +3,10 @@ package com.example.iptv.data.storage
 import android.app.Application
 import android.util.AtomicFile
 import com.example.iptv.data.model.M3UChannel
+import com.example.iptv.data.model.ChannelTextSharing
+import com.example.iptv.ui.browser.BrowserCatalog
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -74,5 +78,64 @@ class ChannelSnapshotsTest {
         assertTrue(snapshot.stale(1001 + ChannelSnapshot.MAX_AGE_MS))
         assertTrue(snapshot.stale(999))
         assertTrue(snapshot.copy(downloadedAt = 0).stale(1000))
+    }
+
+    @Test fun snapshotSharingPreservesSchemaValuesAndCanonicalOccurrences() = runBlocking {
+        val store = FileChannelSnapshots(RuntimeEnvironment.getApplication())
+        val base = channel.copy(groupTitle = " TR ", userAgent = " Agent ", tvgName = channel.name)
+        val rows = listOf(base, base.copy(), base.copy(groupTitle = "tr", userAgent = "agent", tvgName = "news, HD"),
+            base.copy(groupTitle = "", userAgent = "", tvgName = "", logoUrl = "", tvgId = "", providerNumber = ""),
+            base.copy(groupTitle = "   ", userAgent = null, tvgName = null, logoUrl = null, tvgId = null, providerNumber = null),
+            base.copy(name = "Film Ω", groupTitle = "VOD", tvgName = "Film Ω", streamUrl = "https://provider.example/movie/1.mp4", isVod = true))
+        val snapshot = ChannelSnapshot(rows, 1234567)
+        store.write(account, snapshot)
+        val file = File(store.directory, account.key)
+        val gson = Gson()
+        val json = gson.fromJson(file.readText(), JsonObject::class.java)
+        assertEquals(1, json["version"].asInt)
+        assertEquals(account.key, json["account"].asString)
+        assertEquals(gson.toJsonTree(rows), json["channels"])
+        // Preserve Gson's handling of explicit nulls and unknown future metadata.
+        json.addProperty("unknown", "ignored")
+        json["channels"].asJsonArray[4].asJsonObject.add("userAgent", com.google.gson.JsonNull.INSTANCE)
+        json["channels"].asJsonArray[0].asJsonObject.addProperty("unknown", true)
+        file.writeText(gson.toJson(json))
+        val originalBytes = file.readBytes()
+        val actual = requireNotNull(store.read(account))
+        assertEquals(snapshot, actual)
+        assertArrayEquals(originalBytes, file.readBytes())
+        assertSame(actual.channels[0].groupTitle, actual.channels[1].groupTitle)
+        assertSame(actual.channels[0].userAgent, actual.channels[1].userAgent)
+        actual.channels.filter { it.name == it.tvgName }.forEach { assertSame(it.name, it.tvgName) }
+        val expectedIds = BrowserCatalog.create(rows).channels.map { it.id }
+        assertEquals(expectedIds, BrowserCatalog.create(actual.channels).channels.map { it.id })
+        assertNotEquals(expectedIds[0], expectedIds[1])
+        store.write(account, actual)
+        assertEquals(snapshot, store.read(account))
+    }
+
+    @Test fun snapshotPoolsAreBoundedAndIsolatedBetweenAccountsAndReads() = runBlocking {
+        val store = FileChannelSnapshots(RuntimeEnvironment.getApplication())
+        val rows = (0..ChannelTextSharing.GROUP_LIMIT).map { index ->
+            channel.copy(name = "Name $index", tvgName = "Name $index", groupTitle = "Group $index", userAgent = "Agent $index")
+        }.let { it + it.first() + it.last() + it[ChannelTextSharing.AGENT_LIMIT] }
+        val snapshot = ChannelSnapshot(rows, 1000)
+        val otherAccount = account.copy(username = "another")
+        store.write(account, snapshot)
+        store.write(otherAccount, snapshot)
+        val first = requireNotNull(store.read(account)).channels
+        assertEquals(rows, first)
+        assertSame(first[0].groupTitle, first[first.lastIndex - 2].groupTitle)
+        assertSame(first[0].userAgent, first[first.lastIndex - 2].userAgent)
+        assertNotSame(first[ChannelTextSharing.GROUP_LIMIT].groupTitle, first[first.lastIndex - 1].groupTitle)
+        assertNotSame(first[ChannelTextSharing.AGENT_LIMIT].userAgent, first.last().userAgent)
+        assertSame(first[ChannelTextSharing.AGENT_LIMIT].groupTitle, first.last().groupTitle)
+        listOf(account, otherAccount).forEach { current ->
+            val next = requireNotNull(store.read(current)).channels
+            assertEquals(rows, next)
+            assertNotSame(first[0].groupTitle, next[0].groupTitle)
+            assertNotSame(first[0].userAgent, next[0].userAgent)
+            assertSame(next[0].groupTitle, next[next.lastIndex - 2].groupTitle)
+        }
     }
 }

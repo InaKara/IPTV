@@ -1,5 +1,7 @@
 # Startup crash notice and channel-list failure — 23 October 2026
 
+Later [open-issue investigation](OPEN_ISSUES_INVESTIGATION.md) records read-only device heap/ABI facts and current-code desktop allocation/startup diagnostics. These identify allocation/refresh-overlap pressure, without reproducing the historical Android crash or establishing a memory fix.
+
 Investigation of the user's report after the latest approved deployment. The user explicitly authorized repeated stop/start/deploy operations for this investigation session. During initial diagnosis, before SF-1 approval, no app source/implementation tests were changed and no new APK was deployed. One unchanged-app restart was performed; no uninstall, app-data clear or device preference change was used. Raw logs, account comparisons and provider responses remain under ignored app/build/reports/investigation/; no selected external logo URLs were probed.
 
 ## Crash notice: an earlier memory failure

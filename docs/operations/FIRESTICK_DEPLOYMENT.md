@@ -205,8 +205,38 @@ UI-013/SET-008 implement current-view/category headings and the device-wide save
 
 No install, app stop/start, provider request or other device action was performed for CF-1. After separately authorized deployment, check actual TV heading readability, switch navigation/status persistence across restart/account changes, all browsing routes and real playback stepping while filtered, plus returns when the previous category becomes hidden. Full Activity lifecycle and device playback remain pending. See [CATEGORY_FILTER_REVIEW.md](../design/CATEGORY_FILTER_REVIEW.md).
 
+## Read-only open-issue investigation — 23 October 2026
+
+The user requested investigation and allowed Firestick use if needed. The device was reachable with wakefulness Asleep and the existing app process already running. Read-only heap/ABI/power/memory and current-process fixed diagnostic-tag queries were performed without waking the display, starting/stopping the app, installing, navigating or changing settings. Reported runtime: API 28, armeabi-v7a/armeabi and a 192 MiB normal heap growth limit (384 MiB maximum heap configuration). No existing fixed AypiAudio records were available to establish runtime MP2 support/selection.
+
+PC provider/API/XMLTV/HLS inspection and standalone current-code desktop allocation/decoder diagnostics are recorded in [OPEN_ISSUES_INVESTIGATION.md](../investigations/OPEN_ISSUES_INVESTIGATION.md). They establish useful provider capabilities and investigation leads, not device playback, audible audio, native 4K output, fresh Android startup/refresh peaks or screensaver acceptance. No new app behavior, native decoder build or deployment was included. Future app starts/deployments still need their described approval; visual/audio/remote checks need a viewing session.
+
 ## References
 
 - [Amazon: connect to Fire TV through ADB](https://developer.amazon.com/docs/fire-tv/connecting-adb-to-device.html)
 - [Android Gradle plugin 8.2 compatibility](https://developer.android.com/build/releases/agp-8-2-0-release-notes)
 - [Gradle Java compatibility](https://docs.gradle.org/current/userguide/compatibility.html)
+
+## AU-1 MP2 local validation — 23 October 2026; not deployed
+
+The explicitly approved PLAY-010 integration adds official Media3 1.2.1 FFmpeg audio after platform audio, with MPEG-only FFmpeg 6.0.1 libraries built from pinned sources using workspace-local Linux NDK r26b. See [FFMPEG_BUILD.md](FFMPEG_BUILD.md) for first-build preparation, clean/rebuild, license/source/relink material and local native checks. Ordinary Gradle now fails clearly if those artifacts are missing/stale. No Gradle/AGP/Media3 version or deployment script behavior changed.
+
+Both ARM libraries pass ELF/JNI/dependency/configuration checks and reproduce byte-for-byte on a repeated native build. A static Android Bionic x86_64 executable running under WSL decoded synthetic MP2 to non-silent 48 kHz stereo PCM (84 frames; RMS 2053.5), with AAC absent from that narrow decoder build. This is not an ARM/JVM/audible device test. Fresh smoke/lint passed **140/140 in 38.57 seconds**, zero failures/skips/errors; lint 0 errors/31 warnings. Debug APK assembly and byte-identical ARM/license packaging checks passed; APK 15,643,148 bytes, about 337 KiB above the preceding local debug build. AGP could not apply its own native strip step because its SDK NDK is unconfigured; the explicit source build already strips these binaries and packaging equality is verified. Earlier header/annotation/lint integration failures are resolved; no unresolved build failure remains.
+
+No Firestick commands, install, app stop/start, display wake or provider request occurred for this implementation. After separately approved script deployment, actual Android native loading, selected decoder, audible TRT 1/known-good audio and synchronization/memory remain physical acceptance. Do not mark them passed from these host results. EPG is Deferred; live controls LP-1 and metadata-memory reduction MR-1 await selected scope approval.
+
+## LP-1 live controls — 23 October 2026; not deployed
+
+PLAY-012 was explicitly approved with Approve LP-1 implementation. Local implementation adds actual-window 10-second native/dedicated live steps, separate amber-focus Live with lag display, exact-provider/account HLS validation and one-time original fallback, and bounded expired-pause recovery with feedback and retained play intent. VOD elapsed/total times and hidden 30-second D-pad shortcuts, Menu/Back/timeout and resource release are retained. See [LIVE_PLAYBACK_REVIEW.md](../design/LIVE_PLAYBACK_REVIEW.md).
+
+Fresh smoke/debug lint passes **146/146 in about 34 seconds**, zero failures/skips/errors; lint 0 errors/31 warnings. Six new meaningful cases include actual Media3 HLS rolling-window preparation/rejection, route/identity boundaries, command bounds/recovery, native focus/time/pixel/key/timeout/cleanup checks. Debug APK assembly and native ABI/license packaging verification passed. Native live/VOD previews were inspected after a completed drawing frame. Earlier test failures exposed a reused-data-source fixture issue and an actual unavailable-Live focus edge case; both were corrected and the final run is fresh. No unresolved build/test failure remains.
+
+No real provider request, Firestick command/install/app start/stop/display wake or setting change occurred for LP-1. Deployment must still be separately approved as the described deploy-firestick.ps1 install/force-stop/start operation. Then actual provider live-window seeking, safe Live timing, prolonged pause expiry, original-source fallback, audible MP2/known-good audio, synchronization and physical remote/TV readability need acceptance; host fixtures do not mark these complete. No memory optimization, EPG feature, release build or publication is included.
+
+## MR-1 metadata memory — 23 October 2026; not deployed
+
+The user explicitly approved MR-1 / REL-004. Bounded per-load category/user-agent sharing and per-entry equal display/TVG-name sharing now run in both the InputStream parser and streamed snapshot reader. Values, canonical occurrence IDs, schema, account boundaries and existing refresh/playback retention are preserved. See [MEMORY_REVIEW.md](../design/MEMORY_REVIEW.md) for implementation limits and the allocation tradeoff.
+
+Fresh local smoke/debug lint passed **150/150**, with zero failures/skips/errors; lint reports zero errors and 31 warnings. Debug APK assembly passed. The same offline 100,961-entry initial/cache/refresh desktop workload retains about 18 MiB less after loading and 37 MiB less with old/new catalogues retained. Complete metadata/identity comparisons and snapshot byte equality passed. These are host results, not Android peak-memory or crash-resolution evidence; cached loading creates about 5.35 MiB more short-lived allocations. No unresolved build/test failure remains.
+
+No Firestick command, deployment, app stop/start, provider request or setting change occurred. A separately approved deployment must use the retained install/force-stop/start script. Android cold/cached start and refresh peaks, known-good/MP2 playback memory and audible/remote/live acceptance still need their own described device session; implementation approval does not authorize those extra actions.

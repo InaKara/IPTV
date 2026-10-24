@@ -1,0 +1,13 @@
+Aypi Tivi audio fallback
+
+Media3 FFmpeg extension 1.2.1, Copyright The Android Open Source Project.
+Apache License 2.0. See Media3-FFmpeg-Apache-2.0.txt.
+Source: https://github.com/androidx/media/tree/1.2.1/libraries/decoder_ffmpeg
+
+FFmpeg 6.0.1, Copyright the FFmpeg developers.
+GNU Lesser General Public License version 2.1 or later.
+See FFmpeg-LGPL-2.1.txt.
+Source: https://ffmpeg.org/releases/ffmpeg-6.0.1.tar.xz
+Unmodified source; only MPEG audio decoding and resampling configured.
+Build/relink instructions: docs/operations/FFMPEG_BUILD.md in the app source.
+Pinned source checksums: scripts/ffmpeg-sources.json in the app source.

@@ -1365,7 +1365,7 @@
     {
       "id": "MC-PLAY-010",
       "key": "manual#PLAY-010",
-      "title": "Pending AU-1: review reproducible official MP2 software decoder build, native ABI packaging/loading, synthetic non-silent PCM decode, fallback selection and separately authorized device audio",
+      "title": "AU-1 native/source/ABI/decode checks and separately approved Android loading, selected decoder, known-good audio, audible MP2 and synchronization acceptance",
       "kind": "Manual",
       "group": "manual",
       "source": "docs/design/LATEST_APP_REVIEW.md"
@@ -1565,6 +1565,108 @@
       "title": "Pending backlog scope review: UI-014 outcome, acceptance criteria and selected design; implementation and feature acceptance not run",
       "kind": "Manual",
       "source": "docs/backlog.md; docs/requirements/REQUIREMENTS.md"
+    },
+    {
+      "id": "MC-PLAY-012",
+      "key": "manual#PLAY-012",
+      "title": "Verify LP-1 on device: live seek window, safe Live return/lag, HLS fallback, expired pause recovery, focus/keys and preserved VOD playback",
+      "kind": "Manual",
+      "source": "docs/design/LIVE_PLAYBACK_REVIEW.md"
+    },
+    {
+      "id": "MC-REL-004",
+      "key": "manual#REL-004",
+      "title": "Verify actual Android initial/cache/refresh peaks and physical playback continuity; historical OOM resolution remains unproven",
+      "kind": "Manual",
+      "source": "docs/design/MEMORY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-100",
+      "key": "com.example.iptv.ui.AudioFallbackTest#actualPlayerFactoryKeepsPlatformAudioBeforeSingleSoftwareFallback",
+      "title": "Player factory retains platform audio before one software fallback and keeps video renderer",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AudioFallbackTest.kt"
+    },
+    {
+      "id": "TC-APP-101",
+      "key": "com.example.iptv.ui.player.LiveSourcePolicyTest#providerCandidateIsAccountBoundAndPreservesCanonicalChannel",
+      "title": "providerCandidateIsAccountBoundAndPreservesCanonicalChannel",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/test/java/com/example/iptv/ui/player/LiveSourcePolicyTest.kt"
+    },
+    {
+      "id": "TC-APP-102",
+      "key": "com.example.iptv.ui.player.LivePlaybackTest#nativeSeekCommandsClampMovingLiveWindowsAndRetainVodGuards",
+      "title": "nativeSeekCommandsClampMovingLiveWindowsAndRetainVodGuards",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/LivePlaybackTest.kt"
+    },
+    {
+      "id": "TC-APP-103",
+      "key": "com.example.iptv.ui.player.LivePlaybackTest#expiredWindowRecoveryAndOneTimeFallbackRetainPlaybackIntent",
+      "title": "expiredWindowRecoveryAndOneTimeFallbackRetainPlaybackIntent",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/LivePlaybackTest.kt"
+    },
+    {
+      "id": "TC-APP-104",
+      "key": "com.example.iptv.ui.player.LivePlaybackTest#realHlsSourcePublishesRollingSeekWindowAndRejectsInvalidManifest",
+      "title": "realHlsSourcePublishesRollingSeekWindowAndRejectsInvalidManifest",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/player/LivePlaybackTest.kt"
+    },
+    {
+      "id": "TC-APP-105",
+      "key": "com.example.iptv.ui.LiveControlsTest#liveActionLagFocusAndNativeStepButtonsFollowChangingCapabilities",
+      "title": "liveActionLagFocusAndNativeStepButtonsFollowChangingCapabilities",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/LiveControlsTest.kt"
+    },
+    {
+      "id": "TC-APP-106",
+      "key": "com.example.iptv.ui.LiveControlsTest#liveAndVodTransitionsRetainTimesShortcutsAndControllerTimeout",
+      "title": "liveAndVodTransitionsRetainTimesShortcutsAndControllerTimeout",
+      "kind": "App",
+      "group": "playback",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/LiveControlsTest.kt"
+    },
+    {
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/MetadataSharingTest.kt",
+      "title": "Parser shares repeated text while preserving exact values and canonical duplicate identities",
+      "key": "com.example.iptv.data.parser.MetadataSharingTest#parserSharesExactRepeatedMetadataAndPreservesCanonicalOccurrences",
+      "id": "TC-APP-107",
+      "kind": "App"
+    },
+    {
+      "group": "parser",
+      "source": "app/src/test/java/com/example/iptv/data/parser/MetadataSharingTest.kt",
+      "title": "Parser sharing is bounded and isolated across loads and interrupted input",
+      "key": "com.example.iptv.data.parser.MetadataSharingTest#parserPoolsAreBoundedAndIndependentAcrossLoadsAndFailures",
+      "id": "TC-APP-108",
+      "kind": "App"
+    },
+    {
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt",
+      "title": "Snapshot streaming shares text with exact metadata schema and duplicate identity round trips",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#snapshotSharingPreservesSchemaValuesAndCanonicalOccurrences",
+      "id": "TC-APP-109",
+      "kind": "App"
+    },
+    {
+      "group": "storage",
+      "source": "app/src/test/java/com/example/iptv/data/storage/ChannelSnapshotsTest.kt",
+      "title": "Snapshot sharing stays bounded and isolated between accounts and repeated reads",
+      "key": "com.example.iptv.data.storage.ChannelSnapshotsTest#snapshotPoolsAreBoundedAndIsolatedBetweenAccountsAndReads",
+      "id": "TC-APP-110",
+      "kind": "App"
     }
   ],
   "requirements": [
@@ -1605,15 +1707,17 @@
     },
     {
       "id": "FIX-003",
-      "fingerprint": "f5b0483adf7af7e24a49e112502e37049a794b86015b4bdeb0deca280ddfc40a",
+      "fingerprint": "0654361c90928994ad355a0fbe8b102f118ef92c7229d9f212de5c3c9b41c978",
       "coverage": "Partial",
       "cases": [
         "TC-APP-027",
         "TC-APP-028",
-        "TC-APP-037"
+        "TC-APP-037",
+        "TC-APP-102",
+        "TC-APP-103"
       ],
-      "gap": "Seek policy and overlay timing; decoder, native controller, background engine release and resume require device checks.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "gap": "Seek policy and overlay timing; decoder, native controller, background engine release and resume require device checks. LP-1 extends bounded native/dedicated seeks to actual live windows; VOD hidden shortcuts remain unchanged. Real provider/device window seeking remains manual.",
+      "reviewNote": "LP-1 local implementation complete: actual synthetic HLS rolling-window/invalid-manifest checks, canonical provider/account source rules, live/VOD bounded commands, repeat-safe expiry and original-source fallback, native lag/Live amber focus/usable fallback, remote increments/timing/timeout and listener cleanup. Physical provider/audiovisual/remote acceptance remains separate."
     },
     {
       "id": "FIX-004",
@@ -1883,20 +1987,24 @@
         "TC-APP-003",
         "TC-APP-004",
         "TC-APP-005",
-        "TC-APP-006"
+        "TC-APP-006",
+        "TC-APP-107",
+        "TC-APP-108"
       ],
       "gap": "Representative metadata/comments/name edge cases; no exhaustive M3U dialect coverage.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
     },
     {
       "id": "DATA-002",
       "fingerprint": "3dcfc6fa293cec07640ad58fb35b7b09b8de22c293cd7424732f6906fd561511",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-003"
+        "TC-APP-003",
+        "TC-APP-107",
+        "TC-APP-108"
       ],
       "gap": "Blank-name fallback; every missing-category dialect is not yet covered.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
     },
     {
       "id": "DATA-003",
@@ -2683,10 +2791,12 @@
         "TC-APP-074",
         "TC-APP-080",
         "MC-DATA-006",
-        "TC-APP-081"
+        "TC-APP-081",
+        "TC-APP-109",
+        "TC-APP-110"
       ],
       "gap": "Versioned metadata/account/no-backup location, corruption/schema, interrupted/rejected replacement and coordinator storage failure are automated. Physical OS transfer exclusion and minified APK read-back are not established by host tests; release assembly is separate. SF-1 blank/whitespace exact metadata and null/missing required-field assertions plus HTTP/parser/file/browser/recreated-session coverage pass. Separate Firestick evidence confirms 100,967-record first load and fresh-cache Categories, no startup download on the latter and account/history preservation. The host suite does not repeat real-provider/device acceptance or prove general Android heap safety.",
-      "reviewNote": "SF-1 explicitly approved, implemented and separately device-verified. 065 preserves blank/whitespace metadata, 066 rejects null/missing required fields, and 081 covers HTTP/parser/file/browser plus recreated-session cache reuse with one request. Full provider first load and cached Categories (100,967 records) passed on Firestick; no new fatal crash or cached download phases. Account/history preserved. These device observations do not replace local assertions or establish a fix for the earlier memory failure."
+      "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
     },
     {
       "id": "DATA-007",
@@ -2783,8 +2893,8 @@
         "TC-APP-086",
         "MC-PLAY-008"
       ],
-      "gap": "PC metadata confirms MP2 stereo 48 kHz; approved read-only device codec declarations show MP3 but no MP2 declaration. This is separate diagnostic evidence, not a runtime MediaCodecList/selected-track/audible output test. Local diagnostics assertions distinguish absent/unsupported/selected tracks and redact private metadata. Software decoding is unimplemented and awaits PLAY-010 approval.",
-      "reviewNote": "UX-1 approved implementation: real startup status/geometry/error/setup focus, native raster/SVG artwork/density pixels, native controller key/focus/timeout and bounded audio diagnostics assertions reviewed. UI source is implemented; audio remains Partial because codec presence/support diagnosis is not an audible fix. PC MP2 and approved read-only device declarations are separate evidence. No tests claim physical startup, popup/remote or decoder acceptance; AU-1 remains unapproved."
+      "gap": "Provider MP2 and read-only device declarations support the missing-codec diagnosis. Bounded private-data-safe diagnostics are locally checked. AU-1 is now explicitly approved and implemented locally; Android selected decoder/output and audible affected/known-good streams remain physical acceptance.",
+      "reviewNote": "Approved AU-1 integrated with official sources, pinned narrow ARM build, actual production renderer-order assertion and separate native Bionic non-silent MP2/ABI/JNI/configuration evidence. Status Partial preserves Android load, selected renderer, known-good/audio and synchronization acceptance gaps."
     },
     {
       "id": "PLAY-009",
@@ -2803,13 +2913,14 @@
     },
     {
       "id": "PLAY-010",
-      "fingerprint": "153ff9f299d6425b68d1d37a6b20106fc4dea393ae5317d679549147fef4bf00",
-      "coverage": "Manual",
+      "fingerprint": "b0a8b7983deb531042dc123a8b9c6c817902770f1774eff727911a2a0df9fe32",
+      "coverage": "Partial",
       "cases": [
+        "TC-APP-100",
         "MC-PLAY-010"
       ],
-      "gap": "New native decoder/build proposal, not implemented. No software decoder, synthetic decode test or package verification exists yet; actual device decoding/output is also unverified.",
-      "reviewNote": "AU-1 proposed after PC probe identified MP2. This new native dependency/build scope is explicitly awaiting approval; no existing test validates software decoding or packaged native loading. Pending manual disposition is honest, and real assertions must follow approval."
+      "gap": "Actual production renderer factory is checked locally for platform-first audio, one official software extension and retained video. Native source-build/PCM/ELF/APK checks are separate slower evidence. Android dynamic loading, track selection, supported-format regression, audible MP2 and synchronization remain separately authorized physical checks.",
+      "reviewNote": "Approved AU-1 integrated with official sources, pinned narrow ARM build, actual production renderer-order assertion and separate native Bionic non-silent MP2/ABI/JNI/configuration evidence. Status Partial preserves Android load, selected renderer, known-good/audio and synchronization acceptance gaps."
     },
     {
       "id": "UI-012",
@@ -2887,13 +2998,13 @@
     },
     {
       "id": "EPG-001",
-      "fingerprint": "9cfe63074e45ca4a63669121fe4568b4e8995f780b104077d4d4434a4f8198cd",
+      "fingerprint": "66b8cf096b43025e27982073b83bb184c451c6a0a27e8214304bf1b5ae43a84b",
       "coverage": "Manual",
       "cases": [
         "MC-EPG-001"
       ],
-      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
-      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+      "gap": "Provider discovery confirms valid XMLTV, with sparse exact ID-to-programme coverage; this is separate service metadata evidence. No guide implementation, mapping/cache UI assertions or app/device EPG acceptance exists. Scope/design and implementation remain unapproved.",
+      "reviewNote": "EPG explicitly deferred by user; existing discovery is evidence, not guide implementation. User explicitly selected previously reviewed AU-1/PLAY-010 native source-build/fallback implementation; native/physical gaps retained while work proceeds. New LP-1 live-control proposal is manual/pending and unimplemented until exact revision approval."
     },
     {
       "id": "PLAY-011",
@@ -2902,8 +3013,8 @@
       "cases": [
         "MC-PLAY-011"
       ],
-      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
-      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+      "gap": "Source/PC investigation confirms existing VOD-only seek policy and a short provider HLS window. No new controls/live-seek/recovery behavior is implemented; native app live-window/audio/physical acceptance remains pending. Existing PLAY-009 focus is separate delivered scope.",
+      "reviewNote": "Investigation evidence only; definitions/statuses unchanged. Provider API/XMLTV/HLS, official decoder mapping and desktop PCM diagnostics are not app implementation tests or physical acceptance. Updated manual coverage gaps distinguish discovered capabilities from unimplemented features; no native build/player/API migration or device playback is approved."
     },
     {
       "id": "LIB-001",
@@ -2912,8 +3023,8 @@
       "cases": [
         "MC-LIB-001"
       ],
-      "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
-      "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+      "gap": "Provider discovery confirms movie details and season/episode metadata, separately from app feature delivery. No video-library UI/integration or corresponding assertions exist; selected sources/design/implementation remain unapproved.",
+      "reviewNote": "Investigation evidence only; definitions/statuses unchanged. Provider API/XMLTV/HLS, official decoder mapping and desktop PCM diagnostics are not app implementation tests or physical acceptance. Updated manual coverage gaps distinguish discovered capabilities from unimplemented features; no native build/player/API migration or device playback is approved."
     },
     {
       "id": "INT-001",
@@ -2974,6 +3085,47 @@
       ],
       "gap": "Explicit future feature request only. Detailed scope/design and implementation are unapproved; no meaningful implementation assertions or device/service acceptance exist for this feature. Add appropriate synthetic checks after selected review; existing baseline tests do not establish delivery.",
       "reviewNote": "User requested backlog documentation, not feature implementation. Reviewed each explicit wish against source: session-only VOD resume, M3U-only/no guide, existing native focus, Canvas icons and required Leanback. New Open proposals list decisions/dependencies and honest manual/pending coverage. No app/test implementation or service/device access is authorized."
+    },
+    {
+      "id": "PLAY-012",
+      "fingerprint": "5a92885e19b522d913474cf0b3ebe95349a59d8db21ec169eb2f02acc6fc650e",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-101",
+        "TC-APP-102",
+        "TC-APP-103",
+        "TC-APP-104",
+        "TC-APP-105",
+        "TC-APP-106",
+        "MC-PLAY-012"
+      ],
+      "gap": "Local source-boundary, actual HLS source/timeline, live/VOD guarded commands, bounded recovery/fallback and native focus/time/key checks cover approved LP-1. Physical provider seeking, long-pause recovery, audiovisual continuity and remote acceptance remain separate.",
+      "reviewNote": "LP-1 local implementation complete: actual synthetic HLS rolling-window/invalid-manifest checks, canonical provider/account source rules, live/VOD bounded commands, repeat-safe expiry and original-source fallback, native lag/Live amber focus/usable fallback, remote increments/timing/timeout and listener cleanup. Physical provider/audiovisual/remote acceptance remains separate."
+    },
+    {
+      "id": "REL-004",
+      "fingerprint": "684e39f4257f378bda809e4bffb421b21f8451fe6d1a208488a893d68809829c",
+      "coverage": "Partial",
+      "cases": [
+        "TC-APP-107",
+        "TC-APP-108",
+        "TC-APP-109",
+        "TC-APP-110",
+        "TC-APP-065",
+        "TC-APP-066",
+        "TC-APP-067",
+        "TC-APP-069",
+        "TC-APP-070",
+        "TC-APP-073",
+        "TC-APP-074",
+        "TC-APP-075",
+        "TC-APP-079",
+        "TC-APP-080",
+        "TC-APP-081",
+        "MC-REL-004"
+      ],
+      "gap": "Exact metadata/identity/schema sharing, bounds, per-load/account isolation, interrupted input and retained cache/refresh/cancel regressions pass locally. Representative offline host retained savings are about 18 MiB on loading and 37 MiB during refresh overlap, with about 5.35 MiB additional cumulative snapshot-read allocation. Actual Android peaks/decoder memory and physical playback continuity remain pending; historical OOM resolution is unproven.",
+      "reviewNote": "MR-1 implemented after explicit approval: actual parser/snapshot tests assert complete values and canonical duplicate IDs, case/blank/null semantics, exact sharing and bounded isolated loads/accounts with interrupted input. Retained corruption/atomic replacement, cancelled/superseded account, failed refresh and browser-cache regressions are explicitly mapped. Full representative metadata/IDs and byte equality plus controlled host retention/allocation comparison passed; Android peaks/physical continuity and historical crash resolution remain manual."
     }
   ]
 }

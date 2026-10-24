@@ -59,9 +59,11 @@ fun PlayerScreen(
         onDispose { display?.close() }
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val recoveryNotice by viewModel.liveRecoveryNotice.collectAsStateWithLifecycle()
     val failed = state == PlayerUiState.Error || state == PlayerUiState.Unsupported
     val errorFocus = remember { FocusRequester() }
     var notice by remember(channel, selectionKey) { mutableStateOf<SeekNotice?>(null) }
+    LaunchedEffect(recoveryNotice) { if (recoveryNotice > 0) notice = null }
     LifecycleStartEffect(channel, viewModel) {
         viewModel.start(channel)
         onStopOrDispose { viewModel.suspendPlayback() }
@@ -83,6 +85,7 @@ fun PlayerScreen(
             },
             update = {
                 it.player = player
+                it.isLiveChannel = !channel.isVod
                 it.nextChannel = onNextChannel
                 it.previousChannel = onPreviousChannel
                 it.seek = { offset -> seek(offset) }
@@ -92,6 +95,9 @@ fun PlayerScreen(
         TimedOverlay(channel.streamUrl to selectionKey, channel.name, 48)
         notice?.let {
             TimedOverlay(it, stringResource(R.string.seek_seconds, if (it.seconds > 0) "+" else "", it.seconds), 120)
+        }
+        if (recoveryNotice > 0) {
+            TimedOverlay(channel.streamUrl to recoveryNotice, stringResource(R.string.live_window_recovered), 120)
         }
         if (failed) {
             Surface(Modifier.fillMaxSize(), colors = NonInteractiveSurfaceDefaults.colors(containerColor = Color.Black.copy(alpha = 0.8f))) {

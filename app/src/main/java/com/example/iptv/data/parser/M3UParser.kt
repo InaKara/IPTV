@@ -1,6 +1,7 @@
 package com.example.iptv.data.parser
 
 import com.example.iptv.data.model.M3UChannel
+import com.example.iptv.data.model.ChannelTextSharing
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -11,6 +12,7 @@ class M3UParser @Inject constructor() {
     private val attributePattern = Pattern.compile("([a-zA-Z0-9\\-]+)=\"([^\"]*)\"|([a-zA-Z0-9\\-]+)=([^\\s]*)")
 
     fun parse(inputStream: java.io.InputStream): List<M3UChannel> {
+        val text = ChannelTextSharing()
         val channels = mutableListOf<M3UChannel>()
         val reader = inputStream.bufferedReader()
 
@@ -55,7 +57,7 @@ class M3UParser @Inject constructor() {
                     builder.streamUrl = trimmedLine
                     // VOD detection
                     builder.isVod = isVodContent(builder.groupTitle, builder.streamUrl)
-                    channels.add(builder.build())
+                    channels.add(builder.build(text))
                 }
                 currentChannelBuilder = null
             }
@@ -88,8 +90,9 @@ class M3UParser @Inject constructor() {
         var isVod: Boolean = false
         var providerNumber: String? = null
 
-        fun build(): M3UChannel {
-            return M3UChannel(name, groupTitle, logoUrl, streamUrl, userAgent, tvgId, tvgName, isVod, providerNumber)
+        fun build(text: ChannelTextSharing): M3UChannel {
+            return M3UChannel(name, text.group(groupTitle), logoUrl, streamUrl, text.userAgent(userAgent),
+                tvgId, text.tvgName(name, tvgName), isVod, providerNumber)
         }
     }
 }

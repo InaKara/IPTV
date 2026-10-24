@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -102,7 +104,8 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro",
+                rootProject.file("third_party/media3-ffmpeg/proguard-rules.txt"))
         }
     }
     compileOptions {
@@ -125,7 +128,39 @@ android {
         }
     }
     testOptions { unitTests.isIncludeAndroidResources = true }
+    sourceSets.getByName("main") {
+        java.srcDir(rootProject.file("third_party/media3-ffmpeg/java"))
+        jniLibs.srcDir(layout.buildDirectory.dir("generated/ffmpeg/jniLibs"))
+    }
 }
+
+// Native generation is explicit, not a network download during Gradle configuration.
+// Refuse a silently missing/stale fallback after a clean checkout or native source edit.
+val verifyFfmpegNative by tasks.registering {
+    doLast {
+        val manifest = layout.buildDirectory.file("generated/ffmpeg/manifest.json").get().asFile
+        check(manifest.isFile) { "Prepare AU-1 native libraries first; see docs/operations/FFMPEG_BUILD.md" }
+        val data = groovy.json.JsonSlurper().parse(manifest) as Map<*, *>
+        val inputs = data["inputs"] as Map<*, *>
+        val requiredInputs = listOf("scripts/ffmpeg-sources.json", "scripts/build-ffmpeg.sh",
+            "scripts/prepare-ffmpeg.py", "scripts/verify-ffmpeg.py") +
+            rootProject.file("third_party/media3-ffmpeg").walkTopDown().filter { it.isFile }
+                .map { it.relativeTo(rootProject.projectDir).invariantSeparatorsPath }.toList()
+        check(inputs.keys == requiredInputs.toSet()) { "Native source list changed; rebuild AU-1" }
+        fun digest(file: File) = MessageDigest.getInstance("SHA-256")
+            .digest(file.readBytes()).joinToString("") { "%02x".format(it) }
+        inputs.forEach { (path, expected) ->
+            check(digest(rootProject.file(path.toString())) == expected) { "Native input changed: $path; rebuild AU-1" }
+        }
+        val libraries = data["libraries"] as Map<*, *>
+        check(libraries.keys == setOf("armeabi-v7a", "arm64-v8a")) { "Required ARM decoder ABIs missing" }
+        libraries.forEach { (abi, expected) ->
+            val library = layout.buildDirectory.file("generated/ffmpeg/jniLibs/$abi/libffmpegJNI.so").get().asFile
+            check(library.isFile && digest(library) == expected) { "Decoder missing/changed for $abi; rebuild AU-1" }
+        }
+    }
+}
+tasks.named("preBuild").configure { dependsOn(verifyFfmpegNative) }
 
 dependencies {
     // Core Android
@@ -160,6 +195,8 @@ dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.2.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
+    // Official Media3 1.2.1 extension's compile-only nullness annotations.
+    compileOnly("org.checkerframework:checker-qual:3.13.0")
     
     // Image Loading (Coil)
     implementation("io.coil-kt:coil-compose:2.5.0")
