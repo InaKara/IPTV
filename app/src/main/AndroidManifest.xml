@@ -23,6 +23,7 @@
         
         <activity
             android:name=".SplashActivity"
+            android:launchMode="singleTop"
             android:icon="@mipmap/ic_launcher"
             android:banner="@drawable/tv_banner"
             android:exported="true"
@@ -36,6 +37,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/Theme.IPTVApp" />

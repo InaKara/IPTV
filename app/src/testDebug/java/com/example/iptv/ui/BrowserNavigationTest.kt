@@ -312,10 +312,12 @@ class BrowserNavigationTest {
         compose.onNodeWithTag("search_input").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
         compose.onNodeWithTag("search_editor").performTextInput("nEwS")
         compose.onNodeWithTag("search_editor").assertTextEquals("nEwS")
+        assertEquals("", vm.browser.state.value.query)
+        assertTrue(vm.browser.state.value.items.isEmpty())
+        compose.onNodeWithTag("search_editor").performImeAction()
         assertEquals("nEwS", vm.browser.state.value.query)
         compose.waitUntil(5000) { vm.browser.state.value.items.size == 1 }
-        compose.runOnIdle { back.onBackPressed() }
-        compose.onNodeWithTag("search_input").assertIsFocused().performKeyInput { pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("search_submit").assertIsFocused().performKeyInput { pressKey(Key.DirectionDown) }
         compose.onNodeWithTag("tile_0").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
         assertEquals(0, selected)
         compose.onNodeWithText("Playback destination").assertIsDisplayed()
@@ -329,6 +331,30 @@ class BrowserNavigationTest {
         compose.runOnIdle { back.onBackPressed() }
         compose.onNodeWithText("Recently viewed").assertIsDisplayed()
         assertEquals(BrowserDestination.CATEGORIES, vm.browser.state.value.location.destination)
+    }
+
+    @Test fun searchDraftCancelAndRemoteSubmitBrowseLocationRestoreExactResult() {
+        render()
+        focusTag("sidebar_SEARCH").performClick()
+        compose.onNodeWithTag("search_input").performClick()
+        compose.onNodeWithTag("search_editor").performTextInput("Channel 25")
+        assertEquals("", vm.browser.state.value.query)
+        compose.runOnIdle { back.onBackPressed() }
+        assertEquals("", vm.browser.state.value.draftQuery)
+        compose.onNodeWithTag("search_input").performClick()
+        compose.onNodeWithTag("search_editor").performTextInput("Channel 25")
+        compose.onNodeWithTag("search_submit").performClick()
+        compose.waitUntil(5000) { vm.browser.state.value.items.size == 1 && !vm.browser.state.value.searching }
+        compose.onNodeWithTag("search_submit").performKeyInput { pressKey(Key.DirectionDown) }
+        compose.onNodeWithTag("tile_0").assertIsFocused().performKeyInput { pressKey(Key.Menu) }
+        compose.onNodeWithTag("browse_location").performClick()
+        assertEquals("group:Live", vm.browser.state.value.location.categoryId)
+        compose.onNodeWithTag("tile_25").assertIsFocused()
+        assertEquals(-1, selected)
+        compose.runOnIdle { back.onBackPressed() }
+        assertEquals(BrowserDestination.SEARCH, vm.browser.state.value.location.destination)
+        compose.onNodeWithTag("search_input").assertTextEquals("Channel 25")
+        compose.onNodeWithTag("tile_0").assertIsFocused()
     }
 
     @Test fun returningFromPlaybackTracksSwitchedChannelAndKeepsCategoryScroll() {

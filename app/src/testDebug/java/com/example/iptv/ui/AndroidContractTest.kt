@@ -74,7 +74,7 @@ class AndroidContractTest {
                 }
             }
             assertTrue(R.drawable.app_logo in referenced)
-            assertTrue(R.drawable.brand_name in referenced)
+            assertTrue((if (resource == R.drawable.splash_background) R.drawable.startup_brand_name else R.drawable.brand_name) in referenced)
         }
     }
 }

@@ -114,6 +114,31 @@ class LibraryDatabase @Inject constructor(@ApplicationContext context: Context) 
             buildList { while (c.moveToNext()) add(c.entry()) }
         }
     }
+    fun category(account: LibraryAccount, kind: LibraryKind, id: String): LibraryCategory? = readableDatabase.rawQuery(
+        "SELECT id,name FROM categories WHERE cache=? AND kind=? AND id=?", arrayOf(account.cache, kind.name, id)).use {
+        if (it.moveToFirst()) LibraryCategory(it.getString(0), it.getString(1)) else null
+    }
+
+    /** Sorted IDs only, streamed by SQLite. Locating a distant result does not retain all title rows. */
+    fun browseIndex(account: LibraryAccount, entry: LibraryEntry, category: String? = null,
+        series: String? = null, season: String? = null, sort: LibrarySort): Int {
+        val where = mutableListOf("e.cache=?", "e.kind=?")
+        val args = mutableListOf(account.cache, entry.kind.name)
+        for ((column, value) in listOf("e.category" to category, "e.series" to series, "e.season" to season)) {
+            if (value != null) { where.add("$column=?"); args.add(value) }
+        }
+        val order = when (sort) {
+            LibrarySort.PROVIDER -> "e.ord,e.id"
+            LibrarySort.NAME -> "e.name COLLATE NOCASE,e.ord,e.id"
+            LibrarySort.RATING -> "CASE WHEN e.rating>0 THEN 0 ELSE 1 END,e.rating DESC,e.ord,e.id"
+            LibrarySort.RECENT -> "e.stamp DESC,e.ord,e.id"
+        }
+        return readableDatabase.rawQuery("SELECT e.id FROM entries e WHERE ${where.joinToString(" AND ")} ORDER BY $order", args.toTypedArray()).use { cursor ->
+            var index = 0
+            while (cursor.moveToNext()) { if (cursor.getString(0) == entry.id) return@use index; index++ }
+            -1
+        }
+    }
     fun find(account: LibraryAccount, kind: LibraryKind, id: String): LibraryEntry? = readableDatabase.rawQuery(
         "SELECT $columns ${join()} WHERE e.cache=? AND e.kind=? AND e.id=?", arrayOf(account.cache, kind.name, id)).use { if (it.moveToFirst()) it.entry() else null }
     fun seasons(account: LibraryAccount, series: String, offset: Int = 0): List<String> = readableDatabase.rawQuery(

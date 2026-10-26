@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
@@ -33,6 +32,9 @@ import com.example.iptv.R
 import com.example.iptv.data.library.*
 import com.example.iptv.data.model.M3UChannel
 import com.example.iptv.ui.browser.GridDensity
+import com.example.iptv.ui.browser.FocusRestoration
+import com.example.iptv.ui.browser.rememberFocusRestoration
+import com.example.iptv.ui.browser.attachedFocusRequester
 import com.example.iptv.ui.home.BrowserColors
 import com.example.iptv.ui.home.BrowserControl
 import com.example.iptv.ui.home.ChannelLogo
@@ -97,8 +99,11 @@ private fun LibraryLoading(page: LibraryPage, scale: Float, modifier: Modifier, 
 @Composable
 internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: GridDensity,
     modifier: Modifier, entryRequester: FocusRequester, leave: () -> Unit,
-    onPlay: (Int, List<M3UChannel>) -> Unit, externalBack: () -> Unit) {
-    val page by viewModel.state.collectAsStateWithLifecycle()
+    onPlay: (Int, List<M3UChannel>) -> Unit, externalBack: () -> Unit,
+    focusRestoration: FocusRestoration = rememberFocusRestoration()) {
+    val current by viewModel.state.collectAsStateWithLifecycle()
+    // Preparation is real pending work even when a fresh catalog needs no network refresh.
+    val page = current.copy(loading = current.loading || current.preparing)
     val playChoice by viewModel.playChoice.collectAsStateWithLifecycle()
     val route = page.location.route
     val key = page.location.key + ":${page.page}"
@@ -108,6 +113,10 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     var menuReturn by remember(key) { mutableStateOf<String?>(null) }
     var previousRows by remember(key) { mutableStateOf(emptySet<String>()) }
     var choiceWasOpen by remember(key) { mutableStateOf(false) }
+    fun currentPage(): Boolean {
+        val latest = viewModel.state.value
+        return latest.location.key + ":${latest.page}" == key && contextRow == null && viewModel.playChoice.value == null
+    }
     LaunchedEffect(playChoice) {
         if (playChoice != null) choiceWasOpen = true
         else if (choiceWasOpen) { choiceWasOpen = false; menuReturn = "play" }
@@ -119,37 +128,36 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     LaunchedEffect(grid, key) {
         snapshotFlow { grid.firstVisibleItemIndex to grid.firstVisibleItemScrollOffset }.collect { (index, offset) -> viewModel.scroll(index, offset) }
     }
-    LaunchedEffect(menuReturn, key) {
+    LaunchedEffect(menuReturn, key, focusRestoration.version) {
         val target = menuReturn ?: return@LaunchedEffect
         withFrameNanos { }
         val visibleTarget = page.rows.any { it.key == target } || (route == LibraryRoute.DETAIL &&
             target in setOf("play", "watch", "favorite", "seasons", "next_episode"))
-        (if (visibleTarget) requesters[target] ?: entryRequester else entryRequester).requestFocus()
-        menuReturn = null
+        focusRestoration.restore(if (visibleTarget) requesters[target] ?: entryRequester else entryRequester,
+            onFocused = { menuReturn = null }, current = { currentPage() && menuReturn == target })
     }
-    LaunchedEffect(key) {
-        withFrameNanos { }
-        (requesters[page.bookmark.focus] ?: entryRequester).requestFocus()
+    LaunchedEffect(key, focusRestoration.version) {
+        focusRestoration.restore(requesters[page.bookmark.focus] ?: entryRequester, current = ::currentPage)
     }
     LaunchedEffect(key, page.rows, page.failed, page.loading, page.preparing) {
         if (route in setOf(LibraryRoute.CATEGORIES, LibraryRoute.SEASONS, LibraryRoute.CONTINUE, LibraryRoute.RECENT) &&
             page.rows.isEmpty() && !page.failed && !page.loading && !page.preparing) leave()
     }
     // Restore a surviving item after paging, sorting or filtering; explicit sidebar focus stays there.
-    LaunchedEffect(key, page.rows) {
+    LaunchedEffect(key, page.rows, focusRestoration.version) {
         val target = page.bookmark.focus?.takeIf { id -> page.rows.any { it.key == id } }
         if (target != null) {
             val index = page.rows.indexOfFirst { it.key == target }
             snapshotFlow { grid.layoutInfo.totalItemsCount == page.rows.size }.first { it }
             if (grid.layoutInfo.visibleItemsInfo.none { it.key == target }) grid.scrollToItem((index / density.columns) * density.columns)
             snapshotFlow { grid.layoutInfo.visibleItemsInfo.any { it.key == target } }.first { it }
-            withFrameNanos { }; requesters[target]?.requestFocus()
+            requesters[target]?.let { focusRestoration.restore(it) { currentPage() && viewModel.state.value.bookmark.focus == target } }
         } else if (page.bookmark.focus in previousRows || (previousRows.isEmpty() && page.rows.isNotEmpty())) {
-            entryRequester.requestFocus()
+            focusRestoration.restore(entryRequester, current = ::currentPage)
         }
         previousRows = page.rows.mapTo(mutableSetOf()) { it.key }
     }
-    Column(modifier.focusRequester(entryRequester).focusGroup().onPreviewKeyEvent {
+    Column(modifier.attachedFocusRequester(entryRequester, focusRestoration).focusGroup().onPreviewKeyEvent {
         if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             // Compose handles left between controls; only the first column returns to the sidebar.
             val focused = page.bookmark.focus
@@ -165,7 +173,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
             val requester = requesters.getOrPut(id) { FocusRequester() }
             val watchedAction = if (id == "watch") stringResource(if (page.progress.watched) R.string.library_reset else R.string.library_mark) else null
             BrowserControl(Modifier.height((60 * scale).dp).widthIn(min = (150 * scale).dp)
-                .focusRequester(requester).testTag("library_$id")
+                .attachedFocusRequester(requester, focusRestoration).testTag("library_$id")
                 .semantics { if (watchedAction != null) { contentDescription = watchedAction; stateDescription = label } }, scale,
                 onFocus = { viewModel.focus(id) }, onClick = click) { tint ->
                 Row(Modifier.padding(horizontal = (16 * scale).dp).align(Alignment.Center), verticalAlignment = Alignment.CenterVertically,
@@ -181,7 +189,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
             } else if (page.favorite) R.string.remove_favorite else R.string.add_favorite)
             val status = stringResource(if (page.favorite) R.string.is_favorite else R.string.not_favorite)
             val requester = requesters.getOrPut("favorite") { FocusRequester() }
-            BrowserControl(Modifier.size((60 * scale).dp).focusRequester(requester).testTag("library_favorite")
+            BrowserControl(Modifier.size((60 * scale).dp).attachedFocusRequester(requester, focusRestoration).testTag("library_favorite")
                 .semantics { contentDescription = label; stateDescription = status; toggleableState = if (page.favorite) ToggleableState.On else ToggleableState.Off },
                 scale, onFocus = { viewModel.focus("favorite") }, onClick = viewModel::toggleFavorite) { tint ->
                 LibraryIcon(LibrarySymbol.HEART, tint, Modifier.size((28 * scale).dp).align(Alignment.Center), page.favorite)
@@ -196,7 +204,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                 val id = "root_$index"
                 val requester = requesters.getOrPut(id) { FocusRequester() }
                 BrowserControl(Modifier.fillMaxWidth().height(((816f - (density.rows - 1) * 12f) / density.rows * scale).dp)
-                    .focusRequester(requester).testTag("library_$id"), scale,
+                    .attachedFocusRequester(requester, focusRestoration).testTag("library_$id"), scale,
                     onFocus = { viewModel.focus(id) }, onClick = {
                     when (index) {
                         0 -> viewModel.openRoot(LibraryRoute.CATEGORIES)
@@ -229,6 +237,13 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                             heart()
                         }
                         if (page.nextEpisode != null) action(stringResource(R.string.library_next_episode), "next_episode", click = viewModel::nextEpisode)
+                    }
+                    if (viewModel.searchOrigin) {
+                        var unavailable by remember(key) { mutableStateOf(false) }
+                        action(stringResource(R.string.browse_location), "location") {
+                            viewModel.browseSelectedLocation { unavailable = !it }
+                        }
+                        if (unavailable) Text(stringResource(R.string.location_unavailable), color = BrowserColors.secondary)
                     }
                     val details = page.details
                     val facts = listOfNotNull(details?.year?.takeIf(String::isNotBlank), (details?.runtime?.takeIf(String::isNotBlank) ?: entry.runtime.takeIf(String::isNotBlank)),
@@ -273,7 +288,7 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
                 itemsIndexed(page.rows, key = { _, row -> row.key }) { _, row ->
                     val requester = requesters.getOrPut(row.key) { FocusRequester() }
                     BrowserControl(Modifier.height(((640f - (density.rows - 1) * 12) / density.rows * scale).dp)
-                        .focusRequester(requester).testTag("library_item_${row.key}"), scale,
+                        .attachedFocusRequester(requester, focusRestoration).testTag("library_item_${row.key}"), scale,
                         onFocus = { viewModel.focus(row.key) }, onKey = {
                             if (it.keyCode == KeyEvent.KEYCODE_MENU && row.channel?.channel?.isVod == true && row.entry?.kind != LibraryKind.SERIES) {
                                 contextRow = row; true
@@ -306,13 +321,14 @@ internal fun LibraryPane(viewModel: LibraryViewModel, scale: Float, density: Gri
     }
     playChoice?.let { progress ->
         androidx.compose.ui.window.Dialog(onDismissRequest = viewModel::cancelPlayChoice) {
+            val choiceFocus = rememberFocusRestoration()
             val resume = remember { FocusRequester() }
-            LaunchedEffect(Unit) { withFrameNanos { }; resume.requestFocus() }
+            LaunchedEffect(choiceFocus.version) { choiceFocus.restore(resume) { viewModel.playChoice.value == progress } }
             Column(Modifier.width((650 * scale).dp).background(BrowserColors.tile).padding((24 * scale).dp),
                 verticalArrangement = Arrangement.spacedBy((12 * scale).dp)) {
                 listOf(false, true).forEach { beginning ->
                     BrowserControl(Modifier.fillMaxWidth().height((72 * scale).dp)
-                        .then(if (!beginning) Modifier.focusRequester(resume) else Modifier)
+                        .then(if (!beginning) Modifier.attachedFocusRequester(resume, choiceFocus) else Modifier)
                         .testTag(if (beginning) "play_beginning" else "play_resume"), scale,
                         onClick = { viewModel.play(beginning, onPlay) }) { tint ->
                         Row(Modifier.padding((16 * scale).dp).align(Alignment.CenterStart), verticalAlignment = Alignment.CenterVertically,
@@ -342,15 +358,16 @@ private fun LibraryActions(viewModel: LibraryViewModel, row: LibraryRow, close: 
     val focus = remember { FocusRequester() }
     val favoriteFocus = remember { FocusRequester() }
     androidx.compose.ui.window.Dialog(onDismissRequest = close) {
+        val focusRestoration = rememberFocusRestoration()
         Column(Modifier.width(460.dp).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             val channel = viewModel.channel(row)
-            LaunchedEffect(channel) { if (channel != null) { withFrameNanos { }; favoriteFocus.requestFocus() } }
+            LaunchedEffect(channel, focusRestoration.version) { if (channel != null) focusRestoration.restore(favoriteFocus) }
             var watched by remember(row.key) { mutableStateOf<Boolean?>(null) }
             LaunchedEffect(row.key) { watched = viewModel.watched(row) }
-            LaunchedEffect(watched) { if (watched != null) { withFrameNanos { }; focus.requestFocus() } }
+            LaunchedEffect(watched, focusRestoration.version) { if (watched != null) focusRestoration.restore(focus) }
             if (channel != null) {
               if (watched != null) {
-                BrowserControl(Modifier.fillMaxWidth().height(60.dp).focusRequester(focus).testTag("library_mark"), 1f,
+                BrowserControl(Modifier.fillMaxWidth().height(60.dp).attachedFocusRequester(focus, focusRestoration).testTag("library_mark"), 1f,
                     onClick = { viewModel.mark(channel.channel, watched != true, channel.id, close) }) { tint ->
                     Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         LibraryIcon(if (watched == true) LibrarySymbol.WATCHED else LibrarySymbol.UNWATCHED, tint, Modifier.size(26.dp))
@@ -358,7 +375,7 @@ private fun LibraryActions(viewModel: LibraryViewModel, row: LibraryRow, close: 
                     }
                 }
               }
-                BrowserControl(Modifier.fillMaxWidth().height(60.dp).focusRequester(favoriteFocus), 1f,
+                BrowserControl(Modifier.fillMaxWidth().height(60.dp).attachedFocusRequester(favoriteFocus, focusRestoration), 1f,
                     onClick = { viewModel.favorite(channel); close() }) { tint ->
                     Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         LibraryIcon(LibrarySymbol.HEART, tint, Modifier.size(26.dp))

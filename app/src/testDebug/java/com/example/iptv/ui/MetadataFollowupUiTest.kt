@@ -127,6 +127,63 @@ class MetadataFollowupUiTest {
             } finally { update.countDown() }
         } finally { release.countDown() }
     }
+    @Test fun freshLocalPreparationShowsLoadingWithoutAnotherProviderRequestAndCancelsSafely() {
+        db.transaction { sql ->
+            db.category(sql, account.cache, LibraryKind.MOVIE, LibraryCategory("1", "Films"), 0)
+            db.entry(sql, account.cache, film)
+            db.fresh(sql, account.cache, LibraryKind.MOVIE, System.currentTimeMillis())
+        }
+        runBlocking { assertTrue(repo.refresh(account, LibraryKind.MOVIE)) }
+        render(); vod(); compose.onNodeWithTag("library_root_0").performClick(); waitText("Films")
+        val locked = CountDownLatch(1); val release = CountDownLatch(1)
+        val worker = Thread { db.transaction { locked.countDown(); release.await(8, TimeUnit.SECONDS) } }
+        worker.start(); assertTrue(locked.await(3, TimeUnit.SECONDS))
+        try {
+            compose.onNodeWithText("Films").performClick()
+            compose.onNodeWithText("Loading movies…").assertIsDisplayed()
+            compose.onNodeWithText("No channels in this category.").assertDoesNotExist()
+            assertFalse("Fresh listing performs only a local read", library.state.value.loading)
+            assertTrue(library.state.value.preparing)
+            compose.onNodeWithTag("sidebar_CATEGORIES").performClick()
+            compose.onNodeWithTag("library_loading").assertDoesNotExist()
+        } finally { release.countDown(); worker.join(5000) }
+        assertEquals(0, server.requestCount)
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Live TV")
+    }
+
+    @Test fun searchDetailsBrowseButtonOpensKnownCategoryAndBackRestoresSubmittedSearch() {
+        val show = LibraryEntry(LibraryKind.SERIES, "9", "Sample show", "2", "Series")
+        db.transaction { sql ->
+            db.category(sql, account.cache, LibraryKind.MOVIE, LibraryCategory("1", "Films"), 0)
+            db.entry(sql, account.cache, film)
+            db.fresh(sql, account.cache, LibraryKind.MOVIE, System.currentTimeMillis())
+            db.putDetails(sql, account, film, LibraryDetails("A plot"), System.currentTimeMillis(), 500)
+            db.category(sql, account.cache, LibraryKind.SERIES, LibraryCategory("2", "Series"), 0)
+            db.entry(sql, account.cache, show)
+            db.fresh(sql, account.cache, LibraryKind.SERIES, System.currentTimeMillis())
+        }
+        render(); compose.onNodeWithTag("sidebar_SEARCH").performClick()
+        compose.runOnIdle { home.search("Sample") }; waitText(film.name)
+        compose.onNodeWithTag("tile_0").performClick()
+        compose.onNodeWithTag("library_location").assertIsDisplayed().performClick()
+        compose.waitUntil(5000) { library.state.value.location.route == com.example.iptv.ui.library.LibraryRoute.TITLES && !library.state.value.preparing }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Films")
+        compose.onNodeWithTag("library_item_${library.state.value.rows.single().key}").assertIsFocused()
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("search_input").assertTextEquals("Sample")
+        compose.onNodeWithTag("tile_0").assertIsFocused()
+        compose.runOnIdle { home.search("Sample show") }
+        compose.waitUntil(5000) { home.browser.state.value.items.singleOrNull()?.entry?.library?.kind == LibraryKind.SERIES }
+        focus("tile_0").performKeyInput { pressKey(Key.Menu) }
+        compose.onNodeWithTag("favorite_action").assertDoesNotExist()
+        compose.onNodeWithTag("browse_location").assertIsFocused().performClick()
+        compose.waitUntil(5000) { library.state.value.location.kind == LibraryKind.SERIES && !library.state.value.preparing }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Series")
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("search_input").assertTextEquals("Sample show")
+        compose.onNodeWithTag("tile_0").assertIsFocused()
+        assertEquals(0, server.requestCount)
+    }
     @Test fun seasonHeartRoutesGlobalFavoriteWithoutBulkEpisodeFavoritesAndSettingsLogToggleIsRemoteUsable() {
         val show = LibraryEntry(LibraryKind.SERIES, "9", "A show", "2", "Drama")
         db.transaction { sql ->

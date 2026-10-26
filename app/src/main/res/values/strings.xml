@@ -1,4 +1,7 @@
 <resources>
+    <string name="searching">Searching…</string>
+    <string name="browse_location">Browse location</string>
+    <string name="location_unavailable">Location unavailable</string>
     <string name="live_button">Live</string>
     <string name="at_live_button">● Live</string>
     <string name="at_live">At Live</string>

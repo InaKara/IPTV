@@ -1,6 +1,7 @@
 package com.example.iptv
 
 import android.os.Bundle
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -40,6 +41,7 @@ import com.example.iptv.ui.player.PlayerScreen
 import com.example.iptv.ui.SessionViewModel
 import com.example.iptv.ui.theme.IPTVTheme
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.iptv.util.AppTaskNavigation
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,6 +50,11 @@ class MainActivity : ComponentActivity() {
     private val browser: HomeViewModel by viewModels()
     private val connection: LoginViewModel by viewModels()
     private val library: com.example.iptv.ui.library.LibraryViewModel by viewModels()
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -78,7 +85,7 @@ class MainActivity : ComponentActivity() {
                             onPreviousChannel = { session.step(-1) }
                         )
                     } else if (directory != null) {
-                        ExitConfirmDialog(onExit = { finish() })
+                        ExitConfirmDialog(onExit = { AppTaskNavigation.exit(this@MainActivity) })
 
                         BrowserScreen(
                             channels = directory.channels,
@@ -95,7 +102,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        ExitConfirmDialog(onExit = { finish() })
+                        ExitConfirmDialog(onExit = { AppTaskNavigation.exit(this@MainActivity) })
                         StartupContent(loading, connection.startupStatusRes) {
                           DisposableEffect(Unit) { onDispose { connection.cancelAccountEdit() } }
                           Column(Modifier.fillMaxSize().padding(32.dp)) {
@@ -114,7 +121,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun ExitConfirmDialog(onExit: () -> Unit) {
+internal fun ExitConfirmDialog(onExit: () -> Unit) {
     var showExitDialog by remember { mutableStateOf(false) }
 
     BackHandler { showExitDialog = true }
@@ -134,7 +141,7 @@ private fun ExitConfirmDialog(onExit: () -> Unit) {
                     Row {
                         Button(onClick = { showExitDialog = false }) { Text(stringResource(R.string.cancel)) }
                         Spacer(modifier = Modifier.width(16.dp))
-                        Button(onClick = onExit) { Text(stringResource(R.string.exit)) }
+                        Button(onClick = { showExitDialog = false; onExit() }) { Text(stringResource(R.string.exit)) }
                     }
                 }
             }

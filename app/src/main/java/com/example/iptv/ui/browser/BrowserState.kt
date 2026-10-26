@@ -14,7 +14,7 @@ enum class BrowserDestination {
 
     val isCategorySection: Boolean get() = this == CATEGORIES || this == VOD
 }
-enum class BrowserFocus { GRID, SIDEBAR, QUERY, DENSITY, ACCOUNT, ADULT_FILTER, LOGGING }
+enum class BrowserFocus { GRID, SIDEBAR, QUERY, SEARCH_BUTTON, DENSITY, ACCOUNT, ADULT_FILTER, LOGGING }
 
 data class BrowserLocation(
     val destination: BrowserDestination = BrowserDestination.CATEGORIES,
@@ -113,6 +113,8 @@ data class BrowserState(
     val categories: List<BrowserCategory> = emptyList(),
     val bookmarks: Map<String, GridBookmark> = mapOf(BrowserLocation().key to GridBookmark(area = BrowserFocus.SIDEBAR)),
     val query: String = "",
+    val draftQuery: String = "",
+    val searching: Boolean = false,
     val density: GridDensity = GridDensity.STANDARD,
     val favorites: Set<String> = emptySet(),
     val filterAdult: Boolean = true
@@ -139,6 +141,24 @@ class BrowserController {
     private var extraFavorites = emptyList<BrowserChannel>()
     private var extraSearch = emptyList<BrowserChannel>()
     private var libraryReturn: BrowserLocation? = null
+    private var browseReturn: BrowserLocation? = null
+    var navigationRevision: Long = 0
+        private set
+
+    fun canBrowseLocation(entry: BrowserChannel): Boolean = catalog?.channels?.any {
+        it.id == entry.id && it.visible(state.value.filterAdult)
+    } == true
+
+    fun browseLocation(entry: BrowserChannel): Boolean {
+        val exact = catalog?.channels?.find { it.id == entry.id && it.visible(state.value.filterAdult) } ?: return false
+        browseReturn = state.value.location
+        navigate(BrowserLocation(if (exact.channel.isVod) BrowserDestination.VOD else BrowserDestination.CATEGORIES,
+            "group:${exact.channel.groupTitle}"))
+        focusGrid(exact.id)
+        val index = state.value.items.indexOfFirst { it.id == exact.id }
+        scroll(index, 0)
+        return true
+    }
 
     fun openLibraryDetails() { libraryReturn = state.value.location; navigate(BrowserLocation(BrowserDestination.VOD)) }
     fun closeLibraryDetails() { val target = libraryReturn ?: return; libraryReturn = null; navigate(target) }
@@ -150,6 +170,8 @@ class BrowserController {
     fun reset() {
         catalog = null
         libraryReturn = null
+        browseReturn = null
+        navigationRevision++
         extraFavorites = emptyList(); extraSearch = emptyList()
         auxiliaryReturns.clear()
         favoritesReturn = BrowserLocation()
@@ -187,6 +209,7 @@ class BrowserController {
     fun open(destination: BrowserDestination) {
         val current = state.value.location
         if (destination == current.destination && (!destination.isCategorySection || current.categoryId == null)) return
+        browseReturn = null
         when (destination) {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD -> auxiliaryReturns.clear()
             BrowserDestination.FAVORITES -> {
@@ -200,6 +223,7 @@ class BrowserController {
 
     fun back(): Boolean {
         val current = state.value.location
+        browseReturn?.let { target -> browseReturn = null; navigate(target); return true }
         val target = when (current.destination) {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD ->
                 if (current.categoryId == null) return false else BrowserLocation(current.destination)
@@ -211,6 +235,7 @@ class BrowserController {
     }
 
     private fun navigate(location: BrowserLocation) {
+        navigationRevision++
         if (location.destination.isCategorySection) lastCategories = location
         mutableState.value = state.value.copy(location = location)
         render()
@@ -219,11 +244,17 @@ class BrowserController {
     fun query(value: String) {
         extraSearch = emptyList()
         searchResults = emptyList()
-        mutableState.value = state.value.copy(query = value)
+        mutableState.value = state.value.copy(query = value, draftQuery = value, searching = false)
         // A new query starts a new result collection, while its field retains focus.
         saveBookmark("SEARCH", GridBookmark(area = BrowserFocus.QUERY))
         render()
     }
+
+    fun editQuery(value: String) {
+        if (value.isBlank()) query("") else mutableState.value = state.value.copy(draftQuery = value)
+    }
+    fun cancelQueryDraft() { mutableState.value = state.value.copy(draftQuery = state.value.query) }
+    fun searching(value: Boolean) { mutableState.value = state.value.copy(searching = value) }
 
     // Keep worker results reversible; render applies the latest preference, even to late results.
     fun search(query: String): List<BrowserChannel> = catalog?.search(query).orEmpty()

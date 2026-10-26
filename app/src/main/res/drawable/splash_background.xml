@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/black" />
-    <item android:width="200dp" android:height="200dp" android:gravity="center" android:bottom="80dp"
+    <item><shape><solid android:color="@color/startup_background" /></shape></item>
+    <item android:width="@dimen/startup_logo_size" android:height="@dimen/startup_logo_size"
+        android:gravity="center" android:bottom="@dimen/startup_logo_bottom_inset"
         android:drawable="@drawable/app_logo" />
-    <item android:width="200dp" android:height="40dp" android:gravity="center" android:top="208dp"
-        android:drawable="@drawable/brand_name" />
+    <item android:width="@dimen/startup_title_width" android:height="@dimen/startup_title_height"
+        android:gravity="center" android:top="@dimen/startup_title_top_inset"
+        android:drawable="@drawable/startup_brand_name" />
 </layer-list>

@@ -32,6 +32,9 @@ data class LibraryPage(val location: LibraryLocation = LibraryLocation(), val ro
     val nextEpisode: LibraryEntry? = null, val favorite: Boolean = false, val unavailable: Boolean = false,
     val preparing: Boolean = false)
 
+private fun LibraryPage.withoutPayload() = copy(rows = emptyList(), details = null, nextEpisode = null,
+    preparing = true, loading = false)
+
 @HiltViewModel
 class LibraryViewModel @Inject constructor(private val repository: LibraryRepository,
     private val recents: RecentlyWatchedManager, private val preferences: BrowserPreferences,
@@ -49,10 +52,26 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
     var externalReturn = false
         private set
     private var externalKey: String? = null
+    var searchOrigin: Boolean = false
+        private set
+    private var requestRevision = 0L
+    internal val retainedParentPayloads get() = parents.count { it.rows.isNotEmpty() || it.details != null }
+
+    private fun trimParents(kind: LibraryKind) {
+        var retained = 0
+        for (index in parents.indices.reversed()) {
+            val page = parents[index]
+            val opposite = (kind == LibraryKind.SERIES && page.location.kind == LibraryKind.MOVIE) ||
+                (kind == LibraryKind.MOVIE && page.location.kind in setOf(LibraryKind.SERIES, LibraryKind.EPISODE))
+            if (opposite || retained >= 2) parents[index] = page.withoutPayload()
+            else if (page.rows.isNotEmpty() || page.details != null) retained++
+        }
+    }
+    fun deactivate() { requestRevision++; job?.cancel(); trimParents(state.value.location.kind) }
     fun activate(filterAdult: Boolean) {
         val active = runCatching { repository.account() }.getOrNull() ?: return
         if (account?.cache != active.cache) {
-            job?.cancel(); parents.clear(); externalReturn = false
+            requestRevision++; job?.cancel(); parents.clear(); externalReturn = false; searchOrigin = false
             mutable.value = LibraryPage()
             choice.value = null
             account = active
@@ -64,20 +83,22 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
     }
     private fun hidden(account: LibraryAccount, entry: LibraryEntry) = filter &&
         repository.resolve(account, entry).channel.groupTitle.contains("adult", true)
-    fun root() { job?.cancel(); parents.clear(); externalReturn = false; choice.value = null; mutable.value = LibraryPage(); load() }
+    fun root() { requestRevision++; job?.cancel(); parents.clear(); externalReturn = false; searchOrigin = false; choice.value = null; mutable.value = LibraryPage(); load() }
     fun openRoot(route: LibraryRoute, kind: LibraryKind = LibraryKind.MOVIE) = navigate(LibraryLocation(route, kind))
     fun fallback() = navigate(LibraryLocation(LibraryRoute.PLAYLIST))
-    fun external(entry: LibraryEntry, filterAdult: Boolean) {
+    fun external(entry: LibraryEntry, filterAdult: Boolean, fromSearch: Boolean = false) {
         activate(filterAdult)
         val a = account ?: return
         if (hidden(a, entry)) return
         externalReturn = true
+        searchOrigin = fromSearch
         val target = LibraryLocation(LibraryRoute.DETAIL, entry.kind, label = entry.name, entry = entry)
         externalKey = target.key
         navigate(target)
     }
     fun externalSeason(season: SeasonFavorite, filterAdult: Boolean) {
         activate(filterAdult)
+        searchOrigin = false
         if (filterAdult && season.categoryName.contains("adult", true)) return
         val target = LibraryLocation(LibraryRoute.EPISODES, LibraryKind.SERIES, label = season.name,
             entry = season.series(), season = season.season)
@@ -89,12 +110,50 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
     }
     fun consumeExternalReturn(): Boolean {
         if (!externalReturn || mutable.value.location.key != externalKey) return false
-        externalReturn = false; back(); return true
+        externalReturn = false; searchOrigin = false; back(); return true
     }
-    private fun navigate(location: LibraryLocation) {
+    private fun navigate(location: LibraryLocation, page: Int = 0, bookmark: LibraryBookmark = LibraryBookmark()) {
         choice.value = null
         parents.add(mutable.value)
-        job?.cancel(); mutable.value = LibraryPage(location); load()
+        trimParents(location.kind)
+        job?.cancel(); mutable.value = LibraryPage(location, page = page, bookmark = bookmark); load()
+    }
+
+    /** Resolve exact cached parents off the UI thread; never infer a folder from a stream URL. */
+    fun browseSelectedLocation(opened: (Boolean) -> Unit) {
+        state.value.location.entry?.let { browseLocation(it, filter, opened) } ?: opened(false)
+    }
+    fun browseLocation(entry: LibraryEntry, filterAdult: Boolean, opened: (Boolean) -> Unit = {}) {
+        activate(filterAdult)
+        val a = account ?: return opened(false)
+        val origin = state.value.location
+        val revision = ++requestRevision
+        job?.cancel()
+        job = viewModelScope.launch {
+            val target = try { repository.local {
+                val db = repository.database
+                val exact = db.find(a, entry.kind, entry.id) ?: return@local null
+                if (filterAdult && exact.categoryName.contains("adult", true)) return@local null
+                if (exact.kind == LibraryKind.EPISODE) {
+                    val series = db.find(a, LibraryKind.SERIES, exact.seriesId) ?: return@local null
+                    if (exact.season.isBlank() || (filterAdult && series.categoryName.contains("adult", true))) return@local null
+                    val index = db.browseIndex(a, exact, series = series.id, season = exact.season, sort = LibrarySort.PROVIDER)
+                    if (index < 0) null else Triple(LibraryLocation(LibraryRoute.EPISODES, LibraryKind.SERIES,
+                        label = series.name, entry = series, season = exact.season), index, repository.resolve(a, exact).id)
+                } else {
+                    val category = db.category(a, exact.kind, exact.category) ?: return@local null
+                    val index = db.browseIndex(a, exact, category = category.id, sort = db.sort(a.owner, exact.kind))
+                    if (index < 0) null else Triple(LibraryLocation(LibraryRoute.TITLES, exact.kind,
+                        category = category.id, label = category.name), index, repository.resolve(a, exact).id)
+                }
+            } } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { null }
+            if (revision != requestRevision || !repository.valid(a) || state.value.location != origin) return@launch
+            if (target == null) { opened(false); return@launch }
+            externalReturn = true; searchOrigin = true; externalKey = target.first.key
+            navigate(target.first, target.second / LibraryDatabase.PAGE_SIZE,
+                LibraryBookmark(target.third, target.second % LibraryDatabase.PAGE_SIZE))
+            opened(true)
+        }
     }
     fun open(row: LibraryRow) {
         val location = state.value.location
@@ -219,6 +278,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
         val a = account ?: return
         val requested = state.value
         val location = requested.location
+        val revision = ++requestRevision
         job?.cancel()
         if (location.route == LibraryRoute.ROOT || location.route == LibraryRoute.PLAYLIST) return
         val needsListing = location.route == LibraryRoute.CATEGORIES || location.route == LibraryRoute.TITLES
@@ -237,7 +297,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
                 if (repository.valid(a)) recents.resolve(a.owner,
                     resolved.associate { a.key(it.first.kind, it.first.id) to it.second.channel })
             }
-            fun publish(page: LibraryPage) { if (repository.valid(a) && state.value.location == location) mutable.value = page.copy(bookmark = state.value.bookmark) }
+            fun publish(page: LibraryPage) { if (revision == requestRevision && repository.valid(a) && state.value.location == location) mutable.value = page.copy(bookmark = state.value.bookmark) }
             suspend fun cached(loading: Boolean, failed: Boolean): LibraryPage = repository.local {
                 val db = repository.database
                 val sort = db.sort(a.owner, location.kind)
@@ -306,7 +366,7 @@ class LibraryViewModel @Inject constructor(private val repository: LibraryReposi
             publish(cached(false, !success))
           } catch (cancelled: CancellationException) { throw cancelled }
           catch (_: Exception) {
-              if (repository.valid(a) && state.value.location == location) mutable.value = state.value.copy(loading = false, preparing = false, failed = true)
+                if (revision == requestRevision && repository.valid(a) && state.value.location == location) mutable.value = state.value.copy(loading = false, preparing = false, failed = true)
           }
         }
     }

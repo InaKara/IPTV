@@ -42,6 +42,7 @@ class HomeViewModel @Inject constructor(
     private var refresh: Job? = null
     val browser = BrowserController()
     private var searchJob: Job? = null
+    private var searchRevision = 0L
     private var preferenceWrite: Job? = null
     private var browserAccount: String? = null
     private var playbackIds = emptyList<String>()
@@ -91,13 +92,34 @@ class HomeViewModel @Inject constructor(
     }
     suspend fun awaitBrowseReady() { firstLayout.first { it } }
 
+    fun editSearch(query: String) {
+        if (query.isBlank()) cancelSearch()
+        browser.editQuery(query)
+    }
+    fun cancelSearch() { searchRevision++; searchJob?.cancel(); browser.searching(false) }
+    fun cancelSearchDraft() { browser.cancelQueryDraft() }
+    fun submitSearch() = search(browser.state.value.draftQuery)
+
+    /** Explicit submission only; editing the draft never scans a catalog. */
     fun search(query: String) {
         searchJob?.cancel()
+        val revision = ++searchRevision
+        val navigation = browser.navigationRevision
+        val owner = browserAccount
         browser.query(query)
+        if (query.isBlank()) return
+        browser.searching(true)
         searchJob = viewModelScope.launch {
-            val results = withContext(Dispatchers.Default) { browser.search(query) }
-            browser.searchResults(query, results)
-            syncLibrary(query)
+            fun current() = revision == searchRevision && navigation == browser.navigationRevision && owner == browserAccount &&
+                browser.state.value.location.destination == BrowserDestination.SEARCH && browser.state.value.query == query
+            try {
+                val results = withContext(Dispatchers.Default) { browser.search(query) }
+                if (!current()) return@launch
+                browser.searchResults(query, results)
+                syncLibrary(query)
+            } finally {
+                if (revision == searchRevision) browser.searching(false)
+            }
         }
     }
 
@@ -179,6 +201,7 @@ class HomeViewModel @Inject constructor(
         }
     }
     private suspend fun syncLibraryData(query: String?) {
+        val navigation = browser.navigationRevision
         val repo = library ?: return
         val account = runCatching { repo.account() }.getOrNull() ?: return
         val saved = preferences?.load() ?: return
@@ -192,7 +215,7 @@ class HomeViewModel @Inject constructor(
         favoriteAliases = favoriteReferences.entries.groupBy({ it.value.id }, { it.key }).mapValues { it.value.toSet() }
         browser.preferences(saved.density, saved.favorites + favoriteReferences.values.map { it.id }, saved.filterAdult)
         val search = query?.takeIf { it.isNotBlank() }?.let { repo.supplemental(account, emptySet(), it) }.orEmpty()
-        if (repo.valid(account) && browser.state.value.query == query.orEmpty()) browser.supplemental(
+        if (repo.valid(account) && browser.navigationRevision == navigation && browser.state.value.query == query.orEmpty()) browser.supplemental(
             favoriteReferences.values.toList(),
             search.map { it.second })
     }

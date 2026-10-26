@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compact branding for windows below 360dp wide or 520dp high. Native and Compose
+         both draw splash_background; gravity insets are twice the offset from center. -->
+    <dimen name="startup_logo_size">160dp</dimen>
+    <dimen name="startup_logo_bottom_inset">152dp</dimen>
+    <dimen name="startup_title_width">100dp</dimen>
+    <dimen name="startup_title_height">20dp</dimen>
+    <dimen name="startup_title_top_inset">52dp</dimen>
+    <dimen name="startup_status_gap">12dp</dimen>
+</resources>

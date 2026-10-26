@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onPreviewKeyEvent
@@ -81,6 +80,7 @@ fun BrowserScreen(
     accountSettings: (@Composable (Modifier, FocusRequester, () -> Unit) -> Unit)? = null,
     library: LibraryViewModel? = null
 ) {
+    val focusRestoration = rememberFocusRestoration()
     LaunchedEffect(channels) { viewModel.loadChannels(channels) }
     val loading by viewModel.uiState.collectAsStateWithLifecycle()
     val verbose by viewModel.verboseLogging.collectAsStateWithLifecycle()
@@ -94,6 +94,8 @@ fun BrowserScreen(
         return
     }
     LaunchedEffect(state.location, state.filterAdult) {
+        if (state.location.destination != BrowserDestination.SEARCH) viewModel.cancelSearch()
+        if (state.location.destination != BrowserDestination.VOD) library?.deactivate()
         viewModel.awaitBrowseReady()
         if (state.location.destination == BrowserDestination.VOD) library?.activate(state.filterAdult)
         else viewModel.syncLibrary()
@@ -108,6 +110,7 @@ fun BrowserScreen(
     }
     val sidebarRequesters = remember { List(BrowserDestination.values().size) { FocusRequester() } }
     val queryRequester = remember { FocusRequester() }
+    val searchRequester = remember { FocusRequester() }
     val accountRequester = remember { FocusRequester() }
     val filterRequester = remember { FocusRequester() }
     val loggingRequester = remember { FocusRequester() }
@@ -126,6 +129,7 @@ fun BrowserScreen(
         val requester = when {
             target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()]
             target == "query" -> queryRequester
+            target == "search_button" -> searchRequester
             target == "account" -> accountRequester
             target == "adult_filter" -> filterRequester
             target == "logging" -> loggingRequester
@@ -133,8 +137,8 @@ fun BrowserScreen(
             visible != null && visible.offset.y >= 0 && visible.offset.y + visible.size.height <= gridState.layoutInfo.viewportSize.height -> itemRequesters[target]
             else -> null
         }
-        if (requester == null) request(target)
-        else { command = null; pendingTarget = null; requester.requestFocus() }
+        if (requester == null || !focusRestoration.request(requester)) request(target)
+        else { command = null; pendingTarget = null }
     }
     fun requestGrid() {
         val current = controller.state.value
@@ -153,11 +157,18 @@ fun BrowserScreen(
                 else if (horizontal > 0) when (state.location.destination) {
                     BrowserDestination.SETTINGS -> move("density:${density.name}")
                     BrowserDestination.SEARCH -> if (state.bookmark.focusedId == null || items.isEmpty()) move("query") else requestGrid()
-                    else -> if (useLibrary) libraryRequester.requestFocus() else requestGrid()
+                    else -> if (useLibrary) {
+                        if (!focusRestoration.request(libraryRequester)) request("library")
+                    } else requestGrid()
                 }
             }
             target == "query" -> {
                 if (horizontal < 0) move("sidebar:${BrowserDestination.SEARCH.ordinal}")
+                else if (horizontal > 0) move("search_button")
+                else if (vertical > 0 && items.isNotEmpty()) requestGrid()
+            }
+            target == "search_button" -> {
+                if (horizontal < 0) move("query")
                 else if (vertical > 0 && items.isNotEmpty()) requestGrid()
             }
             target.startsWith("density:") -> {
@@ -197,15 +208,16 @@ fun BrowserScreen(
     LaunchedEffect(viewKey) { inputMode.requestInputMode(InputMode.Keyboard) }
     BackHandler(enabled = state.canGoBack) { controller.back() }
     BackHandler(enabled = library != null && state.location.destination == BrowserDestination.VOD && !useLibrary && state.location.categoryId == null) { library?.back() }
-    BackHandler(enabled = editing) { editing = false; keyboard?.hide(); request("query") }
+    BackHandler(enabled = editing) { viewModel.cancelSearchDraft(); editing = false; keyboard?.hide(); request("query") }
 
-    LaunchedEffect(viewKey, density, items) {
+    LaunchedEffect(viewKey, density, items, focusRestoration.version) {
         if (useLibrary) return@LaunchedEffect
         if (editing || menuTile != null) return@LaunchedEffect
         val saved = controller.state.value.bookmark
         when (saved.area) {
             BrowserFocus.SIDEBAR -> request("sidebar:${saved.sidebarIndex}")
             BrowserFocus.QUERY -> request("query")
+            BrowserFocus.SEARCH_BUTTON -> request("search_button")
             BrowserFocus.DENSITY -> request("density:${saved.focusedId ?: density.name}")
             BrowserFocus.ACCOUNT -> request("account")
             BrowserFocus.ADULT_FILTER -> request("adult_filter")
@@ -213,24 +225,29 @@ fun BrowserScreen(
             BrowserFocus.GRID -> requestGrid()
         }
     }
-    LaunchedEffect(command, viewKey, density) {
-        val target = command?.target ?: return@LaunchedEffect
-        when {
-            target.startsWith("sidebar:") -> sidebarRequesters[target.substringAfter(':').toInt()].requestFocus()
-            target == "query" -> queryRequester.requestFocus()
-            target == "account" -> accountRequester.requestFocus()
-            target == "adult_filter" -> filterRequester.requestFocus()
-            target == "logging" -> loggingRequester.requestFocus()
-            target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]?.requestFocus()
+    LaunchedEffect(command, viewKey, density, focusRestoration.version) {
+        val requested = command ?: return@LaunchedEffect
+        val target = requested.target
+        val requester = when {
+            target.startsWith("sidebar:") -> sidebarRequesters.getOrNull(target.substringAfter(':').toInt())
+            target == "query" -> queryRequester
+            target == "search_button" -> searchRequester
+            target == "account" -> accountRequester
+            target == "adult_filter" -> filterRequester
+            target == "logging" -> loggingRequester
+            target == "library" -> libraryRequester
+            target.startsWith("density:") -> densityRequesters[GridDensity.valueOf(target.substringAfter(':'))]
             else -> {
                 val index = items.indexOfFirst { it.id == target }
                 if (index < 0) return@LaunchedEffect
                 val first = firstRowForTarget(index, gridState.firstVisibleItemIndex, density.columns, density.rows)
                 if (first != gridState.firstVisibleItemIndex) gridState.scrollToItem(first)
                 snapshotFlow { gridState.layoutInfo.visibleItemsInfo.any { it.key == target } }.first { it }
-                withFrameNanos { }
-                if (command?.target == target) itemRequesters[target]?.requestFocus()
+                itemRequesters[target]
             }
+        }
+        requester?.let {
+            focusRestoration.restore(it) { command == requested && controller.state.value.location.key == viewKey && !editing && menuTile == null }
         }
     }
     LaunchedEffect(gridState, viewKey, items) {
@@ -240,8 +257,8 @@ fun BrowserScreen(
             if (controller.state.value.location.key == viewKey) controller.scroll(index, offset)
         }
     }
-    LaunchedEffect(editing) {
-        if (editing) { withFrameNanos { }; queryRequester.requestFocus(); keyboard?.show() }
+    LaunchedEffect(editing, focusRestoration.version) {
+        if (editing) focusRestoration.restore(queryRequester, onFocused = { keyboard?.show() }) { editing }
     }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(BrowserColors.page)) {
@@ -272,13 +289,13 @@ fun BrowserScreen(
                     val y = if (destination == BrowserDestination.SETTINGS) 820 else 102 + index * 96
                     BrowserControl(
                         Modifier.offset((18 * scale).dp, (y * scale).dp).size((84 * scale).dp)
-                            .focusRequester(sidebarRequesters[index]).testTag("sidebar_${destination.name}")
+                            .attachedFocusRequester(sidebarRequesters[index], focusRestoration).testTag("sidebar_${destination.name}")
                             .semantics { contentDescription = label },
                         scale, active = state.activeSidebar == index, navigation = true,
                         onFocus = { focused("sidebar:$index"); controller.focusArea(BrowserFocus.SIDEBAR, index) },
                         onKey = { key -> direction(key, "sidebar:$index") },
                         onClick = {
-                            editing = false; keyboard?.hide()
+                            viewModel.cancelSearchDraft(); editing = false; keyboard?.hide()
                             if (destination == BrowserDestination.VOD) library?.root()
                             controller.open(destination)
                         }
@@ -306,7 +323,7 @@ fun BrowserScreen(
                     Modifier.offset((152 * scale).dp, (104 * scale).dp).size((1496 * scale).dp, (816 * scale).dp),
                     libraryRequester, { move("sidebar:${BrowserDestination.VOD.ordinal}") },
                     onPlay = { index, entries -> viewModel.prepareLibraryPlayback(entries, library.playbackKey()); onChannelClick(index, entries) },
-                    externalBack = { controller.closeLibraryDetails() })
+                    externalBack = { controller.closeLibraryDetails() }, focusRestoration = focusRestoration)
             } else if (isSettings) {
                 Row(Modifier.offset((152 * scale).dp, (120 * scale).dp).size((1496 * scale).dp, (800 * scale).dp),
                     horizontalArrangement = Arrangement.spacedBy((32 * scale).dp)) {
@@ -315,7 +332,7 @@ fun BrowserScreen(
                         GridDensity.values().forEach { value ->
                             val label = stringResource(when (value) { GridDensity.LARGE -> R.string.density_large; GridDensity.STANDARD -> R.string.density_standard; GridDensity.COMPACT -> R.string.density_compact })
                             BrowserControl(Modifier.fillMaxWidth().height((74 * scale).dp)
-                                .focusRequester(densityRequesters.getValue(value)).testTag("density_${value.name}"), scale,
+                                .attachedFocusRequester(densityRequesters.getValue(value), focusRestoration).testTag("density_${value.name}"), scale,
                                 active = density == value, onFocus = { focused("density:${value.name}"); controller.focusArea(BrowserFocus.DENSITY, id = value.name) },
                                 onKey = { key -> direction(key, "density:${value.name}") }, onClick = { viewModel.setDensity(value) }
                             ) { tint -> Text("$label  ·  ${value.columns} × ${value.rows}", color = tint, fontSize = (24 * scale).sp,
@@ -323,7 +340,7 @@ fun BrowserScreen(
                         }
                         val filterStatus = stringResource(if (state.filterAdult) R.string.filtering_active else R.string.filtering_inactive)
                         BrowserControl(Modifier.fillMaxWidth().height((116 * scale).dp)
-                            .focusRequester(filterRequester).testTag("adult_filter")
+                            .attachedFocusRequester(filterRequester, focusRestoration).testTag("adult_filter")
                             .semantics {
                                 toggleableState = if (state.filterAdult) ToggleableState.On else ToggleableState.Off
                                 stateDescription = filterStatus
@@ -338,7 +355,7 @@ fun BrowserScreen(
                         }
                         if (com.example.iptv.BuildConfig.DEBUG) {
                             val status = stringResource(if (verbose) R.string.logging_on else R.string.logging_off)
-                            BrowserControl(Modifier.fillMaxWidth().height((100 * scale).dp).focusRequester(loggingRequester).testTag("verbose_logging")
+                            BrowserControl(Modifier.fillMaxWidth().height((100 * scale).dp).attachedFocusRequester(loggingRequester, focusRestoration).testTag("verbose_logging")
                                 .semantics { toggleableState = if (verbose) ToggleableState.On else ToggleableState.Off; stateDescription = status },
                                 scale, role = Role.Switch,
                                 onFocus = { focused("logging"); controller.focusArea(BrowserFocus.LOGGING) },
@@ -358,29 +375,43 @@ fun BrowserScreen(
                                 color = BrowserColors.text, fontSize = (20 * scale).sp, modifier = Modifier.testTag("software_built"))
                         }
                     }
-                    accountSettings?.invoke(Modifier.weight(1f).fillMaxHeight().onFocusChanged {
+                    accountSettings?.invoke(Modifier.weight(1f).fillMaxHeight().focusAnchor(accountRequester, focusRestoration).onFocusChanged {
                         if (it.hasFocus) { focused("account"); controller.focusArea(BrowserFocus.ACCOUNT) }
                     }, accountRequester, { move("density:${density.name}") })
                 }
             } else {
                 if (isSearch) {
-                    val fieldModifier = Modifier.offset((152 * scale).dp, (104 * scale).dp).width((1496 * scale).dp).height((64 * scale).dp)
-                        .focusRequester(queryRequester)
+                    fun submit() {
+                        editing = false; keyboard?.hide(); viewModel.submitSearch()
+                        controller.focusArea(BrowserFocus.SEARCH_BUTTON); request("search_button")
+                    }
+                    val fieldModifier = Modifier.offset((152 * scale).dp, (104 * scale).dp).width((1280 * scale).dp).height((64 * scale).dp)
+                        .attachedFocusRequester(queryRequester, focusRestoration)
                     if (editing) {
-                        BasicTextField(state.query, viewModel::search, singleLine = true,
+                        BasicTextField(state.draftQuery, viewModel::editSearch, singleLine = true,
                             textStyle = TextStyle(color = BrowserColors.dark, fontSize = (22 * scale).sp),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { editing = false; keyboard?.hide(); requestGrid() }),
+                            keyboardActions = KeyboardActions(onSearch = { submit() }, onDone = { submit() }),
                             modifier = fieldModifier.background(BrowserColors.amber, RoundedCornerShape((8 * scale).dp))
                                 .padding((18 * scale).dp).testTag("search_editor")
+                                .onPreviewKeyEvent {
+                                    if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN && it.nativeKeyEvent.keyCode in
+                                        setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER)) { submit(); true } else false
+                                }
                                 .onFocusChanged { if (it.isFocused) { focused("query"); controller.focusArea(BrowserFocus.QUERY) } })
                     } else {
                         BrowserControl(fieldModifier.testTag("search_input"), scale,
                             onFocus = { focused("query"); controller.focusArea(BrowserFocus.QUERY) },
                             onKey = { key -> direction(key, "query") }, onClick = { editing = true }
-                        ) { tint -> Text(state.query.ifBlank { stringResource(R.string.search_hint) }, color = tint,
+                        ) { tint -> Text(state.draftQuery.ifBlank { stringResource(R.string.search_hint) }, color = tint,
                             fontSize = (22 * scale).sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(horizontal = (18 * scale).dp).align(Alignment.CenterStart)) }
+                    }
+                    BrowserControl(Modifier.offset((1448 * scale).dp, (104 * scale).dp).size((200 * scale).dp, (64 * scale).dp)
+                        .attachedFocusRequester(searchRequester, focusRestoration).testTag("search_submit"), scale,
+                        onFocus = { focused("search_button"); controller.focusArea(BrowserFocus.SEARCH_BUTTON) },
+                        onKey = { direction(it, "search_button") }, onClick = { submit() }) { tint ->
+                        Text(stringResource(R.string.search), color = tint, fontSize = (22 * scale).sp, modifier = Modifier.align(Alignment.Center))
                     }
                 }
                 val gridTop = if (isSearch) 184 else 104
@@ -389,6 +420,7 @@ fun BrowserScreen(
                     .size((1496 * scale).dp, (gridHeight * scale).dp)
                 if (items.isEmpty()) {
                     val message = when {
+                        isSearch && state.searching -> R.string.searching
                         isSearch && state.query.isBlank() -> R.string.search_instruction
                         isSearch -> R.string.search_empty
                         state.location.destination == BrowserDestination.FAVORITES -> R.string.favorites_empty
@@ -406,10 +438,10 @@ fun BrowserScreen(
                     ) {
                         itemsIndexed(items, key = { _, tile -> tile.id }) { index, tile ->
                             val requester = itemRequesters.getOrPut(tile.id) { FocusRequester() }
-                            BrowserControl(Modifier.fillMaxWidth().height(tileHeight).focusRequester(requester).testTag("tile_$index"), scale,
+                            BrowserControl(Modifier.fillMaxWidth().height(tileHeight).attachedFocusRequester(requester, focusRestoration).testTag("tile_$index"), scale,
                                 onFocus = { focused(tile.id); controller.focusGrid(tile.id) },
                                 onKey = { key ->
-                                    if (tile.entry != null && tile.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES && (key.keyCode == KeyEvent.KEYCODE_MENU ||
+                                    if (tile.entry != null && (isSearch || tile.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES) && (key.keyCode == KeyEvent.KEYCODE_MENU ||
                                             (key.keyCode == KeyEvent.KEYCODE_F10 && key.isShiftPressed))) {
                                         if (key.repeatCount == 0) menuTile = tile
                                         true
@@ -420,6 +452,7 @@ fun BrowserScreen(
                                     if (tile.category != null) controller.openCategory(tile.category.id)
                                     else {
                                         if (controller.state.value.items.none { it.id == tile.id }) return@BrowserControl
+                                        controller.focusGrid(tile.id)
                                         val season = tile.entry?.season
                                         if (season != null && library != null) {
                                             controller.openLibraryDetails(); library.externalSeason(season, state.filterAdult); return@BrowserControl
@@ -427,7 +460,7 @@ fun BrowserScreen(
                                         val metadata = tile.entry?.library
                                         if (metadata != null && library != null) {
                                             controller.openLibraryDetails()
-                                            library.external(metadata, state.filterAdult)
+                                            library.external(metadata, state.filterAdult, fromSearch = isSearch)
                                             return@BrowserControl
                                         }
                                         // Re-read visibility so an obsolete tile cannot launch a filtered entry.
@@ -440,7 +473,7 @@ fun BrowserScreen(
                                         }
                                     }
                                 }
-                            ) { tint -> BrowserTileContent(tile, tint, scale) }
+                            ) { tint -> BrowserTileContent(tile, tint, scale, isSearch) }
                         }
                     }
                 }
@@ -448,17 +481,40 @@ fun BrowserScreen(
             menuTile?.let { tile ->
                 fun closeMenu() { menuTile = null; requestGrid() }
                 Dialog(onDismissRequest = { closeMenu() }) {
+                    val menuFocus = rememberFocusRestoration()
                     val actionRequester = remember(tile.id) { FocusRequester() }
+                    val seriesResult = tile.entry?.library?.kind == com.example.iptv.data.library.LibraryKind.SERIES
                     var watched by remember(tile.id) { mutableStateOf<Boolean?>(null) }
                     LaunchedEffect(tile.id) { tile.entry?.takeIf { it.channel.isVod && it.season == null }?.let { watched = viewModel.watched(it) } }
-                    LaunchedEffect(tile.id) { withFrameNanos { }; actionRequester.requestFocus() }
+                    LaunchedEffect(tile.id, menuFocus.version) { menuFocus.restore(actionRequester) { menuTile?.id == tile.id } }
                     Column(Modifier.width((600 * scale).dp).background(BrowserColors.tile, RoundedCornerShape(8.dp)).padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(tile.entry?.channel?.name.orEmpty(), color = BrowserColors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        BrowserControl(Modifier.fillMaxWidth().height(56.dp).focusRequester(actionRequester).testTag("favorite_action"), 1f,
+                        var locationUnavailable by remember(tile.id) { mutableStateOf(false) }
+                        if (isSearch) {
+                            BrowserControl(Modifier.fillMaxWidth().height(56.dp)
+                                .then(if (seriesResult) Modifier.attachedFocusRequester(actionRequester, menuFocus) else Modifier).testTag("browse_location"), 1f,
+                                onClick = {
+                                    val entry = tile.entry ?: return@BrowserControl
+                                    if (entry.library != null && library != null) {
+                                        val origin = controller.navigationRevision
+                                        library.browseLocation(entry.library, state.filterAdult) { opened ->
+                                            if (opened && controller.navigationRevision == origin) { menuTile = null; controller.openLibraryDetails() }
+                                            else locationUnavailable = true
+                                        }
+                                    } else if (controller.browseLocation(entry)) {
+                                        if (entry.channel.isVod) library?.fallback()
+                                        menuTile = null
+                                    } else locationUnavailable = true
+                                }) { tint -> Text(stringResource(R.string.browse_location), color = tint, modifier = Modifier.align(Alignment.Center)) }
+                            if (locationUnavailable) Text(stringResource(R.string.location_unavailable), color = BrowserColors.secondary)
+                        }
+                        if (tile.entry?.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES) {
+                        BrowserControl(Modifier.fillMaxWidth().height(56.dp).attachedFocusRequester(actionRequester, menuFocus).testTag("favorite_action"), 1f,
                             onClick = { viewModel.toggleFavorite(tile.id); closeMenu() }
                         ) { tint -> Text(stringResource(if (tile.id in state.favorites) R.string.remove_favorite else R.string.add_favorite),
                             color = tint, modifier = Modifier.align(Alignment.Center)) }
+                        }
                         if (library != null && watched != null && tile.entry?.channel?.isVod == true && tile.entry.library?.kind != com.example.iptv.data.library.LibraryKind.SERIES) {
                             BrowserControl(Modifier.fillMaxWidth().height(56.dp), 1f,
                                 onClick = { viewModel.markWatched(tile.entry, watched != true, ::closeMenu) }
@@ -491,7 +547,7 @@ internal fun BrowserControl(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun BoxScope.BrowserTileContent(tile: BrowserTile, tint: Color, scale: Float) {
+private fun BoxScope.BrowserTileContent(tile: BrowserTile, tint: Color, scale: Float, showLocation: Boolean = false) {
     Column(Modifier.fillMaxSize().padding(horizontal = (18 * scale).dp, vertical = (18 * scale).dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -508,6 +564,14 @@ private fun BoxScope.BrowserTileContent(tile: BrowserTile, tint: Color, scale: F
             val label = channel.providerNumber?.trim()?.takeIf { it.isNotEmpty() }?.let { "$it   ${channel.name}" } ?: channel.name
             Text(label, color = tint, fontSize = (18 * scale).sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth().padding(top = (12 * scale).dp))
+            if (showLocation) {
+                val metadata = tile.entry.library
+                val context = if (metadata?.kind == com.example.iptv.data.library.LibraryKind.EPISODE && metadata.season.isNotBlank())
+                    listOf(channel.groupTitle, stringResource(R.string.library_season, metadata.season)).filter { it.isNotBlank() }.joinToString(" · ")
+                    else channel.groupTitle
+                Text(context.ifBlank { stringResource(R.string.location_unavailable) }, color = tint, fontSize = (15 * scale).sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("result_location_${tile.id}"))
+            }
         }
     }
 }

@@ -637,7 +637,7 @@
     {
       "id": "MC-BROWSE-008",
       "key": "manual#BROWSE-008",
-      "title": "Exercise browsing Back, Cancel and Exit on the device; dialog integration not in fast suite.",
+      "title": "Verify root Back/Cancel and confirmed full-task Exit to Fire TV Home without older-activity resume or crash; correction approval and device session separate",
       "kind": "Manual",
       "group": "manual",
       "source": "docs/requirements/REQUIREMENTS.md"
@@ -2150,6 +2150,198 @@
       "kind": "App",
       "group": "settings-software",
       "source": "app/src/testDebug/java/com/example/iptv/ui/SettingsSoftwareInfoTest.kt"
+    },
+    {
+      "id": "MC-PLAY-016",
+      "key": "manual#PLAY-016",
+      "title": "Complete normal-control comparison and audible affected-episode diagnosis in a separately approved soundbar/device session",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-LIB-007",
+      "key": "manual#LIB-007",
+      "title": "verify truthful movie/series/episode local-preparation feedback, retained updating content and remote returns",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-PLAY-017",
+      "key": "manual#PLAY-017",
+      "title": "Verify actual source selection/subtitle rendering and remaining source variants in a separately approved session; bounded PC inventory is recorded separately",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-017",
+      "key": "manual#BROWSE-017",
+      "title": "verify draft-only editing, one search per explicit submit, clear/cancel, stale-job rejection and returns",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-REL-007",
+      "key": "manual#REL-007",
+      "title": "verify inactive payload bounds and opposite-section release with disk/durable data and bookmarks retained",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-BROWSE-018",
+      "key": "manual#BROWSE-018",
+      "title": "verify known browse context, exact category/season/page jump, search return and restricted/unavailable cases",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/BROWSING_PLAYBACK_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "MC-UI-017",
+      "key": "manual#UI-017",
+      "title": "Review cream branding and unchanged launcher, including visible title size/position continuity across native launch, splash, loading/error; ST-1 correction and device approval separate",
+      "kind": "Manual",
+      "group": "ux2-proposal-review",
+      "source": "docs/design/STARTUP_TITLE_STABILITY_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-152",
+      "key": "com.example.iptv.ui.home.SubmittedSearchTest#editingDoesNotSubmitAndCancelClearAndObsoleteNavigationKeepResultsSafe",
+      "title": "Draft typing never submits; explicit submission, cancel, clear and obsolete navigation retain safe search results",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/home/SubmittedSearchTest.kt"
+    },
+    {
+      "id": "TC-APP-153",
+      "key": "com.example.iptv.ui.library.LibraryRetentionLocationTest#exactMovieAndEpisodeJumpsLocateDistantPagesAndRetainDurableState",
+      "title": "Exact movie/episode jumps reveal distant pages while preserving watched state, favorites, sort and adult/account restrictions",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/library/LibraryRetentionLocationTest.kt"
+    },
+    {
+      "id": "TC-APP-154",
+      "key": "com.example.iptv.ui.library.LibraryRetentionLocationTest#nestedPayloadsAreBoundedAndEvictedBookmarksRestoreFromDiskAcrossSections",
+      "title": "Nested library payloads stay bounded and opposite-section data is released while disk and exact Back bookmarks survive",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/library/LibraryRetentionLocationTest.kt"
+    },
+    {
+      "id": "TC-APP-155",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#searchDraftCancelAndRemoteSubmitBrowseLocationRestoreExactResult",
+      "title": "Remote Search button, draft cancel and legacy browse-location jump preserve the exact offscreen item and submitted Search return",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-156",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#freshLocalPreparationShowsLoadingWithoutAnotherProviderRequestAndCancelsSafely",
+      "title": "A genuinely blocked fresh local page shows Loading immediately and can be canceled without a provider request or stale view",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-157",
+      "key": "com.example.iptv.ui.MetadataFollowupUiTest#searchDetailsBrowseButtonOpensKnownCategoryAndBackRestoresSubmittedSearch",
+      "title": "Search detail Browse location and series-result Menu reveal exact categories and preserve canonical focus and Search returns",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MetadataFollowupUiTest.kt"
+    },
+    {
+      "id": "TC-APP-158",
+      "key": "com.example.iptv.ui.StartupPresentationTest#largerCreamStartupHasContrastingTextAndStableErrorActionBounds",
+      "title": "Native startup renders a larger logo and cream/burgundy launch and Compose screens with readable error action and stable bounds",
+      "kind": "App",
+      "group": "ux2-browsing-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "MC-REL-008",
+      "key": "manual#REL-008",
+      "title": "Verify actual repeated launcher reuse, Exit to Home and attached focus on Fire TV across lifecycle changes; separate device approval",
+      "kind": "Manual",
+      "group": "exit-lifecycle-review",
+      "source": "docs/design/EXIT_LIFECYCLE_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-159",
+      "key": "com.example.iptv.ui.AppTaskLifecycleTest#nonRootExitRemovesTheWholeOwnTaskWithoutTouchingOtherTasksOrSavedData",
+      "title": "Non-root Exit selects the complete own AppTask, leaves other tasks and saved data untouched, and rejects closing-task handoff",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AppTaskLifecycleTest.kt"
+    },
+    {
+      "id": "TC-APP-160",
+      "key": "com.example.iptv.ui.AppTaskLifecycleTest#browserHandoffRequiresResumedHostAndUsesTheExistingBrowserRoute",
+      "title": "Browser handoff requires a resumed live host and uses clear-top/single-top routing without duplicate finishing handoffs",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AppTaskLifecycleTest.kt"
+    },
+    {
+      "id": "TC-APP-161",
+      "key": "com.example.iptv.ui.AppTaskLifecycleTest#actualCrashMarkerStillDelegatesAndIsConsumedOnceByRealSplash",
+      "title": "A genuine crash still delegates and the actual Splash consumes its generic marker once into ErrorActivity",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/AppTaskLifecycleTest.kt"
+    },
+    {
+      "id": "TC-APP-162",
+      "key": "com.example.iptv.ui.FocusLifecycleTest#queuedFocusWaitsForPlacementAndOldTargetsCannotReceiveItAfterPauseOrRemoval",
+      "title": "Queued focus waits for a real placed target and rejects paused, removed and obsolete targets through resume",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/FocusLifecycleTest.kt"
+    },
+    {
+      "id": "TC-APP-163",
+      "key": "com.example.iptv.ui.FocusLifecycleTest#splashKeepsTwoForegroundSecondsAndCannotLaunchAfterStopOrDisposal",
+      "title": "Fresh splash keeps two foreground seconds and cancels handoff while stopped or disposed",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/FocusLifecycleTest.kt"
+    },
+    {
+      "id": "TC-APP-164",
+      "key": "com.example.iptv.ui.MainExitIntegrationTest#confirmedExitDialogPreservesCancelAndClosesWholeTaskWithBrowserFocusDisabled",
+      "title": "Actual Exit dialog/browser in managed ComponentActivity preserve Cancel, close the own multi-activity AppTask and reject closing-task focus through resume",
+      "kind": "App",
+      "group": "exit-lifecycle",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/MainExitIntegrationTest.kt"
+    },
+    {
+      "id": "TC-APP-165",
+      "key": "com.example.iptv.ui.StartupPresentationTest#nativeLaunchSplashAndLoadingShareTitlePixelsAndInitialGeometry",
+      "title": "Actual native launch, splash, saved-list, connecting, loading and error renders retain title ink/shape/position and initial TV branding geometry",
+      "kind": "App",
+      "group": "startup-title",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "TC-APP-166",
+      "key": "com.example.iptv.ui.StartupPresentationTest#highDensityAndLargeTextKeepTitleFixedAndErrorActionVisible",
+      "title": "High-density TV renders retain identical native and Compose title pixels with larger status text and a visible usable error action",
+      "kind": "App",
+      "group": "startup-title",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "TC-APP-167",
+      "key": "com.example.iptv.ui.StartupPresentationTest#compactLayoutFitsTheSameNativeAndComposeBrandingWithLargeText",
+      "title": "Compact TV layout uses matching constrained native and Compose branding with larger status/error text and an accessible focused retry",
+      "kind": "App",
+      "group": "startup-title",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
     }
   ],
   "requirements": [
@@ -2349,10 +2541,11 @@
       "fingerprint": "687da6a1edb34301fc79c766b5c997122442a162dbb02ecf571233046e4a5112",
       "coverage": "Partial",
       "cases": [
-        "TC-APP-034"
+        "TC-APP-034",
+        "TC-APP-158"
       ],
       "gap": "Compiled launch/logo/name references; cold-start appearance and splash timing need a device.",
-      "reviewNote": "Initial requirement-by-requirement mapping reviewed against real test assertions; remaining criteria stated explicitly."
+      "reviewNote": "UX-2 approved implementation assertions reviewed: add TC-APP-152–158 for real draft/submit/cancel/navigation, canonical distant movie/episode jumps and remote series/legacy/search returns, blocked SQLite preparation without provider calls, two inactive payload retention with disk/durable bookmarks preserved, and native cream/burgundy larger startup/error bounds. Existing TC-APP-034/062 assertions updated for approved branding/submit semantics. Manual physical/provider/audio/heap gaps retained. Focused suite passed before the final series Menu extension; full fresh smoke follows."
     },
     {
       "id": "UI-004",
@@ -2584,13 +2777,15 @@
     },
     {
       "id": "BROWSE-008",
-      "fingerprint": "2fddbf48dce87712dea01f81a819464d07f13b9fe34e02fdac16dbdbd41b1cd2",
-      "coverage": "Manual",
+      "fingerprint": "94a1756b5d0717d00ecc92035ea71a4872ddae03b0dc1e89f8f9a3b4f05951b7",
+      "coverage": "Partial",
       "cases": [
-        "MC-BROWSE-008"
+        "MC-BROWSE-008",
+        "TC-APP-159",
+        "TC-APP-164"
       ],
-      "gap": "Exercise browsing Back, Cancel and Exit on the device; dialog integration not in fast suite.",
-      "reviewNote": "Intentionally excluded from fast automation; no pass is inferred."
+      "gap": "Local assertions cover actual Exit dialog/browser components in a managed ComponentActivity, controlled framework Activity lifecycles and AppTask shadows. They do not execute Fire OS task-manager removal, a complete Hilt MainActivity duplicate stack or physical Home/relaunch/remote acceptance. Those remain manual with separate deployment/device permission.",
+      "reviewNote": "EX-1 approved implementation: TC-APP-159-164 assert complete own AppTask/non-root/other-task/data safety; resumed-only clear-top/single-top handoff; actual Splash crash-marker/delegation; placed, obsolete, paused and removed focus; foreground two-second timer; actual dialog remote Cancel/Exit and browser closing-task resume with retained progress. Framework fixtures retain a managed Compose test clock; dialog uses remote Select. Complete Hilt MainActivity/Fire OS stack execution and Home/relaunch remain explicit manual gaps. No dependency change or blanket exception suppression."
     },
     {
       "id": "RECENT-001",
@@ -3234,10 +3429,12 @@
         "TC-APP-090",
         "TC-APP-095",
         "TC-APP-096",
-        "TC-APP-098"
+        "TC-APP-098",
+        "TC-APP-152",
+        "TC-APP-155"
       ],
       "gap": "Synthetic cached filtering, stale-query rejection, keyboard editing and playback/auxiliary query/focus restoration are automated. Fire TV soft-keyboard behavior and complete no-match presentation remain manual checks.",
-      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
+      "reviewNote": "UX-2 TC-APP-152 cancellation assertion now uses StandardTestDispatcher with explicit queued-work advancement, so cancellation deterministically precedes search launch. A prior unconfined test allowed a legitimate completed result before navigation and was timing dependent. Product criteria/code are unchanged; actual edit/submit/cancel/clear and stale navigation assertions remain. Fresh smoke/lint follows."
     },
     {
       "id": "SET-006",
@@ -3817,10 +4014,11 @@
         "TC-APP-136",
         "MC-LIB-004",
         "TC-APP-145",
-        "TC-APP-146"
+        "TC-APP-146",
+        "TC-APP-156"
       ],
       "gap": "MD-3 local implementation with synthetic delayed/cache/error, remote/dialog, additive durable season and privacy assertions. Actual Firestick readability, complete remote/density/playback/provider acceptance and device log observation remain separate; subsequent separately requested MD-3 deployment completed installation/start with saved data retained. New user report raises loading/series/individual-stream issues under pending MD-4; full feature acceptance and real-provider seek diagnosis remain separate.",
-      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
+      "reviewNote": "UX-2 approved implementation assertions reviewed: add TC-APP-152–158 for real draft/submit/cancel/navigation, canonical distant movie/episode jumps and remote series/legacy/search returns, blocked SQLite preparation without provider calls, two inactive payload retention with disk/durable bookmarks preserved, and native cream/burgundy larger startup/error bounds. Existing TC-APP-034/062 assertions updated for approved branding/submit semantics. Manual physical/provider/audio/heap gaps retained. Focused suite passed before the final series Menu extension; full fresh smoke follows."
     },
     {
       "id": "UI-016",
@@ -3886,10 +4084,11 @@
         "TC-APP-122",
         "TC-APP-124",
         "TC-APP-137",
-        "MC-LIB-005"
+        "MC-LIB-005",
+        "TC-APP-156"
       ],
       "gap": "MD-4 local implementation and meaningful synthetic assertions cover full catalog request reuse, no misleading fresh-category spinner, bounded already-prepared alias reuse, structural parser collisions/field order and selected-series repair across additive schema-v1/v2 upgrades with durable-state/failure retention. Physical latency/readability, representative affected provider series and post-install acceptance remain separate.",
-      "reviewNote": "MD-4 implemented catalog freshness hints/real-work pending state with no premature empty focus, bounded prepared-alias reuse scoped to account/catalog generation, structural top-level episode IDs and schema-v3 per-selected-series parser revision. TC-APP-143–146 and updated v1 migration/empty-focus assertions reviewed; v2 rollback/repair and unchanged durable state have meaningful fixtures. VOD-009 remains Partial with sanitized bounded PC evidence, no working control/device diagnosis or playback correction. Physical gaps retained."
+      "reviewNote": "UX-2 approved implementation assertions reviewed: add TC-APP-152–158 for real draft/submit/cancel/navigation, canonical distant movie/episode jumps and remote series/legacy/search returns, blocked SQLite preparation without provider calls, two inactive payload retention with disk/durable bookmarks preserved, and native cream/burgundy larger startup/error bounds. Existing TC-APP-034/062 assertions updated for approved branding/submit semantics. Manual physical/provider/audio/heap gaps retained. Focused suite passed before the final series Menu extension; full fresh smoke follows."
     },
     {
       "id": "LIB-006",
@@ -3939,6 +4138,109 @@
       ],
       "gap": "SI-1 local UI assertions exercise actual packaged version/date-time resources, timezone/reentry invariance, every density in narrow account Settings and unchanged remote/Back focus. Real Gradle checks establish both-variant UTC stamps, no-op reuse and regeneration when app resource inputs change; debug APK inspection confirms actual version 1.1.2/code 4 and the generated timestamp 2026-10-24 20:59 UTC. The date/time is a fixed resource with no runtime-clock dependency; direct whole-device clock/reinstall and physical readability acceptance remain manual. The large synthetic clock jump fixture was removed after exposing a Robolectric runner stall; no product behavior was changed for it.",
       "reviewNote": "SI-1 local assertions passed and actual debug APK metadata was inspected: version 1.1.2/code 4, UTC minute stamp matches generated resource. Both variant metadata tasks preserve no-op output hashes, regenerate on changed app resource inputs and encode UTC generation minute. Physical clock/reinstall/readability gap retained. Full smoke/lint passed 191/191 in 93.7s; run warm catalog maintenance separately to review the 90-second target after cold lint cost."
+    },
+    {
+      "id": "PLAY-016",
+      "fingerprint": "c7d74db43725422077e559b4f28ae29ab1d281dcfc24a87c0adca1cb142a9cf3",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-016"
+      ],
+      "gap": "UX-2 explicitly approved. Bounded PC inspection completed for sampled The Pitt S02E01/E02 and one unconfirmed-control movie: both episodes declare English/Turkish six-channel E-AC-3 at 48 kHz; the movie declares Turkish AAC stereo. No audible comparison, selected Firestick-track observation or user-confirmed normal source exists; exact provider variant remains unverified. Echo is not diagnosed or fixed. No audio policy/device change. See docs/investigations/AUDIO_SUBTITLES_2026_10_26.md.",
+      "reviewNote": "UX-2 final definition/status review against actual assertions and evidence: five local IDs Implemented with TC-APP-152–158 and retained baseline tests; PLAY-016/017 Partial with bounded three-title header evidence and explicit selected-variant/audible/device/cross-catalog gaps. Canonical legacy/library target focus and submit focus corrected; series Menu fixture focuses its target. Fresh full smoke/lint passed 198/198 and debug assembly passed. No physical acceptance or deployment claimed; regenerate rows with one fresh final maintenance run."
+    },
+    {
+      "id": "LIB-007",
+      "fingerprint": "4754461ccd7d09bd3abab707eed75e6a67a5da100f8568c17ffb2a1494065dc8",
+      "coverage": "Partial",
+      "cases": [
+        "MC-LIB-007",
+        "TC-APP-156",
+        "TC-APP-140",
+        "TC-APP-145"
+      ],
+      "gap": "UX-2 approved and locally implemented: genuine preparation is visibly pending even with a fresh local listing; usable content remains Updating. TC-APP-156 blocks a real SQLite read and checks immediate loading/cancellation with zero provider requests, alongside existing delayed/error/cache regressions. Fresh smoke/lint passed 198/198 in 40.6 seconds, zero failures/skips/errors; lint zero errors/33 warnings and debug assembly passed. Physical device/provider timing and deployment remain separate.",
+      "reviewNote": "UX-2 final definition/status review against actual assertions and evidence: five local IDs Implemented with TC-APP-152–158 and retained baseline tests; PLAY-016/017 Partial with bounded three-title header evidence and explicit selected-variant/audible/device/cross-catalog gaps. Canonical legacy/library target focus and submit focus corrected; series Menu fixture focuses its target. Fresh full smoke/lint passed 198/198 and debug assembly passed. No physical acceptance or deployment claimed; regenerate rows with one fresh final maintenance run."
+    },
+    {
+      "id": "PLAY-017",
+      "fingerprint": "45c7c7a376af76028c66e3706c01249c99dfd876327e0bf43e09f8b2c0352cd3",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-017"
+      ],
+      "gap": "UX-2 explicitly approved. Complete bounded header TrackEntries show Turkish UTF-8/SubRip subtitles in both sampled episodes and none declared in the sampled movie. Omitted Matroska flags imply default eligibility, not proof of actual selection; burned-in text and device rendering remain uninspected. Native chooser remains hidden; no subtitle UI/default change. Three samples consumed 14,088,713 response bytes with per-title/time bounds retained. See docs/investigations/AUDIO_SUBTITLES_2026_10_26.md; catalog-wide availability and physical acceptance remain separate.",
+      "reviewNote": "UX-2 final definition/status review against actual assertions and evidence: five local IDs Implemented with TC-APP-152–158 and retained baseline tests; PLAY-016/017 Partial with bounded three-title header evidence and explicit selected-variant/audible/device/cross-catalog gaps. Canonical legacy/library target focus and submit focus corrected; series Menu fixture focuses its target. Fresh full smoke/lint passed 198/198 and debug assembly passed. No physical acceptance or deployment claimed; regenerate rows with one fresh final maintenance run."
+    },
+    {
+      "id": "BROWSE-017",
+      "fingerprint": "607d609735148ed27052fed8f4ed5d8774aed8e7ca390f442eeb23954f2037ee",
+      "coverage": "Partial",
+      "cases": [
+        "MC-BROWSE-017",
+        "TC-APP-152",
+        "TC-APP-155",
+        "TC-APP-062"
+      ],
+      "gap": "UX-2 approved and locally implemented: draft-only typing, explicit keyboard/button submission, Searching, clear/cancel and navigation/account/query guards retain submitted search returns. TC-APP-152/155 plus revised TC-APP-062 exercise actual state/remote/IME/playback returns. Fresh smoke/lint passed 198/198 in 40.6 seconds; debug assembly passed. Full Fire TV keyboard/timing acceptance and deployment remain separate.",
+      "reviewNote": "UX-2 TC-APP-152 cancellation assertion now uses StandardTestDispatcher with explicit queued-work advancement, so cancellation deterministically precedes search launch. A prior unconfined test allowed a legitimate completed result before navigation and was timing dependent. Product criteria/code are unchanged; actual edit/submit/cancel/clear and stale navigation assertions remain. Fresh smoke/lint follows."
+    },
+    {
+      "id": "REL-007",
+      "fingerprint": "ea952fa2125bbda50190f429858281fa5914e54cc8cd96935bad0049acdab596",
+      "coverage": "Partial",
+      "cases": [
+        "MC-REL-007",
+        "TC-APP-154",
+        "TC-APP-153"
+      ],
+      "gap": "UX-2 approved and locally implemented: two inactive payload limit, opposite-section row/detail release, request cancellation and independent lightweight bookmarks; disk catalogs/freshness/durable data and buffer policy retained. TC-APP-154/153 verify nested eviction, local Back restoration, sort/favorites/watched preservation and no provider request. Fresh smoke/lint passed 198/198 in 40.6 seconds; debug assembly passed. No heap-safety/OOM-resolution claim or device measurement/deployment.",
+      "reviewNote": "UX-2 final definition/status review against actual assertions and evidence: five local IDs Implemented with TC-APP-152–158 and retained baseline tests; PLAY-016/017 Partial with bounded three-title header evidence and explicit selected-variant/audible/device/cross-catalog gaps. Canonical legacy/library target focus and submit focus corrected; series Menu fixture focuses its target. Fresh full smoke/lint passed 198/198 and debug assembly passed. No physical acceptance or deployment claimed; regenerate rows with one fresh final maintenance run."
+    },
+    {
+      "id": "BROWSE-018",
+      "fingerprint": "c5a9e5c0e56d4f3d9757f0ac7b9f8bdcd584a5750bb27a98fffc613575de6e67",
+      "coverage": "Partial",
+      "cases": [
+        "MC-BROWSE-018",
+        "TC-APP-153",
+        "TC-APP-155",
+        "TC-APP-157"
+      ],
+      "gap": "UX-2 approved and locally implemented: known context plus Menu/detail Browse location, exact category/season and sorted distant-page lookup, canonical selected focus, visit-only all-watched-state view and submitted Search return. TC-APP-153/155/157 cover movies/episodes/series/legacy offscreen items, adult/missing locations and preserved state. Fresh smoke/lint passed 198/198 in 40.6 seconds; debug assembly passed. Physical remote/provider-wide acceptance and deployment remain separate.",
+      "reviewNote": "UX-2 final definition/status review against actual assertions and evidence: five local IDs Implemented with TC-APP-152–158 and retained baseline tests; PLAY-016/017 Partial with bounded three-title header evidence and explicit selected-variant/audible/device/cross-catalog gaps. Canonical legacy/library target focus and submit focus corrected; series Menu fixture focuses its target. Fresh full smoke/lint passed 198/198 and debug assembly passed. No physical acceptance or deployment claimed; regenerate rows with one fresh final maintenance run."
+    },
+    {
+      "id": "UI-017",
+      "fingerprint": "d24b11049ad656538678f41a113c110acebaadd1cff891b9fa88c6a4b87bac94",
+      "coverage": "Partial",
+      "cases": [
+        "MC-UI-017",
+        "TC-APP-158",
+        "TC-APP-034",
+        "TC-APP-082",
+        "TC-APP-165",
+        "TC-APP-166",
+        "TC-APP-167"
+      ],
+      "gap": "ST-1 local assertions compare the actual native launch drawable selected by Splash theme with rendered splash/loading/error UI, including title ink/shape/position and full branding pixels. Normal/high-density TV and compact size pass with simulated 1.3x Compose text scaling, accessible title and remote-focused retry fitting. Original texture is retained. These checks do not establish Fire OS window-inset/starting-window or physical startup continuity; actual deployment and TV acceptance remain separately authorized.",
+      "reviewNote": "ST-1 approved implementation/status review: TC-APP-165-167 compare actual themed native launch and rendered Compose title ink/shape/bounds and full branding pixels through splash/saved-list/connect/loading/error at mdpi/xhdpi/compact size with 1.3x Compose text. TC-APP-158/082 strengthened; TC-APP-034 retained. Initial normal geometry, accessibility and remote retry preserved; compact larger-error overflow corrected. Final fresh smoke/lint 207/207 in 53.9 seconds, zero failures/skips/errors; lint zero errors/33 warnings; debug assembly passed. Physical Fire OS window/inset/title continuity remains manual. Prior unchanged TC-APP-136 timeout did not recur in isolated and final full runs; no unrelated code/test was changed."
+    },
+    {
+      "id": "REL-008",
+      "fingerprint": "158eaa995686a07699d05133b7baa3e061f48a35d9c7a15258beba40e0dabc53",
+      "coverage": "Partial",
+      "cases": [
+        "MC-REL-008",
+        "TC-APP-159",
+        "TC-APP-160",
+        "TC-APP-161",
+        "TC-APP-162",
+        "TC-APP-163",
+        "TC-APP-164"
+      ],
+      "gap": "Local assertions cover actual Exit dialog/browser components in a managed ComponentActivity, controlled framework Activity lifecycles and AppTask shadows. They do not execute Fire OS task-manager removal, a complete Hilt MainActivity duplicate stack or physical Home/relaunch/remote acceptance. Those remain manual with separate deployment/device permission.",
+      "reviewNote": "EX-1 approved implementation: TC-APP-159-164 assert complete own AppTask/non-root/other-task/data safety; resumed-only clear-top/single-top handoff; actual Splash crash-marker/delegation; placed, obsolete, paused and removed focus; foreground two-second timer; actual dialog remote Cancel/Exit and browser closing-task resume with retained progress. Framework fixtures retain a managed Compose test clock; dialog uses remote Select. Complete Hilt MainActivity/Fire OS stack execution and Home/relaunch remain explicit manual gaps. No dependency change or blanket exception suppression."
     }
   ]
 }
