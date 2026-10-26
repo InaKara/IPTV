@@ -48,6 +48,7 @@ class MetadataLibraryUiTest {
         runBlocking { repo.record(account, repo.resolve(account, film).channel, 4_980_000, 7_200_000, true) }
         val recents = RecentlyWatchedManager(app); val prefs = BrowserPreferences(app, creds)
         val home = HomeViewModel(recents, preferences = prefs, library = repo)
+        home.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); home.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val library = LibraryViewModel(repo, recents, prefs)
         val store = ViewModelStore().apply { put("home", home); put("library", library) }
         var back: OnBackPressedDispatcher? = null

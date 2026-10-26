@@ -74,6 +74,7 @@ class BrowserLayoutTest {
         }
         server.start()
         val vm = HomeViewModel(RecentlyWatchedManager(app))
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val store = ViewModelStore().apply { put("browser", vm) }
         val channels = listOf("wide.png", "tall.png", "wide.svg").mapIndexed { index, path ->
             M3UChannel("Logo $index", "Local", server.url("/$path").toString(), "https://provider.example/$index", null, null, null, false)
@@ -124,6 +125,7 @@ class BrowserLayoutTest {
     @Test fun allDensitiesFitAndTileAndSidebarHaveWholeAmberFocusWithoutScaling() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val store = ViewModelStore().apply { put("browser", vm) }
         val channels = (0..39).map { M3UChannel("Channel $it", "Live", null, "https://provider.example/$it", null, null, null, false) }
         lateinit var root: View

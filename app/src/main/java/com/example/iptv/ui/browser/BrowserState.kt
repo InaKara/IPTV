@@ -108,10 +108,12 @@ class BrowserCatalog private constructor(
 }
 
 data class BrowserState(
-    val location: BrowserLocation = BrowserLocation(),
+    val location: BrowserLocation = BrowserLocation(BrowserDestination.FAVORITES),
     val items: List<BrowserTile> = emptyList(),
     val categories: List<BrowserCategory> = emptyList(),
-    val bookmarks: Map<String, GridBookmark> = mapOf(BrowserLocation().key to GridBookmark(area = BrowserFocus.SIDEBAR)),
+    val bookmarks: Map<String, GridBookmark> = mapOf(location.key to GridBookmark(area = BrowserFocus.SIDEBAR,
+        sidebarIndex = location.destination.ordinal)),
+    val favoritesReturn: BrowserLocation? = null,
     val query: String = "",
     val draftQuery: String = "",
     val searching: Boolean = false,
@@ -125,7 +127,10 @@ data class BrowserState(
         else -> BrowserFocus.GRID
     })
     val activeSidebar: Int get() = location.destination.ordinal
-    val canGoBack: Boolean get() = !location.destination.isCategorySection || location.categoryId != null
+    val canGoBack: Boolean get() = when (location.destination) {
+        BrowserDestination.FAVORITES -> favoritesReturn != null
+        else -> !location.destination.isCategorySection || location.categoryId != null
+    }
 }
 
 /** Retained by the activity's ViewModel, never serialized into Android saved-instance bundles. */
@@ -134,8 +139,7 @@ class BrowserController {
     val state = mutableState.asStateFlow()
     private var catalog: BrowserCatalog? = null
     private var recent: List<M3UChannel> = emptyList()
-    private var favoritesReturn = BrowserLocation()
-    private var lastCategories = BrowserLocation()
+    private var lastCategories: BrowserLocation? = null
     private val auxiliaryReturns = mutableListOf<BrowserLocation>()
     private var searchResults = emptyList<BrowserChannel>()
     private var extraFavorites = emptyList<BrowserChannel>()
@@ -174,8 +178,7 @@ class BrowserController {
         navigationRevision++
         extraFavorites = emptyList(); extraSearch = emptyList()
         auxiliaryReturns.clear()
-        favoritesReturn = BrowserLocation()
-        lastCategories = BrowserLocation()
+        lastCategories = null
         searchResults = emptyList()
         recent = emptyList()
         mutableState.value = BrowserState()
@@ -213,7 +216,21 @@ class BrowserController {
         when (destination) {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD -> auxiliaryReturns.clear()
             BrowserDestination.FAVORITES -> {
-                favoritesReturn = if (current.destination.isCategorySection) current else lastCategories
+                val returnTarget = when {
+                    current.destination.isCategorySection -> current
+                    auxiliaryReturns.any { it.destination == BrowserDestination.FAVORITES } -> state.value.favoritesReturn
+                    else -> lastCategories
+                }
+                val currentState = state.value
+                val key = BrowserDestination.FAVORITES.name
+                val saved = currentState.bookmarks[key]
+                // Heart focus is a fresh-start default, not the first ordinary Favorites visit.
+                val bookmarks = if (returnTarget != null && currentState.favoritesReturn == null &&
+                    saved?.area == BrowserFocus.SIDEBAR && saved.focusedId == null) {
+                    currentState.bookmarks + (key to saved.copy(area = BrowserFocus.GRID,
+                        sidebarIndex = BrowserDestination.FAVORITES.ordinal))
+                } else currentState.bookmarks
+                mutableState.value = currentState.copy(favoritesReturn = returnTarget, bookmarks = bookmarks)
                 auxiliaryReturns.clear()
             }
             BrowserDestination.SEARCH, BrowserDestination.SETTINGS -> auxiliaryReturns.add(current)
@@ -227,7 +244,7 @@ class BrowserController {
         val target = when (current.destination) {
             BrowserDestination.CATEGORIES, BrowserDestination.VOD ->
                 if (current.categoryId == null) return false else BrowserLocation(current.destination)
-            BrowserDestination.FAVORITES -> favoritesReturn
+            BrowserDestination.FAVORITES -> state.value.favoritesReturn ?: return false
             else -> if (auxiliaryReturns.isEmpty()) BrowserLocation() else auxiliaryReturns.removeAt(auxiliaryReturns.lastIndex)
         }
         navigate(target)
@@ -288,7 +305,8 @@ class BrowserController {
 
     private fun render() {
         var current = state.value
-        val section = if (current.location.destination.isCategorySection) current.location.destination else lastCategories.destination
+        val section = if (current.location.destination.isCategorySection) current.location.destination
+            else lastCategories?.destination ?: BrowserDestination.CATEGORIES
         current = current.copy(categories = catalog?.withRecent(recent, section, current.filterAdult).orEmpty())
         if (current.location.destination.isCategorySection && current.location.categoryId != null &&
             current.categories.none { it.id == current.location.categoryId }) {

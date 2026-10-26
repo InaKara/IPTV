@@ -59,6 +59,7 @@ class AccountSettingsTest {
 
     @Test fun browserSettingsConnectDensityAccountAndReturnFocusWithoutDiscardingCategory() {
         val home = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        home.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); home.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val channels = listOf(M3UChannel("News", "Live", null, "https://provider.example/1", null, null, null, false))
         compose.setContent {
             IPTVTheme {

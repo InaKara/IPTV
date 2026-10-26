@@ -27,6 +27,7 @@ class HomeBehaviorTest {
         val app = RuntimeEnvironment.getApplication()
         val manager = RecentlyWatchedManager(app)
         val vm = HomeViewModel(manager)
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val store = ViewModelStore().apply { put("home", vm) }
         try {
             vm.loadChannels(listOf(channel("one", "Zulu"), channel("two", "tr sport"),
@@ -48,6 +49,7 @@ class HomeBehaviorTest {
         val channels = listOf(channel("one", "Alpha"), channel("two", "Beta"))
         manager.activate("https://provider.example", "demo", channels)
         val vm = HomeViewModel(manager)
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val store = ViewModelStore().apply { put("home", vm) }
         suspend fun state(predicate: (HomeUiState.Success) -> Boolean) = withContext(Dispatchers.Default) {
             withTimeout(5000) { vm.uiState.first { it is HomeUiState.Success && predicate(it) } as HomeUiState.Success }

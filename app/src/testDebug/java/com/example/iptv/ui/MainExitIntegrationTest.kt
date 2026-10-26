@@ -84,6 +84,8 @@ class MainExitIntegrationTest {
                 }
             }
             compose.waitUntil(5000) { compose.onAllNodesWithTag("browser").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused().assertIsSelected()
+            assertFalse(vm.browser.state.value.canGoBack)
             val manager = activity.getSystemService(ActivityManager::class.java)
             val task = ShadowAppTask.newInstance()
             Shadow.extract<ShadowAppTask>(task).setTaskInfo(ActivityManager.RecentTaskInfo().apply { id = activity.taskId; numActivities=2 })
@@ -93,7 +95,7 @@ class MainExitIntegrationTest {
                 .performKeyInput { pressKey(Key.DirectionCenter) }
             compose.waitForIdle()
             assertFalse(Shadow.extract<ShadowAppTask>(task).isFinishedAndRemoved)
-            compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused()
+            compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused()
             val before = preferences.all.toMap()
             compose.runOnIdle { back.onBackPressed() }
             compose.onNodeWithText("Exit").performSemanticsAction(SemanticsActions.RequestFocus) { it() }

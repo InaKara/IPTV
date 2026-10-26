@@ -46,6 +46,7 @@ class SettingsSoftwareInfoTest {
         val app = RuntimeEnvironment.getApplication()
         app.getSharedPreferences("aypi_tivi_prefs", Context.MODE_PRIVATE).edit().clear().commit()
         home = HomeViewModel(RecentlyWatchedManager(app), logging = VerboseLogging(app))
+        home.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); home.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         store.put("home", home)
         val channels = listOf(M3UChannel("Fixture", "Live", null, "https://fixture.invalid/1", null, null, null, false))
         compose.setContent {

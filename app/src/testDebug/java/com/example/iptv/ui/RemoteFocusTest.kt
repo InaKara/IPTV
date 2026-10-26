@@ -97,6 +97,7 @@ class RemoteFocusTest {
 
     @Test fun selectingCategoryAndChannelDeliversExactPositionAndList() {
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val channels = listOf(M3UChannel("News", "Group", null, "https://provider.example/1", null, null, null, false))
         var selected = -1
         var delivered = emptyList<M3UChannel>()
@@ -121,6 +122,7 @@ class RemoteFocusTest {
 
     @Test fun emptyRecentCategoryDoesNotRequestMissingGridFocus() {
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val channels = listOf(M3UChannel("News", "Group", null, "https://provider.example/1", null, null, null, false))
         compose.setContent { IPTVTheme { BrowserScreen(channels, { _, _ -> }, vm) } }
         compose.waitUntil(5000) { compose.onAllNodesWithText("Recently viewed").fetchSemanticsNodes().isNotEmpty() }
@@ -132,6 +134,7 @@ class RemoteFocusTest {
 
     @Test fun remoteCanReachGridAndSidebarTargetsAfterScrolling() {
         val vm = HomeViewModel(RecentlyWatchedManager(RuntimeEnvironment.getApplication()))
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val channels = (0 until 100).map { M3UChannel("Channel$it", "Group000", null, "https://provider.example/$it", null, null, null, false) } +
             (1..40).map { M3UChannel("Other$it", "Group%03d".format(it), null, "https://provider.example/other/$it", null, null, null, false) }
         compose.setContent { IPTVTheme { BrowserScreen(channels, { _, _ -> }, vm) } }

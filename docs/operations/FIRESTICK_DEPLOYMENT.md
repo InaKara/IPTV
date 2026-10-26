@@ -1,5 +1,15 @@
 # Deploy Aypi Tivi to a Firestick
 
+## FS-1 local Favorites startup — 26 October 2026; not deployed
+
+The user selected Approve Favorites implementation first after the reviewed BROWSE-019 proposal and clarification that the current installed/build default was still Live TV. This approves the local Favorites change and selected startup-only UI-012/BROWSE-013/BROWSE-011 exceptions, not installation. Fresh sessions and successful account resets now open Favorites with the heart selected/focused. Initial Favorites without a predecessor uses the existing Cancel/Exit dialog; ordinary Favorites visits retain their prior section and normal grid/menu behavior. Sidebar order, existing retained/reused/foreground sessions, playback and auxiliary returns remain.
+
+TC-APP-168–172 add canonical/filtered/unavailable/late-reference controller cases, actual first-layout/remote populated/empty Favorites, playback and Search/Settings return assertions, and real account preferences/SQLite reconciliation gated after first layout with zero provider attempts. Actual dialog TC-APP-164 verifies initial Favorites Cancel/Exit/task/data safety. Existing Live-context tests explicitly select Live; startup timing tests identify Favorites. The first focused run found startup heart focus leaking into an ordinary Favorites visit; its bookmark handling was corrected, and fixtures now use the approved account-reset default, actual empty text and remembered sidebar returns. All 28 focused checks then passed; the final full run includes the additional zero-provider-attempt assertion.
+
+Fresh test-smoke.ps1 -Lint passed 212/212 (172 app plus 40 shared), zero failures/skips/errors, in 41.3 seconds. Lint has zero errors/33 warnings. Debug assembly passed separately. Final fresh catalog maintenance after correcting the manual default-focus title also passed 212/212, zero failures/skips/errors, in 37.3 seconds. Requirement definitions, mappings and generated companion rows are current; no unresolved local build/test failure remains.
+
+The APK is local and not installed. No Firestick command/start/control, provider access, deployment, commit or push occurred during implementation. Full physical startup/remote/Home and retained/reused Activity/process/window acceptance remain separate. A further deployment needs explicit approval of deploy-firestick.ps1 installing the update, force-stopping Aypi Tivi and starting it; afterward run only that script and report its result.
+
 ## ST-1 local title correction — 26 October 2026; not deployed
 
 The user explicitly approved UI-017/ST-1 with approved, implement after the title continuity revision/in-chat overview. Native launch and later splash/loading/error now draw the same existing splash_background artwork. Normal TV preserves its initial 320 dp illustration and 200 by 40 dp title geometry. Shared compact dimensions reserve space for larger status text and the focused retry action. The accessible title is fixed artwork; status/error text remains scalable. No startup delay/timing, account/cache behavior, launcher, browser theme, EX-1 routing or dependency/deployment-script change was made.

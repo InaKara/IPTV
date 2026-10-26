@@ -92,7 +92,7 @@ class StartupFlowTest {
                     }
                 }
                 compose.waitUntil(5000) { lines.count { "phase=browse_ready" in it } == 1 }
-                compose.onNodeWithText("Local").assertIsDisplayed()
+                compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
                 assertEquals(1, server.requestCount)
                 val snapshot = runBlocking { cache.read(account) }!!
                 assertEquals(listOf("", "   ", "Local"), snapshot.channels.map { it.groupTitle })
@@ -108,7 +108,7 @@ class StartupFlowTest {
                     throw AssertionError("Cached startup: login=${active.first.uiState.value.javaClass.simpleName}, " +
                         "home=${active.second.uiState.value.javaClass.simpleName}, requests=${server.requestCount}, phases=$lines", error)
                 }
-                compose.onNodeWithText("Local").assertIsDisplayed()
+                compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
                 assertEquals(1, server.requestCount)
                 assertEquals(snapshot.channels, (active.first.uiState.value as LoginUiState.Success).channels)
                 assertEquals(snapshot.downloadedAt, (active.first.uiState.value as LoginUiState.Success).downloadedAt)
@@ -146,7 +146,7 @@ class StartupFlowTest {
                     }
                 }
                 compose.waitUntil(5000) { lines.any { "phase=browse_ready" in it } }
-                compose.onNodeWithText("Local").assertIsDisplayed()
+                compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
                 compose.onNodeWithText("Connect").assertDoesNotExist()
                 compose.onNodeWithText("Save and load").assertDoesNotExist()
                 assertEquals(0, server.requestCount)

@@ -26,7 +26,7 @@ class LiveVodBrowserTest {
             https://provider.example/series/episode.mkv
         """.trimIndent().byteInputStream())
         val catalog = BrowserCatalog.create(source)
-        val browser = BrowserController().apply { load(catalog, listOf(source[4], source[0], source[2])) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(catalog, listOf(source[4], source[0], source[2])) }
         val live = browser.state.value.categories
         assertEquals(listOf("Recently viewed", "TR Mixed", "News"), live.map { it.name })
         assertEquals(listOf("Live item A", "News item"), live.first().channels.map { it.channel.name })
@@ -52,7 +52,7 @@ class LiveVodBrowserTest {
     @Test fun matchingSectionRootsAndNestedReturnsRetainIndependentBookmarks() {
         val source = (0..29).flatMap { listOf(item("TV$it", false), item("Film$it", true)) }
         val catalog = BrowserCatalog.create(source)
-        val browser = BrowserController().apply { load(catalog, emptyList()) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(catalog, emptyList()) }
         assertEquals(BrowserDestination.CATEGORIES, browser.state.value.location.destination)
         assertEquals(BrowserFocus.SIDEBAR, browser.state.value.bookmark.area)
         assertEquals(0, browser.state.value.bookmark.sidebarIndex)
@@ -95,7 +95,7 @@ class LiveVodBrowserTest {
         val television = item("TV", false)
         val film = item("Film", true)
         val original = BrowserCatalog.create(listOf(television, film))
-        val browser = BrowserController().apply {
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR);
             load(original, listOf(film)); preferences(GridDensity.LARGE, setOf(original.channels[1].id))
             open(BrowserDestination.VOD); openCategory("group:Mixed"); focusGrid(original.channels[1].id)
         }
@@ -120,7 +120,9 @@ class LiveVodBrowserTest {
         browser.preferences(GridDensity.STANDARD, emptySet())
         assertTrue(browser.state.value.items.isEmpty())
         browser.load(original, emptyList())
-        assertEquals(BrowserLocation(), browser.state.value.location)
+        assertEquals(BrowserLocation(BrowserDestination.FAVORITES), browser.state.value.location)
+        assertEquals(BrowserDestination.FAVORITES.ordinal, browser.state.value.bookmark.sidebarIndex)
+        assertFalse(browser.state.value.canGoBack)
         assertEquals(BrowserFocus.SIDEBAR, browser.state.value.bookmark.area)
         assertTrue(browser.state.value.favorites.isEmpty())
     }

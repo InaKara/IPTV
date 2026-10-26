@@ -1381,10 +1381,10 @@
     {
       "id": "MC-UI-012",
       "key": "manual#UI-012",
-      "title": "Verify LV-1 on device: verify Live TV default/screen focus, ordered Live TV VOD Favorites Search icons, retained bottom Settings, accessible headings and five-control remote focus",
+      "title": "Verify fresh Favorites/heart focus, unchanged Live TV VOD Favorites Search order and bottom Settings, readable accessible icons/headings and five-control remote focus",
       "kind": "Manual",
       "group": "manual",
-      "source": "docs/design/LIVE_VOD_BROWSER_REVIEW.md"
+      "source": "docs/design/FAVORITES_STARTUP_REVIEW.md"
     },
     {
       "id": "MC-BROWSE-013",
@@ -2342,6 +2342,54 @@
       "kind": "App",
       "group": "startup-title",
       "source": "app/src/testDebug/java/com/example/iptv/ui/StartupPresentationTest.kt"
+    },
+    {
+      "id": "MC-BROWSE-019",
+      "key": "manual#BROWSE-019",
+      "title": "Verify physical fresh populated/empty/filtered Favorites and heart focus, root Cancel/Exit, account reset and retained-session/ordinary returns; separate deployment/device approval",
+      "kind": "Manual",
+      "group": "favorites-startup-review",
+      "source": "docs/design/FAVORITES_STARTUP_REVIEW.md"
+    },
+    {
+      "id": "TC-APP-168",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#freshFavoritesKeepVisibleCanonicalOrderAndLateReferencesAtRoot",
+      "title": "Fresh Favorites retain canonical order, filtering, unavailable references and late supplemental items without a fabricated Back target",
+      "kind": "App",
+      "group": "favorites-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-169",
+      "key": "com.example.iptv.ui.browser.BrowserStateTest#freshAndSectionFavoritesKeepDistinctBackTargetsAcrossNestedReturnsAndReset",
+      "title": "Initial Favorites root, ordinary section returns, nested views, reload bookmarks and account reset remain distinct",
+      "kind": "App",
+      "group": "favorites-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/browser/BrowserStateTest.kt"
+    },
+    {
+      "id": "TC-APP-170",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#savedFavoritesOpenOnFirstBrowseWithHeartFocusAndRetainPlaybackAndNestedReturns",
+      "title": "First rendered browse opens saved Favorites with heart focus, preserving playback item and Search/Settings returns",
+      "kind": "App",
+      "group": "favorites-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-171",
+      "key": "com.example.iptv.ui.BrowserNavigationTest#emptyAndFilteredFavoritesKeepInitialHeartFocusAndRootBack",
+      "title": "Empty or adult-filtered startup Favorites retain heart focus and root Back semantics without revealing hidden entries or falling back to Live TV",
+      "kind": "App",
+      "group": "favorites-startup",
+      "source": "app/src/testDebug/java/com/example/iptv/ui/BrowserNavigationTest.kt"
+    },
+    {
+      "id": "TC-APP-172",
+      "key": "com.example.iptv.ui.home.MetadataStartupTest#freshAccountFavoritesResolveAfterLayoutAndAccountResetRestoresOwnReferences",
+      "title": "Fresh account Favorites resolve local typed references after first layout without network; reload retains view and account reset restores its own Favorites",
+      "kind": "App",
+      "group": "favorites-startup",
+      "source": "app/src/test/java/com/example/iptv/ui/home/MetadataStartupTest.kt"
     }
   ],
   "requirements": [
@@ -3398,7 +3446,7 @@
     },
     {
       "id": "BROWSE-011",
-      "fingerprint": "ca085eb71b668c59cfd65168230deb872ed75f418f4b815547c46e5ca84df6c7",
+      "fingerprint": "f42164dc29d307364a7b0665bbb17ad044ca6fd156a1edbcc20207b957b62aa8",
       "coverage": "Partial",
       "cases": [
         "TC-APP-053",
@@ -3412,10 +3460,15 @@
         "TC-APP-091",
         "TC-APP-095",
         "TC-APP-097",
-        "TC-APP-098"
+        "TC-APP-098",
+        "TC-APP-168",
+        "TC-APP-169",
+        "TC-APP-170",
+        "TC-APP-171",
+        "TC-APP-172"
       ],
-      "gap": "Account/restart/schema persistence, ordering/unavailable references and Menu add/remove/empty/Back UI behavior are automated. Physical remote Menu and keyboard Context Menu/Shift+F10 need device acceptance.",
-      "reviewNote": "CF-1 explicitly approved. Reviewed added real preference/account persistence, substring/duplicate identity and reversible all-route catalog/late-search assertions; hidden category and nested return/refresh recovery; actual Compose title/ellipsis/blank/return and remote switch/focus/filtered playback/first-layout checks. Extended native amber switch rendering and retained density/account navigation. Reconciled affected baseline definitions; physical TV/lifecycle/decoder gaps remain explicit."
+      "gap": "FS-1 locally implemented: actual first-browse Favorites/heart focus, populated/empty/adult-filtered lists, controller root/ordinary/nested Back, account reset, retained reload/playback bookmarks and deferred local cached references are automated. Initial Favorites Cancel/Exit is covered by actual dialog components and task shadows. Full retained/reused Activity/window/process/device startup/remote/Home acceptance remains a separate manual check; no installation or Firestick start is inferred from local assertions.",
+      "reviewNote": "FS-1 final actual assertion/mapping review: TC-APP-168-172 and root-dialog TC-APP-164 cover fresh Favorites/heart including empty/adult-filtered/cached API-only references, nested/ordinary Back, playback/reload/account reset and local no-provider gating. Existing Live-context and new first-frame Favorites assertions retained; MC-UI-012 now reflects the approved Favorites default. Full fresh smoke/lint passed 212/212; debug assembly passed. Physical complete Activity/process/window/device/remote/Home acceptance remains manual. Final fresh maintenance passed 212/212 in 37.3 seconds with zero failures/skips/errors, regenerating current manual titles and companion rows. Lint zero errors/33 warnings and debug assembly passed separately; no deployment/device access."
     },
     {
       "id": "BROWSE-012",
@@ -3608,21 +3661,26 @@
     },
     {
       "id": "UI-012",
-      "fingerprint": "7e646e0d28088af6d55367bac37a35b019c0d9756c754406ec6ec9d5434b18c0",
+      "fingerprint": "87e49d0a8b0f991f4dab6965dcc56d25f1b79785d28d770430c09b36beac4fec",
       "coverage": "Partial",
       "cases": [
         "TC-APP-092",
         "TC-APP-093",
         "TC-APP-060",
         "TC-APP-064",
-        "MC-UI-012"
+        "MC-UI-012",
+        "TC-APP-168",
+        "TC-APP-169",
+        "TC-APP-170",
+        "TC-APP-171",
+        "TC-APP-172"
       ],
-      "gap": "Actual Compose tests assert initial screen focus, ordered five-control positions/labels and traversal without activation, empty VOD focus and matching root. Native rendering covers amber whole-control pixels without scaling for all five controls and unchanged densities. Physical TV icon readability/remote acceptance remains pending.",
-      "reviewNote": "LV-1 explicitly approved. Added synthetic InputStream/parser-to-section membership/count/order/identity and global Favorites/Search/filtered-recents assertions; section/category bookmark/nested-return/refresh/type-change/reset cases; actual Compose five-control/default/empty/scrolled-filtered-playback return checks; and all-five-control amber native pixels within existing density checks. Reconciled old four-icon/combined-root wording and retained relevant baseline cases. Classifier unchanged; authoritative provider type and full physical Activity/remote/decoder acceptance remain gaps."
+      "gap": "FS-1 locally implemented: actual first-browse Favorites/heart focus, populated/empty/adult-filtered lists, controller root/ordinary/nested Back, account reset, retained reload/playback bookmarks and deferred local cached references are automated. Initial Favorites Cancel/Exit is covered by actual dialog components and task shadows. Full retained/reused Activity/window/process/device startup/remote/Home acceptance remains a separate manual check; no installation or Firestick start is inferred from local assertions.",
+      "reviewNote": "FS-1 final actual assertion/mapping review: TC-APP-168-172 and root-dialog TC-APP-164 cover fresh Favorites/heart including empty/adult-filtered/cached API-only references, nested/ordinary Back, playback/reload/account reset and local no-provider gating. Existing Live-context and new first-frame Favorites assertions retained; MC-UI-012 now reflects the approved Favorites default. Full fresh smoke/lint passed 212/212; debug assembly passed. Physical complete Activity/process/window/device/remote/Home acceptance remains manual. Final fresh maintenance passed 212/212 in 37.3 seconds with zero failures/skips/errors, regenerating current manual titles and companion rows. Lint zero errors/33 warnings and debug assembly passed separately; no deployment/device access."
     },
     {
       "id": "BROWSE-013",
-      "fingerprint": "60e41b29ff9ac1d732b04324634aec44609a866790027d4be997c16715dc0cbd",
+      "fingerprint": "bc949f902d4fc2a9b0dbf7f6c358223ae65a323b5d9afd29cd63cc7f1be2dcb1",
       "coverage": "Partial",
       "cases": [
         "TC-APP-089",
@@ -3640,10 +3698,15 @@
         "TC-APP-127",
         "TC-APP-128",
         "TC-APP-129",
-        "TC-APP-135"
+        "TC-APP-135",
+        "TC-APP-168",
+        "TC-APP-169",
+        "TC-APP-170",
+        "TC-APP-171",
+        "TC-APP-172"
       ],
-      "gap": "Synthetic parser/catalog/state tests assert exact mixed membership/count/order, canonical identities, global favorites/search, filtered existing recents, independent section/category bookmarks and nested returns, refresh/type change/removal/reset. Compose tests exercise VOD filtered playback delivery, scrolled return and empty VOD Back/focus. Existing account/history/player-session assertions retained. Full Activity recreation, authoritative provider types and actual device playback remain separate.",
-      "reviewNote": "MD-2 explicitly approved. Added TC-APP-132–136 and revised TC-APP-129/130: real SQLite first-layout/demand gating with retained favorites/account cancellation, HH:MM resume bounds, native expiry/interaction/forced-hide/release without player changes, actual tile geometry across densities/empty focus and real metadata-failure retry plus state-derived watched actions across all browser paths. Old indefinite Info assertion replaced. Preserve physical timing/provider/device gaps; fresh execution follows."
+      "gap": "FS-1 locally implemented: actual first-browse Favorites/heart focus, populated/empty/adult-filtered lists, controller root/ordinary/nested Back, account reset, retained reload/playback bookmarks and deferred local cached references are automated. Initial Favorites Cancel/Exit is covered by actual dialog components and task shadows. Full retained/reused Activity/window/process/device startup/remote/Home acceptance remains a separate manual check; no installation or Firestick start is inferred from local assertions.",
+      "reviewNote": "FS-1 final actual assertion/mapping review: TC-APP-168-172 and root-dialog TC-APP-164 cover fresh Favorites/heart including empty/adult-filtered/cached API-only references, nested/ordinary Back, playback/reload/account reset and local no-provider gating. Existing Live-context and new first-frame Favorites assertions retained; MC-UI-012 now reflects the approved Favorites default. Full fresh smoke/lint passed 212/212; debug assembly passed. Physical complete Activity/process/window/device/remote/Home acceptance remains manual. Final fresh maintenance passed 212/212 in 37.3 seconds with zero failures/skips/errors, regenerating current manual titles and companion rows. Lint zero errors/33 warnings and debug assembly passed separately; no deployment/device access."
     },
     {
       "id": "UI-013",
@@ -4241,6 +4304,22 @@
       ],
       "gap": "Local assertions cover actual Exit dialog/browser components in a managed ComponentActivity, controlled framework Activity lifecycles and AppTask shadows. They do not execute Fire OS task-manager removal, a complete Hilt MainActivity duplicate stack or physical Home/relaunch/remote acceptance. Those remain manual with separate deployment/device permission.",
       "reviewNote": "EX-1 approved implementation: TC-APP-159-164 assert complete own AppTask/non-root/other-task/data safety; resumed-only clear-top/single-top handoff; actual Splash crash-marker/delegation; placed, obsolete, paused and removed focus; foreground two-second timer; actual dialog remote Cancel/Exit and browser closing-task resume with retained progress. Framework fixtures retain a managed Compose test clock; dialog uses remote Select. Complete Hilt MainActivity/Fire OS stack execution and Home/relaunch remain explicit manual gaps. No dependency change or blanket exception suppression."
+    },
+    {
+      "id": "BROWSE-019",
+      "fingerprint": "42649e19e270bcb109f29b678d3b8c43386251f8d86cc98eb6ad058a83d5f92b",
+      "coverage": "Partial",
+      "cases": [
+        "MC-BROWSE-019",
+        "TC-APP-168",
+        "TC-APP-169",
+        "TC-APP-170",
+        "TC-APP-171",
+        "TC-APP-172",
+        "TC-APP-164"
+      ],
+      "gap": "FS-1 locally implemented: actual first-browse Favorites/heart focus, populated/empty/adult-filtered lists, controller root/ordinary/nested Back, account reset, retained reload/playback bookmarks and deferred local cached references are automated. Initial Favorites Cancel/Exit is covered by actual dialog components and task shadows. Full retained/reused Activity/window/process/device startup/remote/Home acceptance remains a separate manual check; no installation or Firestick start is inferred from local assertions.",
+      "reviewNote": "FS-1 final actual assertion/mapping review: TC-APP-168-172 and root-dialog TC-APP-164 cover fresh Favorites/heart including empty/adult-filtered/cached API-only references, nested/ordinary Back, playback/reload/account reset and local no-provider gating. Existing Live-context and new first-frame Favorites assertions retained; MC-UI-012 now reflects the approved Favorites default. Full fresh smoke/lint passed 212/212; debug assembly passed. Physical complete Activity/process/window/device/remote/Home acceptance remains manual. Final fresh maintenance passed 212/212 in 37.3 seconds with zero failures/skips/errors, regenerating current manual titles and companion rows. Lint zero errors/33 warnings and debug assembly passed separately; no deployment/device access."
     }
   ]
 }

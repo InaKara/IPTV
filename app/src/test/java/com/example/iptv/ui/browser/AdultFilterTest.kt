@@ -14,7 +14,7 @@ class AdultFilterTest {
             item("Adult in name", "XXX", stream = "adult/path"),
             item("Shared safe", "TR News", stream = "duplicate"), item("Shared hidden", "ADULT", stream = "duplicate"))
         val catalog = BrowserCatalog.create(source)
-        val browser = BrowserController().apply { load(catalog, source) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(catalog, source) }
         val ids = catalog.channels.map { it.id }.toSet()
         browser.preferences(GridDensity.COMPACT, ids)
         assertEquals(listOf("Recently viewed", "TR News", "XXX"), browser.state.value.categories.map { it.name })
@@ -49,7 +49,7 @@ class AdultFilterTest {
         val hidden = item("Film", "Adult films", true)
         val safe = item("TV", "News")
         val original = BrowserCatalog.create(listOf(hidden, safe))
-        val browser = BrowserController().apply { load(original, listOf(hidden)) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(original, listOf(hidden)) }
         browser.preferences(GridDensity.STANDARD, original.channels.map { it.id }.toSet(), false)
         browser.open(BrowserDestination.VOD)
         browser.focusGrid("group:Adult films")

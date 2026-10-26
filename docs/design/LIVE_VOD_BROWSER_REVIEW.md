@@ -1,5 +1,7 @@
 # Live TV and VOD sidebar — LV-1
 
+Later approved [FS-1](FAVORITES_STARTUP_REVIEW.md), 26 October 2026, replaces only the fresh Live TV/screen default with Favorites/heart and gives initial Favorites without a predecessor root Cancel/Exit. Sidebar order, section roots and ordinary/retained-session returns remain. The Live TV default/fallback descriptions below document the historical LV-1 baseline.
+
 23 October 2026. **Approved and locally implemented: the user explicitly replied implement, selecting UI-012 and BROWSE-013 including all documented defaults and return rules. Physical Fire TV acceptance remains pending.** The user asks for a dedicated VOD categories icon, with the computer screen as the default/top selection, followed by VOD, Favorites and Search. Local implementation, meaningful tests and documentation are authorized. Deployment and device actions are not.
 
 Later approved [CF-1](CATEGORY_FILTER_REVIEW.md) replaces generic Channels headings with the opened category/destination name and adds a saved default-active adult-category visibility filter across both sections, recents, Favorites, Search and browser playback collections. These changes take precedence over the historical heading/unfiltered descriptions below; shared canonical data and independent section navigation remain.

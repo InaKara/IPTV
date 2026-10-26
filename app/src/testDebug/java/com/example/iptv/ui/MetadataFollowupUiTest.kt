@@ -66,6 +66,7 @@ class MetadataFollowupUiTest {
         runBlocking { recents.activate(credentials.serverUrl, credentials.username, source) }
         prefs = BrowserPreferences(app, credentials)
         home = HomeViewModel(recents, preferences = prefs, library = repo, logging = VerboseLogging(app))
+        home.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); home.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         library = LibraryViewModel(repo, recents, prefs)
         store.put("home", home); store.put("library", library)
     }

@@ -8,9 +8,67 @@ class BrowserStateTest {
     private fun channel(name: String, group: String = "Group", stream: String = name) =
         M3UChannel(name, group, null, "https://provider.example/$stream", null, "duplicate-tvg-id", null, false)
 
+    @Test fun freshFavoritesKeepVisibleCanonicalOrderAndLateReferencesAtRoot() {
+        val index = BrowserCatalog.create(listOf(channel("One"), channel("Hidden", "Adult films"), channel("Three")))
+        val ids = linkedSetOf(index.channels[2].id, index.channels[1].id, "missing", "cached-api", index.channels[0].id)
+        val browser = BrowserController()
+        assertEquals(BrowserDestination.FAVORITES, browser.state.value.location.destination)
+        assertEquals(BrowserDestination.FAVORITES.ordinal, browser.state.value.bookmark.sidebarIndex)
+        assertEquals(BrowserFocus.SIDEBAR, browser.state.value.bookmark.area)
+        assertFalse(browser.state.value.canGoBack); assertFalse(browser.back())
+        browser.preferences(GridDensity.STANDARD, ids)
+        browser.load(index, emptyList())
+        assertEquals(listOf("One", "Three"), browser.state.value.items.map { it.entry!!.channel.name })
+        assertEquals(ids, browser.state.value.favorites)
+        browser.supplemental(listOf(BrowserChannel("cached-api", channel("Cached", "Films").copy(isVod = true))))
+        assertEquals(listOf("One", "Three", "Cached"), browser.state.value.items.map { it.entry!!.channel.name })
+        assertEquals(BrowserFocus.SIDEBAR, browser.state.value.bookmark.area)
+        assertFalse(browser.state.value.canGoBack)
+        browser.preferences(GridDensity.STANDARD, ids, false)
+        assertEquals(listOf("One", "Hidden", "Three", "Cached"), browser.state.value.items.map { it.entry!!.channel.name })
+        browser.supplemental(emptyList())
+        browser.preferences(GridDensity.STANDARD, setOf(index.channels[1].id), true)
+        assertTrue(browser.state.value.items.isEmpty())
+        assertEquals(BrowserDestination.FAVORITES, browser.state.value.location.destination)
+        assertFalse(browser.back())
+        browser.preferences(GridDensity.STANDARD, ids, true)
+        browser.open(BrowserDestination.CATEGORIES); browser.open(BrowserDestination.FAVORITES)
+        assertEquals("Ordinary Favorites still enters its populated grid", BrowserFocus.GRID, browser.state.value.bookmark.area)
+        assertTrue(browser.back())
+    }
+
+    @Test fun freshAndSectionFavoritesKeepDistinctBackTargetsAcrossNestedReturnsAndReset() {
+        val index = BrowserCatalog.create((0..50).map { channel("Channel$it") })
+        val browser = BrowserController()
+        browser.load(index, emptyList()); browser.preferences(GridDensity.COMPACT, index.channels.map { it.id }.toSet())
+        browser.focusGrid(index.channels[40].id); browser.scroll(30, 7)
+        val favoriteBookmark = browser.state.value.bookmark
+        browser.open(BrowserDestination.SEARCH); browser.open(BrowserDestination.SETTINGS)
+        assertTrue(browser.back()); assertTrue(browser.back())
+        assertEquals(favoriteBookmark, browser.state.value.bookmark)
+        assertFalse(browser.state.value.canGoBack); assertFalse(browser.back())
+        browser.openLibraryDetails(); browser.closeLibraryDetails()
+        browser.open(BrowserDestination.SEARCH); browser.open(BrowserDestination.FAVORITES)
+        assertFalse("An auxiliary return cannot invent a predecessor for initial Favorites", browser.back())
+        browser.open(BrowserDestination.CATEGORIES); browser.openCategory("group:Group")
+        browser.focusGrid(index.channels[41].id); browser.scroll(25, 9)
+        val section = browser.state.value.location; val sectionBookmark = browser.state.value.bookmark
+        browser.open(BrowserDestination.FAVORITES); browser.open(BrowserDestination.FAVORITES)
+        assertTrue(browser.state.value.canGoBack); assertTrue(browser.back())
+        assertEquals(section, browser.state.value.location); assertEquals(sectionBookmark, browser.state.value.bookmark)
+        browser.load(index, emptyList())
+        assertEquals(section, browser.state.value.location); assertEquals(sectionBookmark, browser.state.value.bookmark)
+        browser.reset(); browser.load(index, emptyList())
+        assertEquals(BrowserDestination.FAVORITES, browser.state.value.location.destination)
+        assertTrue(browser.state.value.items.isEmpty()); assertFalse(browser.state.value.canGoBack)
+        assertEquals(BrowserDestination.FAVORITES.ordinal, browser.state.value.bookmark.sidebarIndex)
+        assertEquals(BrowserDestination.FAVORITES, BrowserController().state.value.location.destination)
+        assertEquals("Unrelated Live TV fallback locations remain explicit", BrowserDestination.CATEGORIES, BrowserLocation().destination)
+    }
+
     @Test fun hierarchyAndNestedAuxiliaryBackPreserveSeparateBookmarks() {
         val index = BrowserCatalog.create((0..60).map { channel("Channel$it") })
-        val browser = BrowserController().apply { load(index, emptyList()) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(index, emptyList()) }
         val category = browser.state.value.categories.last()
         browser.focusGrid(category.id)
         browser.scroll(1, 0)
@@ -48,7 +106,7 @@ class BrowserStateTest {
         val updated = BrowserCatalog.create(listOf(source[2], a.copy(name = "Renamed"), a.copy(), source[3]))
         assertEquals(index.channels[0].id, updated.channels[1].id)
         assertEquals(index.channels[1].id, updated.channels[2].id)
-        val browser = BrowserController().apply { load(index, emptyList()); openCategory(index.categories.first { it.name == "Group" }.id) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(index, emptyList()); openCategory(index.categories.first { it.name == "Group" }.id) }
         browser.focusGrid(index.channels[1].id)
         browser.load(updated, emptyList())
         assertEquals(2, restoredIndex(browser.state.value.items, browser.state.value.bookmark.focusedId, 0))
@@ -74,7 +132,7 @@ class BrowserStateTest {
 
     @Test fun cachedSearchIsCaseInsensitiveAndRejectsStaleOrBlankQueries() {
         val index = BrowserCatalog.create(listOf(channel("News World"), channel("Music"), channel("Local NEWS")))
-        val browser = BrowserController().apply { load(index, emptyList()); open(BrowserDestination.SEARCH) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(index, emptyList()); open(BrowserDestination.SEARCH) }
         assertTrue(browser.search("").isEmpty())
         assertTrue(browser.search("   ").isEmpty())
         assertEquals(listOf("News World", "Local NEWS"), browser.search(" news ").map { it.channel.name })
@@ -89,7 +147,7 @@ class BrowserStateTest {
     @Test fun favoritesUsePlaylistOrderAndRetainUnavailableReferences() {
         val index = BrowserCatalog.create(listOf(channel("One"), channel("Two"), channel("Three")))
         val favorites = linkedSetOf(index.channels[2].id, "missing", index.channels[0].id)
-        val browser = BrowserController().apply {
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR);
             load(index, emptyList()); preferences(GridDensity.STANDARD, favorites); open(BrowserDestination.FAVORITES)
         }
         assertEquals(listOf("One", "Three"), browser.state.value.items.map { it.entry!!.channel.name })
@@ -105,7 +163,7 @@ class BrowserStateTest {
 
     @Test fun refreshRebuildsSearchRetainsBookmarksAndRecoversRemovedCategory() {
         val source = listOf(channel("News"), channel("Music"))
-        val browser = BrowserController().apply { load(BrowserCatalog.create(source), emptyList()) }
+        val browser = BrowserController().apply { open(BrowserDestination.CATEGORIES); focusArea(BrowserFocus.SIDEBAR); load(BrowserCatalog.create(source), emptyList()) }
         browser.openCategory("group:Group")
         val focused = browser.state.value.items.last().id
         browser.focusGrid(focused); browser.scroll(1, 3)

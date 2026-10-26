@@ -22,6 +22,7 @@ import com.example.iptv.ui.home.BrowserScreen
 import com.example.iptv.ui.home.HomeViewModel
 import com.example.iptv.ui.theme.IPTVTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -49,6 +50,7 @@ class BrowserNavigationTest {
     private var selected = -1
     private var delivered = emptyList<M3UChannel>()
     private var firstBrowseFilter: Boolean? = null
+    private var firstBrowseDestination: BrowserDestination? = null
     private val channels = (0..31).map {
         M3UChannel(if (it == 0) "Local News" else "Channel $it", "Live", null,
             "https://provider.example/$it", null, null, null, false, if (it == 0) "101" else null)
@@ -60,16 +62,20 @@ class BrowserNavigationTest {
     }
     @After fun close() { compose.runOnIdle { store.clear() }; Dispatchers.resetMain() }
 
-    private fun render(source: List<M3UChannel> = channels) {
+    private fun render(source: List<M3UChannel> = channels, initialLive: Boolean = true) {
         val app = RuntimeEnvironment.getApplication()
         val credentials = CredentialsManager(app).apply { save("https://provider.example", "demo", "synthetic") }
         vm = HomeViewModel(RecentlyWatchedManager(app), preferences = BrowserPreferences(app, credentials))
+        if (initialLive) { vm.browser.open(BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR) }
         store.put("browser", vm)
         compose.setContent {
             back = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
             IPTVTheme {
                 if (browsing) BrowserScreen(source, { index, entries -> selected = index; delivered = entries; browsing = false }, vm,
-                    onBrowseReady = { if (firstBrowseFilter == null) firstBrowseFilter = vm.browser.state.value.filterAdult })
+                    onBrowseReady = {
+                        if (firstBrowseFilter == null) firstBrowseFilter = vm.browser.state.value.filterAdult
+                        if (firstBrowseDestination == null) firstBrowseDestination = vm.browser.state.value.location.destination
+                    })
                 else Text("Playback destination")
             }
         }
@@ -200,6 +206,9 @@ class BrowserNavigationTest {
         }
         compose.waitUntil(5000) { vm.browser.state.value.categories.find { it.name == "Live" }?.channels?.size == 2 }
         assertFalse(vm.browser.state.value.filterAdult)
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused()
+        focusTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionCenter) }
         compose.onNodeWithText("ADULT").assertIsDisplayed()
         compose.runOnIdle { vm.toggleAdultFilter() }
         compose.waitUntil(5000) { vm.browser.state.value.filterAdult }
@@ -212,21 +221,22 @@ class BrowserNavigationTest {
     @Test fun liveVodSidebarOrderDefaultAndFilteredPlaybackReturnUseCorrectSection() {
         val mixed = (0..47).map { M3UChannel("Item $it", "Mixed", null,
             "https://provider.example/item/$it", null, null, null, it % 2 == 1) }
-        render(mixed)
-        compose.onNodeWithTag("sidebar_CATEGORIES").assertIsFocused().assertIsSelected()
-        compose.onNodeWithTag("browser_heading").assertTextEquals("Live TV")
+        render(mixed, initialLive = false)
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused().assertIsSelected()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
         val names = listOf("CATEGORIES", "VOD", "FAVORITES", "SEARCH", "SETTINGS")
         val positions = names.map { compose.onNodeWithTag("sidebar_$it").assertIsDisplayed().fetchSemanticsNode().boundsInRoot.top }
         assertEquals(positions.sorted(), positions)
         compose.onNodeWithContentDescription("Live TV").assertExists()
         compose.onNodeWithContentDescription("VOD").assertExists()
+        focusTag("sidebar_CATEGORIES").performKeyInput { pressKey(Key.DirectionUp) }
         names.forEachIndexed { index, name ->
             compose.onNodeWithTag("sidebar_$name").assertIsFocused()
             if (index < names.lastIndex) compose.onNodeWithTag("sidebar_$name").performKeyInput { pressKey(Key.DirectionDown) }
         }
         compose.onNodeWithTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionDown) }
         compose.onNodeWithTag("sidebar_SETTINGS").assertIsFocused()
-        assertEquals(BrowserDestination.CATEGORIES, vm.browser.state.value.location.destination)
+        assertEquals(BrowserDestination.FAVORITES, vm.browser.state.value.location.destination)
         assertEquals(-1, selected)
         focusTag("sidebar_VOD").performKeyInput { pressKey(Key.DirectionCenter) }
         compose.onNodeWithTag("browser_heading").assertTextEquals("VOD")
@@ -355,6 +365,64 @@ class BrowserNavigationTest {
         assertEquals(BrowserDestination.SEARCH, vm.browser.state.value.location.destination)
         compose.onNodeWithTag("search_input").assertTextEquals("Channel 25")
         compose.onNodeWithTag("tile_0").assertIsFocused()
+    }
+
+    @Test fun savedFavoritesOpenOnFirstBrowseWithHeartFocusAndRetainPlaybackAndNestedReturns() {
+        val app = RuntimeEnvironment.getApplication()
+        val credentials = CredentialsManager(app).apply { save("https://provider.example", "demo", "synthetic") }
+        val saved = BrowserPreferences(app, credentials)
+        val index = com.example.iptv.ui.browser.BrowserCatalog.create(channels)
+        runBlocking { saved.load(); saved.toggle(index.channels[25].id); saved.toggle(index.channels[0].id) }
+        render(initialLive = false)
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused().assertIsSelected()
+        assertEquals(BrowserDestination.FAVORITES, firstBrowseDestination)
+        assertEquals(listOf(channels[0], channels[25]), vm.browser.state.value.items.map { it.entry!!.channel })
+        compose.onNodeWithTag("sidebar_FAVORITES").performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("tile_0").assertIsFocused().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("tile_1").assertIsFocused().performKeyInput { pressKey(Key.DirectionCenter) }
+        assertEquals(listOf(channels[0], channels[25]), delivered)
+        compose.runOnIdle { vm.returnFromPlayback(1); browsing = true }
+        compose.onNodeWithTag("tile_1").assertIsFocused()
+        focusTag("sidebar_SEARCH").performKeyInput { pressKey(Key.DirectionCenter) }
+        focusTag("sidebar_SETTINGS").performKeyInput { pressKey(Key.DirectionCenter) }
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Search")
+        compose.runOnIdle { back.onBackPressed() }
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
+        assertEquals(index.channels[25].id, vm.browser.state.value.bookmark.focusedId)
+        compose.onNodeWithTag("sidebar_SEARCH").assertIsFocused().performKeyInput { pressKey(Key.DirectionRight) }
+        compose.onNodeWithTag("tile_1").assertIsFocused()
+        assertFalse(vm.browser.state.value.canGoBack)
+    }
+
+    @Test fun emptyAndFilteredFavoritesKeepInitialHeartFocusAndRootBack() {
+        val source = listOf(channels[0], channels[1].copy(name = "Hidden favorite", groupTitle = "Adult films"))
+        val app = RuntimeEnvironment.getApplication()
+        val credentials = CredentialsManager(app).apply { save("https://provider.example", "demo", "synthetic") }
+        val saved = BrowserPreferences(app, credentials)
+        val hidden = com.example.iptv.ui.browser.BrowserCatalog.create(source).channels[1].id
+        runBlocking { saved.load(); saved.toggle(hidden) }
+        render(source, initialLive = false)
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused().assertIsSelected()
+        compose.onNodeWithTag("browser_heading").assertTextEquals("Favorites")
+        compose.onNodeWithText("Hidden favorite").assertDoesNotExist()
+        compose.onNodeWithText(app.getString(com.example.iptv.R.string.favorites_empty)).assertIsDisplayed()
+        assertEquals(true, firstBrowseFilter); assertEquals(BrowserDestination.FAVORITES, firstBrowseDestination)
+        assertFalse(vm.browser.state.value.canGoBack); assertFalse(vm.browser.back())
+        compose.runOnIdle { vm.toggleFavorite(hidden) }
+        compose.waitUntil(5000) { vm.browser.state.value.favorites.isEmpty() }
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused()
+        compose.runOnIdle { vm.toggleFavorite(hidden) }
+        compose.waitUntil(5000) { hidden in vm.browser.state.value.favorites }
+        compose.runOnIdle { vm.toggleAdultFilter() }
+        compose.waitUntil(5000) { !vm.browser.state.value.filterAdult }
+        compose.onNodeWithText("Hidden favorite").assertIsDisplayed()
+        compose.onNodeWithTag("sidebar_FAVORITES").assertIsFocused()
+        compose.runOnIdle { vm.toggleAdultFilter() }
+        compose.waitUntil(5000) { vm.browser.state.value.filterAdult }
+        compose.onNodeWithText("Hidden favorite").assertDoesNotExist()
+        assertFalse(vm.browser.state.value.canGoBack)
     }
 
     @Test fun returningFromPlaybackTracksSwitchedChannelAndKeepsCategoryScroll() {

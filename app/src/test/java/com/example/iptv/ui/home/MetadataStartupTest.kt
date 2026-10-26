@@ -22,6 +22,68 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28], application = Application::class)
 class MetadataStartupTest {
+    @Test fun freshAccountFavoritesResolveAfterLayoutAndAccountResetRestoresOwnReferences() = runBlocking<Unit> {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        val app = RuntimeEnvironment.getApplication()
+        app.getSharedPreferences("aypi_tivi_prefs", Context.MODE_PRIVATE).edit().clear().commit()
+        app.noBackupFilesDir.resolve("library.db").delete()
+        val credentials = CredentialsManager(app).apply { save("https://provider.example", "demo", "synthetic") }
+        val db = LibraryDatabase(app)
+        val requests = java.util.concurrent.atomic.AtomicInteger()
+        val client = OkHttpClient.Builder().addInterceptor {
+            requests.incrementAndGet()
+            error("Favorites startup must use local references, not network")
+        }.build()
+        val repo = LibraryRepository(db, credentials, client)
+        val account = repo.account()
+        val film = LibraryEntry(LibraryKind.MOVIE, "42", "Cached favorite", "1", "Films")
+        db.transaction { sql -> db.entry(sql, account.cache, film) }
+        val resolved = repo.resolve(account, film)
+        repo.retainPlayable(account, resolved)
+        val preferences = BrowserPreferences(app, credentials)
+        preferences.load(); preferences.toggle(resolved.id)
+        val news = M3UChannel("News", "Live", null, "https://provider.example/live/1.ts", null, null, null, false)
+        val recents = RecentlyWatchedManager(app)
+        recents.activate(credentials.serverUrl, credentials.username, listOf(news))
+        val vm = HomeViewModel(recents, preferences = preferences, library = repo)
+        val store = ViewModelStore().apply { put("browser", vm) }
+        suspend fun loaded(name: String) = withTimeout(5000) {
+            vm.uiState.first { state -> state is HomeUiState.Success && state.groups.any { group -> group.channels.any { it.name == name } } }
+        }
+        try {
+            vm.loadChannels(listOf(news)); loaded("News")
+            assertEquals(BrowserDestination.FAVORITES, vm.browser.state.value.location.destination)
+            assertEquals(BrowserDestination.FAVORITES.ordinal, vm.browser.state.value.bookmark.sidebarIndex)
+            assertTrue(vm.browser.state.value.items.isEmpty())
+            val pending = async(start = CoroutineStart.UNDISPATCHED) { vm.syncLibrary() }
+            assertTrue("Initial favorite reconciliation still waits for first layout", pending.isActive)
+            vm.onBrowseReady(); withTimeout(5000) { pending.await() }
+            assertEquals(listOf("Cached favorite"), vm.browser.state.value.items.map { it.entry!!.channel.name })
+            assertEquals(BrowserFocus.SIDEBAR, vm.browser.state.value.bookmark.area)
+            assertFalse(vm.browser.state.value.canGoBack)
+            vm.browser.open(BrowserDestination.CATEGORIES); vm.browser.openCategory("group:Live")
+            val focus = vm.browser.state.value.items.single().id
+            vm.browser.focusGrid(focus)
+            vm.loadChannels(listOf(news.copy(name = "Renamed News"))); loaded("Renamed News")
+            assertEquals(BrowserLocation(BrowserDestination.CATEGORIES, "group:Live"), vm.browser.state.value.location)
+            assertEquals(focus, vm.browser.state.value.bookmark.focusedId)
+            credentials.username = "other"
+            val other = news.copy(name = "Other account", groupTitle = "Other", streamUrl = "https://provider.example/live/2.ts")
+            val otherId = BrowserCatalog.create(listOf(other)).channels.single().id
+            preferences.load(); preferences.toggle(otherId)
+            recents.activate(credentials.serverUrl, credentials.username, listOf(other))
+            vm.loadChannels(listOf(other)); loaded("Other account")
+            assertEquals(BrowserDestination.FAVORITES, vm.browser.state.value.location.destination)
+            assertEquals(listOf(otherId), vm.browser.state.value.items.map { it.id })
+            assertFalse(vm.browser.state.value.canGoBack)
+            assertEquals(BrowserDestination.FAVORITES.ordinal, vm.browser.state.value.bookmark.sidebarIndex)
+            assertEquals(setOf(otherId), preferences.load().favorites)
+            credentials.username = "demo"
+            assertEquals(setOf(resolved.id), preferences.load().favorites)
+            assertEquals("Cached Favorites startup/account changes must not request a provider", 0, requests.get())
+        } finally { store.clear(); db.close(); client.connectionPool.evictAll(); client.dispatcher.executorService.shutdown(); Dispatchers.resetMain() }
+    }
+
     @Test fun liveFirstLayoutDoesNotOpenMetadataAndDemandedAliasesRetainLegacyFavorites() = runBlocking<Unit> {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         val app = RuntimeEnvironment.getApplication()
@@ -40,6 +102,7 @@ class MetadataStartupTest {
         val recents = RecentlyWatchedManager(app)
         recents.activate(credentials.serverUrl, credentials.username, source)
         val vm = HomeViewModel(recents, preferences = preferences, library = repo)
+        vm.browser.open(com.example.iptv.ui.browser.BrowserDestination.CATEGORIES); vm.browser.focusArea(com.example.iptv.ui.browser.BrowserFocus.SIDEBAR)
         val store = ViewModelStore().apply { put("browser", vm) }
         try {
             vm.loadChannels(source)
