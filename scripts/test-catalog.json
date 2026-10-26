@@ -2390,6 +2390,30 @@
       "kind": "App",
       "group": "favorites-startup",
       "source": "app/src/test/java/com/example/iptv/ui/home/MetadataStartupTest.kt"
+    },
+    {
+      "id": "MC-BROWSE-020",
+      "key": "manual#BROWSE-020",
+      "title": "Pending review: validate selected Favorites sort/default/direction and persistence, timestamp policy, canonical/filter/season and focus/playback returns",
+      "kind": "Manual",
+      "group": "favorites-pip-backlog",
+      "source": "docs/backlog.md"
+    },
+    {
+      "id": "MC-PLAY-018",
+      "key": "manual#PLAY-018",
+      "title": "Pending review: validate selected PiP variant, platform capability, one-player lifecycle/remote/audio/progress and resource behavior; any device checks need separate authorization",
+      "kind": "Manual",
+      "group": "favorites-pip-backlog",
+      "source": "docs/backlog.md"
+    },
+    {
+      "id": "MC-OPS-008",
+      "key": "manual#OPS-008",
+      "title": "Pending updater review: validate selected feed/version/signature/package checks, remote consent, installer permission/result, failure/retry/restart and retained data on supported Fire OS",
+      "kind": "Manual",
+      "group": "app-updates-backlog",
+      "source": "docs/backlog.md"
     }
   ],
   "requirements": [
@@ -4320,6 +4344,36 @@
       ],
       "gap": "FS-1 locally implemented: actual first-browse Favorites/heart focus, populated/empty/adult-filtered lists, controller root/ordinary/nested Back, account reset, retained reload/playback bookmarks and deferred local cached references are automated. Initial Favorites Cancel/Exit is covered by actual dialog components and task shadows. Full retained/reused Activity/window/process/device startup/remote/Home acceptance remains a separate manual check; no installation or Firestick start is inferred from local assertions.",
       "reviewNote": "FS-1 final actual assertion/mapping review: TC-APP-168-172 and root-dialog TC-APP-164 cover fresh Favorites/heart including empty/adult-filtered/cached API-only references, nested/ordinary Back, playback/reload/account reset and local no-provider gating. Existing Live-context and new first-frame Favorites assertions retained; MC-UI-012 now reflects the approved Favorites default. Full fresh smoke/lint passed 212/212; debug assembly passed. Physical complete Activity/process/window/device/remote/Home acceptance remains manual. Final fresh maintenance passed 212/212 in 37.3 seconds with zero failures/skips/errors, regenerating current manual titles and companion rows. Lint zero errors/33 warnings and debug assembly passed separately; no deployment/device access."
+    },
+    {
+      "id": "BROWSE-020",
+      "fingerprint": "95ff6f010b983027d16a2d625d093beeb0eba2d10af116857c488999cc85b135",
+      "coverage": "Manual",
+      "cases": [
+        "MC-BROWSE-020"
+      ],
+      "gap": "Backlog only; sort keys/default/direction/persistence/manual-order and historical timestamp policy are undecided. Existing playlist/saved-reference ordering tests validate the current baseline, not a new sort feature. No implementation assertions have been added; selected design/implementation approval must precede them.",
+      "reviewNote": "26 October user explicitly requested backlog recording of Favorites sorting and PiP. Both Open with manual pending coverage: sort/default/timestamp policy and PiP variant/lifecycle/platform/resource scope are undecided. Existing ordering/player-release assertions cover only current behavior. No new implementation test or claim of platform/device validation; concrete selected approval required before app changes or test additions. Run existing smoke solely for catalog maintenance."
+    },
+    {
+      "id": "PLAY-018",
+      "fingerprint": "15ff6951e2ca0a7dafe01b3584e82d4764818f095bae5ac5cc6f336ca7586ee3",
+      "coverage": "Manual",
+      "cases": [
+        "MC-PLAY-018"
+      ],
+      "gap": "Backlog only; PiP variant/window/actions/lifecycle/resource scope is undecided. Current source releases playback on leaving the player; in-app one-stream feasibility is a source assessment, not implementation or device evidence. Cross-app Fire OS and dual-stream capability remain unverified. No implementation assertion, feature probe or device session authorized.",
+      "reviewNote": "26 October user explicitly requested backlog recording of Favorites sorting and PiP. Both Open with manual pending coverage: sort/default/timestamp policy and PiP variant/lifecycle/platform/resource scope are undecided. Existing ordering/player-release assertions cover only current behavior. No new implementation test or claim of platform/device validation; concrete selected approval required before app changes or test additions. Run existing smoke solely for catalog maintenance."
+    },
+    {
+      "id": "OPS-008",
+      "fingerprint": "2d12e121e432ac26ae2838998d4e31d3a79e8164cd7aaed46b05a6b7d2928db6",
+      "coverage": "Manual",
+      "cases": [
+        "MC-OPS-008"
+      ],
+      "gap": "Backlog only; update route/hosting/access, signing/version/release migration, cadence/UI, download/installer behavior and permission policy are unselected. Current manual ADB deployment checks do not validate an in-app updater. No implementation assertion or actual update/platform/device test has been added; selected review and separate device/publication permission are required.",
+      "reviewNote": "User requested backlog recording only for app updates. New Open entry with MC-OPS-008 explicit missing coverage: hosting/distribution/cadence, compatible signing and versioning, credential-free packages, user confirmation/installer results, failure/restart/data preservation and existing OPS-007 policy all await selected review. Existing deployment/version checks prove only the current baseline. No implementation tests, updater/permission/infrastructure/device/publication actions authorized; fresh existing smoke is catalog maintenance only."
     }
   ]
 }
